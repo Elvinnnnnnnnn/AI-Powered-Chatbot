@@ -50,19 +50,18 @@ function loadConversations() {
               ${chat.status}
             </span>
           </div>
-          <p>${chat.user_message}</p>
+
+          <p class="last-message">
+            ${chat.user_message || "(no message)"}
+          </p>
+
           <div class="item-footer">
             <span class="time">
               ${new Date(chat.created_at).toLocaleString()}
             </span>
           </div>
-          <strong>
-          ${chat.first_name || "Unknown"} ${chat.last_name || ""}
-        </strong>
-
-        <p>${chat.user_message || "(no message)"}</p>
-
-                `;
+        `;
+;
 
         list.appendChild(div);
       });
