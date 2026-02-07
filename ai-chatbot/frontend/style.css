@@ -366,9 +366,14 @@ footer {
 }
 
 .main-content {
-    flex: 1;
-    padding: 30px;
-    background: #f4f4f4;
+    margin-top: 0;              /* 🔴 REMOVE extra top gap */
+    padding: 20px 30px;         /* tighter vertical spacing */
+    background: linear-gradient(to right, #e53935, #fdd835);
+    min-height: calc(100vh - 60px);
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;    /* 👈 important */
 }
 
 /* =====================================================
@@ -376,7 +381,23 @@ footer {
 ===================================================== */
 
 /* CHAT CONTAINER */
-/* CHAT BOX */
+.chat-container {
+    background: white;
+    width: 100%;
+    max-width: 850px;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ONLY messages scroll */
+.chat-box {
+    height: 360px;
+    overflow-y: auto;
+}
+
 .chat-box {
     height: 420px;
     background: #ffffff;
