@@ -68,6 +68,19 @@ function loadConversations() {
     });
 }
 
+function filterStatus(status, btn) {
+  activeCategory = status;
+
+  // update tab UI
+  document.querySelectorAll(".tabs .tab")
+    .forEach(tab => tab.classList.remove("active"));
+
+  btn.classList.add("active");
+
+  loadConversations();
+}
+
+
 function loadConversationThread(userId) {
   fetch(`http://127.0.0.1:5000/api/admin/conversations/${userId}`)
     .then(res => res.json())

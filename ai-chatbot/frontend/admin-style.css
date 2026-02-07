@@ -573,6 +573,5 @@ body {
 /* ADMIN BOT REPLY */
 .admin-reply {
   background: #16a34a;
-  color: white;
-  font-weight: bold;
+  color: black;
 }

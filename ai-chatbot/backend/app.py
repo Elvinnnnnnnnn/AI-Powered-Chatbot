@@ -7,8 +7,6 @@ import mysql.connector
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-
-
 # ---------------- REGISTER ----------------
 @app.route("/register", methods=["POST"])
 def register():
