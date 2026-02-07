@@ -534,6 +534,35 @@ def save_feedback():
 
     return jsonify({"success": True})
 
+@app.route("/chat/quick-answer", methods=["POST"])
+def quick_answer():
+    data = request.json
+    user_id = data.get("user_id")
+    question = data.get("question")
+    answer = data.get("answer")
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO chats (user_id, user_message, bot_reply, status)
+        VALUES (%s, %s, %s, 'resolved')
+    """, (
+        user_id,
+        question,
+        answer
+    ))
+
+    db.commit()
+    chat_id = cursor.lastrowid
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "chat_id": chat_id,
+        "reply": answer
+    })
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

@@ -5,6 +5,8 @@
    register-step3.html
 ===================================================== */
 
+let isInCategoryFlow = false;
+
 /* STEP 1 → SAVE PERSONAL INFO */
 function saveStep1() {
     localStorage.setItem("first_name", document.getElementById("first_name").value);
@@ -274,6 +276,8 @@ function loadCalendar() {
 ===================================================== */
 
 function sendMessage() {
+    isInCategoryFlow = false;
+
     const input = document.getElementById("userMessage");
     const msg = input.value.trim();
     if (!msg) return;
@@ -382,6 +386,7 @@ function loadCategories() {
 
 function selectCategory(category) {
     // show user choice
+    isInCategoryFlow = true; 
     addMessage("user", category);
 
     // clear category buttons
@@ -412,16 +417,30 @@ function selectCategory(category) {
 }
 
 function selectQuestion(question, answer) {
-    // show selected question
+    isInCategoryFlow = false;
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    // show user question immediately
     addMessage("user", question);
 
-    // show answer
-    addMessage("admin", answer);
+    fetch("http://127.0.0.1:5000/chat/quick-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: user.id,
+            question: question,
+            answer: answer
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        // show bot answer WITH feedback
+        addMessage("admin", data.reply, data.chat_id, true);
+    });
 
-    // clear question buttons
+    // clear buttons
     document.getElementById("categoryActions").innerHTML = "";
-
-    // allow user to continue
     showBackToCategories();
 }
 
@@ -440,6 +459,7 @@ function showBackToCategories() {
 
 /* LOAD CHAT HISTORY */
 function loadChatHistory() {
+    if (isInCategoryFlow) return; 
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (!user) return;
 
