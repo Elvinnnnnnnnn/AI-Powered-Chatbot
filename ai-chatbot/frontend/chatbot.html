@@ -93,9 +93,16 @@
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadCategories();
-});
+    requireLogin();
 
+    sessionStorage.removeItem("activeCategory");
+    isInCategoryFlow = false;
+
+    showWelcomeMessage();   // 👈 ADD THIS
+    loadCategories();
+
+    setInterval(loadChatHistory, 5000);
+});
 
 </script>
 

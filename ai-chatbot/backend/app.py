@@ -497,20 +497,36 @@ def get_questions_by_category(category):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
+    # CATEGORY ANSWER
+    cursor.execute("""
+        SELECT answer
+        FROM knowledge_base
+        WHERE category = %s
+        AND question = '__CATEGORY__'
+        AND status = 'active'
+        LIMIT 1
+    """, (category,))
+    category_answer = cursor.fetchone()
+
+    # QUESTIONS
     cursor.execute("""
         SELECT id, question, answer
         FROM knowledge_base
         WHERE category = %s
+        AND question != '__CATEGORY__'
         AND status = 'active'
         ORDER BY id ASC
     """, (category,))
-
     questions = cursor.fetchall()
 
     cursor.close()
     db.close()
 
-    return jsonify(questions)
+    return jsonify({
+        "category_answer": category_answer["answer"] if category_answer else None,
+        "questions": questions
+    })
+
 
 @app.route("/chat/feedback", methods=["POST"])
 def save_feedback():
@@ -563,6 +579,76 @@ def quick_answer():
         "chat_id": chat_id,
         "reply": answer
     })
+
+@app.route("/chat/category", methods=["POST"])
+def chat_category():
+    data = request.json
+    user_id = data.get("user_id")
+    category = data.get("category")
+
+    if not user_id or not category:
+        return jsonify({"error": "Missing data"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # 🔹 Get category-level answer from knowledge_base
+    cursor.execute("""
+        SELECT answer
+        FROM knowledge_base
+        WHERE category = %s
+        AND question = '__CATEGORY__'
+        AND status = 'active'
+        LIMIT 1
+    """, (category,))
+
+    row = cursor.fetchone()
+
+    category_answer = (
+        row["answer"]
+        if row
+        else "Here are some common questions related to this topic."
+    )
+
+    # 🔹 Save to chats
+    cursor.execute("""
+        INSERT INTO chats (user_id, user_message, bot_reply, status)
+        VALUES (%s, %s, %s, 'resolved')
+    """, (user_id, category, category_answer))
+
+    db.commit()
+    chat_id = cursor.lastrowid
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "reply": category_answer,
+        "chat_id": chat_id
+    })
+
+@app.route("/chat/welcome", methods=["POST"])
+def chat_welcome():
+    data = request.json
+    user_id = data.get("user_id")
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO chats (user_id, bot_reply, status)
+        VALUES (%s, %s, 'resolved')
+    """, (
+        user_id,
+        "Hello! I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

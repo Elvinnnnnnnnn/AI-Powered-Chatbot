@@ -258,42 +258,55 @@ function saveKnowledgeBase(event) {
   event.preventDefault();
 
   const category = kbCategory.value;
-  const status = document.querySelector(
-    "input[name='kbStatus']:checked"
-  ).value;
+  const status = document.querySelector("input[name='kbStatus']:checked").value;
+  const categoryAnswer = document.getElementById("kbCategoryAnswer").value.trim();
 
   const questions = document.querySelectorAll(".kb-question");
   const answers = document.querySelectorAll(".kb-answer");
 
-  if (questions.length === 0) {
-    alert("Please add at least one question.");
+  if (questions.length === 0 && !categoryAnswer) {
+    alert("Please add at least a category answer or one question.");
     return;
   }
 
   const requests = [];
 
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i].value.trim();
-    const answer = answers[i].value.trim();
+  // ✅ 1️⃣ SAVE CATEGORY ANSWER
+  if (categoryAnswer) {
+    requests.push(
+      fetch("http://127.0.0.1:5000/api/admin/knowledge-base", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: category,
+          question: "__CATEGORY__",   // 🔑 MAGIC KEY
+          answer: categoryAnswer,
+          status: status
+        })
+      })
+    );
+  }
 
-    if (!question || !answer) {
-      alert("All questions and answers are required.");
-      return;
-    }
+  // ✅ 2️⃣ SAVE QUESTIONS
+  questions.forEach((qEl, index) => {
+    const question = qEl.value.trim();
+    const answer = answers[index].value.trim();
+
+    if (!question || !answer) return;
 
     requests.push(
       fetch("http://127.0.0.1:5000/api/admin/knowledge-base", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          category,
-          question,
-          answer,
-          status
+          category: category,
+          question: question,
+          answer: answer,
+          status: status
         })
       })
     );
-  }
+  });
 
   Promise.all(requests).then(() => {
     closeModal();
@@ -321,22 +334,19 @@ function editKnowledgeBase(id, category, question, answer, status) {
 }
 
 function resetModal() {
-  editingKbId = null;
-
-  kbCategory.value = "Enrollment";
-  document.querySelector("input[name='kbStatus'][value='active']").checked = true;
-
-  document.querySelector("#kbModal h2").textContent = "Add New Entry";
-  document.querySelector(".modal-actions .btn-primary").textContent = "Add Entry";
+  document.getElementById("kbCategory").value = "Enrollment";
+  document.getElementById("kbCategoryAnswer").value = "";
 
   document.getElementById("qaContainer").innerHTML = `
-  <div class="qa-block">
-    <input type="text" class="kb-question" placeholder="Enter question" required>
-    <textarea class="kb-answer" placeholder="Enter answer" required></textarea>
-  </div>
-`;
+    <div class="qa-block">
+      <input type="text" class="kb-question" placeholder="Enter question">
+      <textarea class="kb-answer" placeholder="Enter answer"></textarea>
+    </div>
+  `;
 
+  document.querySelector("input[name='kbStatus'][value='active']").checked = true;
 }
+
 
 function deleteKnowledgeBase(id) {
   if (!confirm("Are you sure you want to delete this entry?")) return;

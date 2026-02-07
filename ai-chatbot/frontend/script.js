@@ -276,6 +276,7 @@ function loadCalendar() {
 ===================================================== */
 
 function sendMessage() {
+    sessionStorage.removeItem("activeCategory");
     isInCategoryFlow = false;
 
     const input = document.getElementById("userMessage");
@@ -384,36 +385,70 @@ function loadCategories() {
         });
 }
 
-function selectCategory(category) {
-    // show user choice
-    isInCategoryFlow = true; 
-    addMessage("user", category);
-
-    // clear category buttons
-    const container = document.getElementById("categoryActions");
-    container.innerHTML = "";
-
-    // load questions for this category
+function loadCategoryQuestions(category) {
     fetch(`http://127.0.0.1:5000/api/chat/questions/${encodeURIComponent(category)}`)
         .then(res => res.json())
         .then(data => {
-            if (data.length === 0) {
-                addMessage("admin", "No questions available for this category.");
-                showBackToCategories();
+            const { questions } = data;
+
+            const container = document.getElementById("categoryActions");
+            container.innerHTML = "";
+
+            if (!questions || questions.length === 0) {
+                addMessage("admin", "No additional questions available.");
                 return;
             }
 
-            addMessage("admin", "Please choose a question:");
+            addMessage("admin", "You may also ask:");
 
-            data.forEach(item => {
+            questions.forEach(item => {
                 const btn = document.createElement("button");
                 btn.textContent = item.question;
                 btn.onclick = () => selectQuestion(item.question, item.answer);
                 container.appendChild(btn);
             });
 
-            showBackToCategories();
+            // ✅ Back to Categories button (HERE ONLY)
+            const backBtn = document.createElement("button");
+            backBtn.textContent = "⬅ Back to Categories";
+            backBtn.classList.add("back-btn");
+            backBtn.onclick = () => {
+                sessionStorage.removeItem("activeCategory");
+                isInCategoryFlow = false;
+                container.innerHTML = "";
+                loadCategories();
+            };
+
+            container.appendChild(backBtn);
         });
+}
+
+function selectCategory(category) {
+    isInCategoryFlow = true;
+    sessionStorage.setItem("activeCategory", category);
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    addMessage("user", category);
+
+    // 1️⃣ Get category answer
+    fetch("http://127.0.0.1:5000/chat/category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: user.id,
+            category: category
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        addMessage("admin", data.reply, data.chat_id, true);
+        loadCategoryQuestions(category);
+    })
+    .catch(err => {
+        console.error("Category error:", err);
+        addMessage("admin", "Something went wrong. Please try again.");
+    });
 }
 
 function selectQuestion(question, answer) {
@@ -439,22 +474,6 @@ function selectQuestion(question, answer) {
         addMessage("admin", data.reply, data.chat_id, true);
     });
 
-    // clear buttons
-    document.getElementById("categoryActions").innerHTML = "";
-    showBackToCategories();
-}
-
-function showBackToCategories() {
-    const container = document.getElementById("categoryActions");
-
-    const backBtn = document.createElement("button");
-    backBtn.textContent = "⬅ Back to Categories";
-    backBtn.onclick = () => {
-        container.innerHTML = "";
-        loadCategories();
-    };
-
-    container.appendChild(backBtn);
 }
 
 /* LOAD CHAT HISTORY */
@@ -465,19 +484,25 @@ function loadChatHistory() {
 
     fetch(`http://127.0.0.1:5000/chat/history/${user.id}`)
         .then(res => res.json())
-        .then(data => {
-            const box = document.getElementById("chatBox");
-            box.innerHTML = "";
+            .then(data => {
+        const box = document.getElementById("chatBox");
+        box.innerHTML = "";
 
-            data.forEach(row => {
-                if (row.user_message && row.user_message !== "[ADMIN REPLY]") {
-                    addMessage("user", row.user_message);
-                }
-                if (row.bot_reply) {
-                    addMessage("admin", row.bot_reply, row.id, row.feedback === null);
-                }
-            });
+        data.forEach(row => {
+            if (row.user_message) {
+                addMessage("user", row.user_message);
+            }
+            if (row.bot_reply) {
+                addMessage("admin", row.bot_reply, row.id, row.feedback === null);
+            }
         });
+
+        // ✅ RESTORE QUESTIONS IF USER IS IN CATEGORY
+        const activeCategory = sessionStorage.getItem("activeCategory");
+        if (activeCategory) {
+            loadCategoryQuestions(activeCategory);
+        }
+    });
 }
 
 /* =====================================================
@@ -554,4 +579,17 @@ function loadClassSchedule() {
     })
     .then(res => res.json())
     .then(data => renderSchedule(data));
+}
+
+function showWelcomeMessage() {
+    const alreadyWelcomed = sessionStorage.getItem("chatbotWelcomed");
+
+    if (alreadyWelcomed) return;
+
+    addMessage(
+        "admin",
+        "Hello! 👋 I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
+    );
+
+    sessionStorage.setItem("chatbotWelcomed", "true");
 }
