@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | ESCR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-container">
+
+    <!-- LEFT SIDE -->
+    <div class="auth-left">
+        <h1>East Systems Colleges of Rizal</h1>
+        <p class="portal">STUDENT PORTAL</p>
+        <p class="portal">ADMIN PORTAL</p>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="auth-right">
+
+        <!-- STEP INDICATOR -->
+        <div class="steps">
+            <div class="step active">1<br><span>Personal</span></div>
+            <div class="step">2<br><span>Contact</span></div>
+            <div class="step">3<br><span>Account</span></div>
+        </div>
+
+        <h2>Personal Information</h2>
+
+        <label>First Name *</label>
+        <input id="first_name" type="text">
+
+        <label>Middle Name (Optional)</label>
+        <input id="middle_name" type="text">
+
+        <label>Last Name *</label>
+        <input id="last_name" type="text">
+
+        <label>Date of Birth *</label>
+        <input id="birth_date" type="date">
+
+        <label>Gender *</label>
+        <select id="gender">
+            <option>Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+        </select>
+
+        <button class="btn primary full" onclick="saveStep1()">Continue</button>
+
+        <p class="divider">
+            Already have an account?
+            <a href="login.html">Sign In</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+<script src="script.js"></script>
+
+</html>

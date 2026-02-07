@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings | ESCR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+    requireLogin();
+</script>
+
+<!-- TOP NAVBAR (reuse same layout) -->
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+    </div>
+    <div class="topbar-right">
+        <strong class="student-name"></strong><br>
+        <span class="student-role"></span>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html">Home</a>
+    <a href="chatbot.html">ESCR Chatbot</a>
+    <a href="class-schedule.html">Class Schedule</a>
+    <a href="school-calendar.html">School Calendar</a>
+    <a href="settings.html">Settings</a>
+    <a href="login.html">Logout</a>
+</div>
+
+
+        <!-- CONTENT -->
+       <div class="content-single">
+
+            <div class="settings-card">
+
+                <!-- TABS -->
+                <div class="tabs">
+                    <button onclick="showTab('profile')" class="active">Profile</button>
+                    <button onclick="showTab('account')">Account</button>
+                </div>
+
+                <!-- ================= PROFILE TAB ================= -->
+                <div id="profile" class="tab-content active profile-card-ui">
+
+                    <!-- HEADER -->
+                    <div class="profile-header">
+                        <div class="avatar large" id="profileAvatar">JD</div>
+
+                        <div class="profile-photo-actions">
+                            <strong>Profile Picture</strong>
+                            <small>Upload your profile photo</small>
+
+                            <div class="photo-buttons">
+                                <button class="btn primary">Upload Photo</button>
+                                <button class="btn secondary">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORM -->
+                    <div class="profile-form-grid">
+
+                        <div>
+                            <label>First Name</label>
+                            <input id="set_first_name">
+                        </div>
+
+                        <div>
+                            <label>Last Name</label>
+                            <input id="set_last_name">
+                        </div>
+
+                        <div>
+                            <label>Email</label>
+                            <input id="set_email">
+                        </div>
+
+                        <div>
+                            <label>Phone Number</label>
+                            <input id="set_phone">
+                        </div>
+
+                        <div class="full-width">
+                            <label>Address</label>
+                            <input id="set_address">
+                        </div>
+
+                        <div>
+                            <label>Birthdate</label>
+                            <input id="set_birthdate" type="date">
+                        </div>
+
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="profile-actions">
+                        <button class="btn secondary">Cancel</button>
+                        <button class="btn primary" onclick="updateProfile()">Save Changes</button>
+                    </div>
+
+                </div>
+
+                <!-- ================= ACCOUNT TAB ================= -->
+                <div id="account" class="tab-content">
+
+                    <!-- ACCOUNT INFO BOX -->
+                    <div class="account-info-box">
+                        <strong>Account Information</strong>
+                        <p><b>Program:</b> Bachelor of Science in Information Technology</p>
+                        <p><b>Year Level:</b> 4th Year</p>
+                        <p class="status-active"><b>Account Status:</b> Active</p>
+                    </div>
+
+                    <!-- PASSWORD FORM -->
+                    <div class="account-form">
+
+                        <div>
+                            <label>Current Password</label>
+                            <input id="current_password" type="password">
+                        </div>
+
+                        <div>
+                            <label>New Password</label>
+                            <input id="new_password" type="password">
+                        </div>
+
+                        <div>
+                            <label>Confirm New Password</label>
+                            <input id="confirm_password" type="password">
+                        </div>
+
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="profile-actions">
+                        <button class="btn secondary">Cancel</button>
+                        <button class="btn primary" onclick="changePassword()">Save Changes</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+<script src="script.js"></script>
+<script>
+    loadUserInfo();
+    loadSettings();
+</script>
+<script>
+    function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+</script>
+
+</body>
+</html>

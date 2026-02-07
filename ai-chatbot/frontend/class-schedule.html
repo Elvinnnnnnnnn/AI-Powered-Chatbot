@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Class Schedule</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <strong>Class Schedule</strong>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html">Home</a>
+    <a href="chatbot.html">ESCR Chatbot</a>
+    <a href="class-schedule.html">Class Schedule</a>
+    <a href="school-calendar.html">School Calendar</a>
+    <a href="settings.html">Settings</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<div class="content-single">
+
+    <h2 id="stepTitle">Select Year Level</h2>
+
+    <!-- STEP CONTAINER -->
+    <div id="stepContainer" class="program-grid"></div>
+
+    <!-- SCHEDULE OUTPUT -->
+    <div id="scheduleTable"></div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+<script>
+    function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+</script>
+<script>
+    requireLogin();
+</script>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login | ESCR</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-container">
+
+  <!-- LEFT SIDE -->
+  <div class="auth-left">
+    <img src="images/escr-logo.png" alt="ESCR Logo" class="auth-logo">
+    <h2>East Systems Colleges of Rizal</h2>
+
+    <div class="portal-links">
+      <a href="login.html">STUDENT PORTAL</a>
+      <a href="admin-login.html" class="active">ADMIN PORTAL</a>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="auth-right">
+    <h1>WELCOME BACK!</h1>
+
+    <form id="adminLoginForm">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter" required>
+
+      <label>Password</label>
+      <div class="password-field">
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+
+      <div class="auth-options">
+        <label>
+          <input type="checkbox"> Remember Me
+        </label>
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="btn-primary">Sign In</button>
+
+      <div class="divider">New Account?</div>
+
+      <a href="register.html" class="btn-outline">Create Account</a>
+      <a href="index.html" class="btn-light">Back to Home</a>
+    </form>
+  </div>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | ESCR Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-container">
+
+    <!-- LEFT SIDE -->
+    <div class="auth-left">
+        <h1>East Systems Colleges of Rizal</h1>
+        <p class="portal">STUDENT PORTAL</p>
+        <p class="portal">ADMIN PORTAL</p>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="auth-right">
+        <h2>WELCOME BACK!</h2>
+
+        <label>Email</label>
+        <input id="login_email" type="email" placeholder="Enter">
+
+        <label>Password</label>
+        <input id="login_password" type="password" placeholder="Enter your password">
+
+        <div class="options">
+            <label>
+                <input type="checkbox"> Remember Me
+            </label>
+            <a href="#">Forgot Password?</a>
+        </div>
+
+        <button class="btn primary full" onclick="loginUser()">Sign In</button>
+
+        <p class="divider">New Student?</p>
+
+        <a href="register.html" class="btn secondary full">Create Account</a>
+
+        <a href="index.html" class="back">Back to Home</a>
+    </div>
+
+</div>
+
+</body>
+<script src="script.js"></script>
+</html>

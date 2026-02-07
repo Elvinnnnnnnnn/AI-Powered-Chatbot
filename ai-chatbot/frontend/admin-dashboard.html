@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | ESCR</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="admin-body">
+
+<!-- 🔒 ADMIN AUTH CHECK -->
+<script>
+  const admin = localStorage.getItem("admin");
+  if (!admin) {
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+  <h2 class="logo">ESCR</h2>
+
+  <ul class="menu">
+    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+      Dashboard
+    </li>
+    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+      Conversation Logs
+    </li>
+    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+      Knowledge Base
+    </li>
+    <li data-page="users">
+      User Management
+    </li>
+    <li data-page="analytics">
+      Analytics
+    </li>
+    <li data-page="settings">
+      Settings
+    </li>
+  </ul>
+
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</aside>
+
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-content">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Monitor chatbot performance and system analytics.</p>
+      </div>
+      <div class="admin-user">
+        <span>Joel Mariano</span>
+        <div class="avatar">A</div>
+      </div>
+    </header>
+
+    <!-- STATS -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <h4>Total Queries</h4>
+        <h2>765</h2>
+        <span class="green">↑ 12% from last week</span>
+      </div>
+
+      <div class="stat-card">
+        <h4>Resolved Queries</h4>
+        <h2>489</h2>
+        <span class="green">↑ 8% from last week</span>
+      </div>
+
+      <div class="stat-card">
+        <h4>Escalated Queries</h4>
+        <h2>125</h2>
+        <span class="red">↑ 5% from last week</span>
+      </div>
+
+      <div class="stat-card">
+        <h4>Active Users</h4>
+        <h2>349</h2>
+        <span class="green">↑ 15% from last week</span>
+      </div>
+
+      <div class="stat-card">
+        <h4>Average Response Time</h4>
+        <h2>2.3s</h2>
+        <span class="green">↓ 0.5s faster</span>
+      </div>
+
+      <div class="stat-card">
+        <h4>Satisfaction Rate</h4>
+        <h2>87.3%</h2>
+        <span class="green">↑ 3% from last week</span>
+      </div>
+    </section>
+
+    <!-- LOWER GRID -->
+    <section class="lower-grid">
+
+      <!-- MOST ASKED -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Most Asked Questions</h3>
+          <a href="#">View All →</a>
+        </div>
+
+        <ul class="question-list">
+          <li>
+            <span class="badge">1</span>
+            What are the enrollment requirements?
+            <small>Enrollment · 156 times</small>
+          </li>
+          <li>
+            <span class="badge">2</span>
+            How do I check my grades?
+            <small>Grades · 76 times</small>
+          </li>
+        </ul>
+      </div>
+
+      <!-- RECENT ACTIVITY -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Recent Activity</h3>
+          <a href="#">View All →</a>
+        </div>
+
+        <ul class="activity-list">
+          <li>
+            <strong>Valerie Teston</strong>
+            <span>Asked about enrollment deadline</span>
+            <span class="status resolved">resolved</span>
+          </li>
+          <li>
+            <strong>Arjayzon Mata</strong>
+            <span>Inquiry about scholarship</span>
+            <span class="status resolved">resolved</span>
+          </li>
+        </ul>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function logout() {
+    localStorage.removeItem("admin");
+    window.location.href = "admin-login.html";
+  }
+</script>
+<script src="admin-ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Calendar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+    requireLogin();
+</script>
+
+<div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <strong>School Calendar</strong>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html">Home</a>
+    <a href="chatbot.html">ESCR Chatbot</a>
+    <a href="class-schedule.html">Class Schedule</a>
+    <a href="school-calendar.html">School Calendar</a>
+    <a href="settings.html">Settings</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<div class="content-single">
+    <h2>Academic Calendar</h2>
+    <div id="calendarList"></div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    loadCalendar();
+</script>
+<script>
+    function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | ESCR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- TOP NAVBAR -->
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <img src="images/logo.png" class="logo">
+        <div class="title">
+            <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+            <span>Student Portal</span>
+        </div>
+    </div>
+
+    <div class="topbar-right">
+        <div class="profile">
+            <div class="avatar">EB</div>
+            <div>
+                <strong class="student-name"></strong><br>
+                <span class="student-role"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html">Home</a>
+    <a href="chatbot.html">ESCR Chatbot</a>
+    <a href="class-schedule.html">Class Schedule</a>
+    <a href="school-calendar.html">School Calendar</a>
+    <a href="settings.html">Settings</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+    <div class="profile-card">
+        <div class="avatar large">EB</div>
+        <strong class="student-name"></strong>
+        <span class="student-role"></span>
+    </div>
+
+    <div class="info-card">
+        <h2>VISION</h2>
+        <p>
+            A top academic institution that will produce graduates equipped
+            with the knowledge, skills and values that will enable them to
+            become values-driven and highly competent individuals.
+        </p>
+    </div>
+
+    <div class="info-card">
+        <h2>MISSION</h2>
+        <p>
+            To ensure quality instruction for the total development of
+            Easternians committed in practicing professionalism and in
+            meeting the demands of local, national and global communities.
+        </p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+
+<script>
+    function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+</script>
+<script>
+    requireLogin();
+</script>
+<script>
+    loadUserInfo();
+</script>
+</html>

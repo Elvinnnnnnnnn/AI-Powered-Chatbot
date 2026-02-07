@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversation Logs | Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="admin-body">
+
+<!-- 🔒 ADMIN CHECK -->
+<script>
+  if (!localStorage.getItem("admin")) {
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <h2 class="logo">ESCR</h2>
+
+    <ul class="menu">
+      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+        Dashboard
+      </li>
+      <li data-page="logs" class="active" onclick="goTo('admin-conversation-logs.html')">
+        Conversation Logs
+      </li>
+      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+        Knowledge Base
+      </li>
+      <li data-page="users">
+        User Management
+      </li>
+      <li data-page="analytics">
+        Analytics
+      </li>
+      <li data-page="settings">
+        Settings
+      </li>
+    </ul>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <h1>Conversation Logs</h1>
+    <p class="subtitle">Review and manage student-chatbot conversations</p>
+
+    <div class="logs-layout">
+
+      <!-- LEFT: CONVERSATION LIST -->
+      <div class="logs-list">
+
+        <input class="search-box" placeholder="Search conversations...">
+
+        <div class="tabs">
+          <span class="tab active">All</span>
+          <span class="tab">Resolved</span>
+          <span class="tab escalated">Escalated</span>
+        </div>
+
+        <!-- ✅ JS WILL LOAD CONVERSATIONS HERE -->
+        <div id="conversationList">
+          <!-- conversations injected by admin-ui.js -->
+        </div>
+
+      </div>
+
+      <!-- RIGHT: CHAT VIEW -->
+      <div class="chat-panel">
+        <p class="empty-chat">
+          Select a conversation from the left to view details
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script src="admin-ui.js"></script>
+</body>
+</html>

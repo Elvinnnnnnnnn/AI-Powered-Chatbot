@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ESCR Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    
+<div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <strong>Class Schedule</strong>
+</div>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html">Home</a>
+    <a href="chatbot.html">ESCR Chatbot</a>
+    <a href="class-schedule.html">Class Schedule</a>
+    <a href="school-calendar.html">School Calendar</a>
+    <a href="settings.html">Settings</a>
+    <a href="login.html">Logout</a>
+</div>
+
+    <!-- CHATBOT CONTENT -->
+    <div class="main-content">
+    <h1>ESCR Chatbot</h1>
+
+    <div class="chat-box" id="chatBox">
+        <div class="bot-msg">Hello! How can I help you today?</div>
+    </div>
+
+    <div class="quick-actions">
+        <button onclick="sendQuick('Enrollment')">Enrollment</button>
+        <button onclick="sendQuick('Grades')">Grades</button>
+        <button onclick="sendQuick('Schedule')">Schedule</button>
+        <button onclick="sendQuick('Help')">Talk to Admin</button>
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="userMessage" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+
+</div>
+
+</body>
+<script src="script.js"></script>
+<script>
+    requireLogin();
+    loadChatHistory();
+
+    // auto refresh every 5 seconds
+    setInterval(loadChatHistory, 5000);
+</script>
+
+<script>
+    function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+</script>
+
+
+</html>

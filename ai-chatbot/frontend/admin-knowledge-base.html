@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Knowledge Base | Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="admin-body">
+
+<!-- 🔒 ADMIN CHECK -->
+<script>
+  if (!localStorage.getItem("admin")) {
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+  <h2 class="logo">ESCR</h2>
+
+  <ul class="menu">
+    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+      Dashboard
+    </li>
+    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+      Conversation Logs
+    </li>
+    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+      Knowledge Base
+    </li>
+    <li data-page="users">
+      User Management
+    </li>
+    <li data-page="analytics">
+      Analytics
+    </li>
+    <li data-page="settings">
+      Settings
+    </li>
+  </ul>
+
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</aside>
+
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <!-- HEADER -->
+    <div class="kb-header">
+      <div>
+        <h1>Knowledge Base</h1>
+        <p>Manage FAQs, policies, and academic information</p>
+      </div>
+      <button type="button" class="btn-primary" onclick="openModal()">+ Add Entry</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="kb-stats">
+      <div class="kb-card">Total Entries <strong>7</strong></div>
+      <div class="kb-card">Active <strong>7</strong></div>
+      <div class="kb-card">Categories <strong>6</strong></div>
+      <div class="kb-card">Last Updated <strong>Today</strong></div>
+    </div>
+
+    <!-- SEARCH & CATEGORY FILTER -->
+    <div class="kb-filters">
+
+      <div class="kb-search">
+        <input
+            type="text"
+            placeholder="Search Knowledge Base..."
+            oninput="handleSearch(this.value)"
+          >
+      </div>
+
+      <div class="kb-categories">
+        <button class="cat active" onclick="filterCategory('All', this)">All Categories</button>
+        <button class="cat" onclick="filterCategory('Enrollment', this)">Enrollment</button>
+        <button class="cat" onclick="filterCategory('Grades', this)">Grades</button>
+        <button class="cat" onclick="filterCategory('Finance', this)">Finance</button>
+        <button class="cat" onclick="filterCategory('Scholarship', this)">Scholarship</button>
+        <button class="cat" onclick="filterCategory('Schedule', this)">Schedule</button>
+        <button class="cat" onclick="filterCategory('Academic', this)">Academic</button>
+      </div>
+
+    </div>
+
+
+    <!-- ENTRY LIST -->
+    <div id="kbList">
+    </div>
+
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="kbModal">
+ <form class="modal-content" onsubmit="saveKnowledgeBase(event)">
+    <h2>Add New Entry</h2>
+
+    <label>Category</label>
+   <select id="kbCategory">
+      <option>Enrollment</option>
+      <option>Grades</option>
+      <option>Finance</option>
+      <option>Scholarship</option>
+      <option>Schedule</option>
+      <option>Academic</option>
+    </select>
+
+    <label>Question</label>
+    <input type="text" id="kbQuestion" placeholder="Enter the question">
+
+    <label>Answer</label>
+    <textarea id="kbAnswer" placeholder="Enter the answer (max 500 characters)"></textarea>
+
+    <label>Status</label>
+    <div class="radio-group">
+      <label>
+        <input type="radio" name="kbStatus" value="active" checked> Active
+      </label>>
+      <label>
+        <input type="radio" name="kbStatus" value="draft"> Draft
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" onclick="closeModal()">Cancel</button>
+      <button type="submit" class="btn-primary">Add Entry</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="admin-ui.js"></script>
+</body>
+</html>
