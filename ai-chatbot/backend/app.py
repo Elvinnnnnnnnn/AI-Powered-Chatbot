@@ -198,8 +198,9 @@ def chat():
         status = "resolved"
     else:
         reply = (
-            "I'm sorry, I couldn't find an answer to your question. "
-            "Your concern has been forwarded to the admin."
+            "I'm sorry, I couldn't find an answer to your question.\n\n"
+            "Your concern has been escalated.\n"
+            f"Ticket No: #{chat_id}"
         )
         status = "escalated"
 

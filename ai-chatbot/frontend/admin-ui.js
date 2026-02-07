@@ -51,11 +51,20 @@ function loadConversations() {
 
             div.innerHTML = `
               <div class="item-header">
-                <strong>${chat.first_name} ${chat.last_name}</strong>
-                <span class="badge ${chat.status}">
-                  ${chat.status}
-                </span>
-              </div>
+                  <strong>${chat.first_name} ${chat.last_name}</strong>
+
+                  <span class="status-pill ${chat.status}">
+                    ${
+                      chat.status === "resolved"
+                        ? "✔ Resolved"
+                        : chat.status === "escalated"
+                        ? "⚠ Escalated"
+                        : chat.status === "incorrect"
+                        ? "✖ Incorrect"
+                        : chat.status
+                    }
+                  </span>
+                </div>
 
               <p class="last-message">
                 ${chat.user_message || "(no message)"}
@@ -91,34 +100,34 @@ function loadConversationThread(userId) {
 
       // Header
       chatPanel.innerHTML = `
-  <div class="chat-header">
-    <div>
-      <strong>${user.first_name} ${user.last_name}</strong>
-      <p>${user.program} · ${user.year_level}</p>
-    </div>
-    <span class="badge ${user.status}">
-      ${user.status}
-    </span>
-  </div>
-
-  <div class="chat-body" id="chatBody"></div>
-
-  ${
-    user.status === "escalated"
-      ? `
-        <!-- ADMIN REPLY BOX -->
-        <div class="chat-actions admin-reply-box">
-          <textarea
-            id="adminReply"
-            placeholder="Type admin reply here..."
-            rows="3"></textarea>
-
-          <button class="btn-success" onclick="sendAdminReply()">
-            📩 Send Reply
-          </button>
+        <div class="chat-header">
+          <div>
+            <strong>${user.first_name} ${user.last_name}</strong>
+            <p>${user.program} · ${user.year_level}</p>
+          </div>
+          <span class="badge ${user.status}">
+            ${user.status}
+          </span>
         </div>
-      `
-      : ""
+
+        <div class="chat-body" id="chatBody"></div>
+
+        ${
+          user.status === "escalated"
+            ? `
+              <!-- ADMIN REPLY BOX -->
+              <div class="chat-actions admin-reply-box">
+                <textarea
+                  id="adminReply"
+                  placeholder="Type admin reply here..."
+                  rows="3"></textarea>
+
+                <button class="btn-success" onclick="sendAdminReply()">
+                  📩 Send Reply
+                </button>
+              </div>
+            `
+            : ""
   }
 
   <div class="chat-actions">
