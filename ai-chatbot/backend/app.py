@@ -506,6 +506,28 @@ def get_questions_by_category(category):
 
     return jsonify(questions)
 
+@app.route("/chat/feedback", methods=["POST"])
+def save_feedback():
+    data = request.json
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE chats
+        SET feedback = %s
+        WHERE id = %s
+    """, (
+        data["feedback"],   # 'yes' or 'no'
+        data["chat_id"]
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

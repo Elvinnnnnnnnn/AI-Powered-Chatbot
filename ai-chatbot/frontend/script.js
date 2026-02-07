@@ -306,9 +306,8 @@ function sendQuick(text) {
 }
 
 /* ADD MESSAGE TO CHAT BOX */
-function addMessage(sender, text) {
+function addMessage(sender, text, chatId = null, withFeedback = false) {
     const box = document.getElementById("chatBox");
-
     let html = "";
 
     if (sender === "user") {
@@ -322,7 +321,20 @@ function addMessage(sender, text) {
         html = `
             <div class="chat-message admin">
                 <div class="avatar admin-avatar">A</div>
-                <div class="bubble admin-bubble">${text}</div>
+                <div class="bubble admin-bubble">
+                    ${text}
+                    ${
+                      withFeedback && chatId
+                        ? `
+                          <div class="feedback">
+                            <span>Was this helpful?</span>
+                            <button onclick="sendFeedback(${chatId}, 'yes')">👍</button>
+                            <button onclick="sendFeedback(${chatId}, 'no')">👎</button>
+                          </div>
+                        `
+                        : ""
+                    }
+                </div>
             </div>
         `;
     }
@@ -330,6 +342,26 @@ function addMessage(sender, text) {
     box.insertAdjacentHTML("beforeend", html);
     box.scrollTop = box.scrollHeight;
 }
+
+function sendFeedback(chatId, feedback) {
+    fetch("http://127.0.0.1:5000/chat/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: chatId,
+            feedback: feedback
+        })
+    })
+    .then(() => {
+        addMessage(
+            "admin",
+            feedback === "yes"
+              ? "Thanks! Glad I could help 😊"
+              : "Thanks for the feedback. I’ll forward this to the admin."
+        );
+    });
+}
+
 
 function loadCategories() {
     fetch("http://127.0.0.1:5000/api/chat/categories")
@@ -348,19 +380,61 @@ function loadCategories() {
 }
 
 function selectCategory(category) {
-    // Show user choice in chat
+    // show user choice
     addMessage("user", category);
 
-    // Clear category buttons
+    // clear category buttons
+    const container = document.getElementById("categoryActions");
+    container.innerHTML = "";
+
+    // load questions for this category
+    fetch(`http://127.0.0.1:5000/api/chat/questions/${encodeURIComponent(category)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.length === 0) {
+                addMessage("admin", "No questions available for this category.");
+                showBackToCategories();
+                return;
+            }
+
+            addMessage("admin", "Please choose a question:");
+
+            data.forEach(item => {
+                const btn = document.createElement("button");
+                btn.textContent = item.question;
+                btn.onclick = () => selectQuestion(item.question, item.answer);
+                container.appendChild(btn);
+            });
+
+            showBackToCategories();
+        });
+}
+
+function selectQuestion(question, answer) {
+    // show selected question
+    addMessage("user", question);
+
+    // show answer
+    addMessage("admin", answer);
+
+    // clear question buttons
     document.getElementById("categoryActions").innerHTML = "";
 
-    // TEMP bot response (next step will replace this)
-    addMessage(
-        "admin",
-        `You selected ${category}. Please choose a question.`
-    );
+    // allow user to continue
+    showBackToCategories();
+}
 
-    // 👉 Next step: load questions here
+function showBackToCategories() {
+    const container = document.getElementById("categoryActions");
+
+    const backBtn = document.createElement("button");
+    backBtn.textContent = "⬅ Back to Categories";
+    backBtn.onclick = () => {
+        container.innerHTML = "";
+        loadCategories();
+    };
+
+    container.appendChild(backBtn);
 }
 
 /* LOAD CHAT HISTORY */

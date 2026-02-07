@@ -635,6 +635,27 @@ footer {
     border: 1px solid #ccc;
 }
 
+.feedback {
+    margin-top: 8px;
+    font-size: 13px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.feedback button {
+    background: #eee;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 4px 6px;
+}
+
+.feedback button:hover {
+    background: #ddd;
+}
+
+
 /* =====================================================
    RESPONSIVE (ALL PAGES)
 ===================================================== */
