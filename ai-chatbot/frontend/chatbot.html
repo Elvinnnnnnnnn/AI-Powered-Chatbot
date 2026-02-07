@@ -26,35 +26,24 @@
 </div>
 
     <!-- CHATBOT CONTENT -->
-    <!-- CHATBOT CONTENT -->
-<div class="content-single" id="chatContent">
+    <div class="main-content">
+    <h1>ESCR Chatbot</h1>
 
-  <div class="chat-card">
-
-    <!-- CHAT MESSAGES -->
-    <div class="chat-box modern" id="chatBox">
-      <!-- messages injected by JS -->
+    <div class="chat-box" id="chatBox">
+        <div class="bot-msg">Hello! How can I help you today?</div>
     </div>
 
-    <!-- QUICK ACTIONS -->
-    <div class="chat-quick-actions">
-      <button onclick="sendQuick('Enrollment')">Enrollment</button>
-      <button onclick="sendQuick('Grades')">Grades</button>
-      <button onclick="sendQuick('Schedule')">Schedule</button>
-      <button onclick="sendQuick('Help')">Talk to Admin</button>
+    <div class="quick-actions">
+        <button onclick="sendQuick('Enrollment')">Enrollment</button>
+        <button onclick="sendQuick('Grades')">Grades</button>
+        <button onclick="sendQuick('Schedule')">Schedule</button>
+        <button onclick="sendQuick('Help')">Talk to Admin</button>
     </div>
 
-    <!-- INPUT -->
-    <div class="chat-input modern">
-      <input
-        type="text"
-        id="userMessage"
-        placeholder="Type your question here..."
-      >
-      <button onclick="sendMessage()">➤</button>
+    <div class="chat-input">
+        <input type="text" id="userMessage" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
     </div>
-
-  </div>
 </div>
 
 
