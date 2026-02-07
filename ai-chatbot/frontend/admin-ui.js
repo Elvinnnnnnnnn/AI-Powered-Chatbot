@@ -234,8 +234,9 @@ function loadKnowledgeBase() {
     .then(res => res.json())
     .then(data => {
       kbData = data;
-      renderCategoryButtons();   // 👈 ADD THIS
+      renderCategoryButtons();
       renderKnowledgeBase();
+      updateKbStats();   // 👈 ADD THIS
     });
 }
 
@@ -418,4 +419,30 @@ function renderCategoryButtons() {
     btn.onclick = () => filterCategory(category, btn);
     container.appendChild(btn);
   });
+}
+
+function updateKbStats() {
+  // Total entries
+  document.getElementById("statTotal").textContent = kbData.length;
+
+  // Active entries
+  const activeCount = kbData.filter(item => item.status === "active").length;
+  document.getElementById("statActive").textContent = activeCount;
+
+  // Unique categories
+  const uniqueCategories = new Set(kbData.map(item => item.category));
+  document.getElementById("statCategories").textContent = uniqueCategories.size;
+
+  // Last updated
+  if (kbData.length === 0) {
+    document.getElementById("statUpdated").textContent = "—";
+    return;
+  }
+
+  const latest = kbData
+    .map(item => new Date(item.updated_at))
+    .sort((a, b) => b - a)[0];
+
+  document.getElementById("statUpdated").textContent =
+    latest.toLocaleDateString() + " " + latest.toLocaleTimeString();
 }
