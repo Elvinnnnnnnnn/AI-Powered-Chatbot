@@ -365,20 +365,19 @@ footer {
     border-radius: 5px;
 }
 
-.main-content {
-    margin-top: 0;              /* 🔴 REMOVE extra top gap */
-    padding: 20px 30px;         /* tighter vertical spacing */
-    background: linear-gradient(to right, #e53935, #fdd835);
-    min-height: calc(100vh - 60px);
-
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;    /* 👈 important */
-}
-
 /* =====================================================
    CHATBOT PAGE (chatbot.html)
 ===================================================== */
+
+/* PAGE BACKGROUND */
+.main-content {
+    padding: 30px;
+    background: linear-gradient(to right, #e53935, #fdd835);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
 
 /* CHAT CONTAINER */
 .chat-container {
@@ -390,66 +389,79 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
-/* ONLY messages scroll */
+/* CHAT BOX (SCROLLABLE) */
 .chat-box {
     height: 360px;
     overflow-y: auto;
+    padding-right: 6px;
 }
 
-.chat-box {
-    height: 420px;
-    background: #ffffff;
-    padding: 20px;
-    overflow-y: auto;
-    border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* MESSAGE WRAPPER */
-.message {
+/* MESSAGE ROW */
+.chat-message {
     display: flex;
     margin-bottom: 12px;
-    align-items: flex-start;
+    align-items: flex-end;
 }
 
-/* BOT MESSAGE */
-.bot-msg {
-    background: #ffffff;
-    padding: 12px 14px;
-    border-radius: 14px;
-    max-width: 70%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    font-size: 14px;
+/* ADMIN (LEFT) */
+.chat-message.admin {
+    justify-content: flex-start;
 }
 
-/* BOT AVATAR */
-.bot-avatar {
-    width: 32px;
-    height: 32px;
-    background: #d32f2f;
+/* USER (RIGHT) */
+.chat-message.user {
+    justify-content: flex-end;
+}
+
+/* AVATAR (DEFAULT) */
+.avatar {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
+    font-weight: bold;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
+}
+
+/* ADMIN AVATAR */
+.admin-avatar {
+    background: #9e9e9e;
     margin-right: 8px;
 }
 
-/* USER MESSAGE */
-.user-message {
-    justify-content: flex-end;
+/* USER AVATAR */
+.user-avatar {
+    background: #d32f2f;
+    margin-left: 8px;
 }
 
-.user-msg {
+/* MESSAGE BUBBLE */
+.bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 60%;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* ADMIN BUBBLE */
+.admin-bubble {
+    background: #f1f1f1;
+    color: #333;
+    border-top-left-radius: 6px;
+}
+
+/* USER BUBBLE */
+.user-bubble {
     background: #d32f2f;
     color: white;
-    padding: 12px 14px;
-    border-radius: 14px;
-    max-width: 70%;
-    font-size: 14px;
+    border-top-right-radius: 6px;
 }
 
 /* QUICK ACTION BUTTONS */
@@ -457,18 +469,16 @@ footer {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 10px;
 }
 
 .quick-actions button {
     background: #fff3e0;
     border: 1px solid #ff9800;
     color: #e65100;
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 13px;
-    transition: 0.2s;
 }
 
 .quick-actions button:hover {
@@ -479,7 +489,7 @@ footer {
 /* INPUT BAR */
 .chat-input {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .chat-input input {
@@ -497,49 +507,6 @@ footer {
     border: none;
     border-radius: 20px;
     cursor: pointer;
-}
-
-/* =====================================================
-   SETTINGS PAGE (settings.html)
-===================================================== */
-
-.content-single {
-    margin-top: 60px;
-    padding: 30px;
-    background: linear-gradient(to right, #e53935, #fdd835);
-    min-height: calc(100vh - 60px);
-}
-
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tabs button {
-    padding: 10px 20px;
-    border: none;
-    background: #eee;
-    cursor: pointer;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.tabs button.active {
-    background: #ff6f00;
-    color: white;
-}
-
-.tab-content {
-    display: none;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    max-width: 900px;
-}
-
-.tab-content.active {
-    display: block;
 }
 
 /* =========================

@@ -27,37 +27,55 @@
     <!-- CHATBOT CONTENT -->
     <div class="main-content">
 
-        <div class="chat-container">
+    <div class="chat-container">
 
-            <!-- SCROLLABLE MESSAGES -->
-            <div class="chat-box" id="chatBox">
-                <div class="message">
-                    <div class="bot-avatar">🤖</div>
-                    <div class="bot-msg">
-                        Hello! I’m ESCR Academic Chatbot. How can I help you today?
-                    </div>
+        <!-- MESSAGES -->
+        <div class="chat-box" id="chatBox">
+
+            <!-- ADMIN MESSAGE -->
+            <div class="chat-message admin">
+                <div class="avatar admin-avatar">A</div>
+                <div class="bubble admin-bubble">
+                    I'm sorry, I couldn't find an answer to your question.
+                    Your concern has been forwarded to the admin.
                 </div>
             </div>
 
-            <!-- QUICK ACTIONS -->
-            <div class="quick-actions">
-                <button onclick="sendQuick('Enrollment')">Enrollment</button>
-                <button onclick="sendQuick('Grades')">Grades</button>
-                <button onclick="sendQuick('Schedule')">Schedule</button>
-                <button onclick="sendQuick('Help')">Talk to Admin</button>
+            <!-- USER MESSAGE -->
+            <div class="chat-message user">
+                <div class="bubble user-bubble">
+                    Schedule
+                </div>
+                <div class="avatar user-avatar">U</div>
             </div>
 
-            <!-- INPUT -->
-            <div class="chat-input">
-                <input type="text" id="userMessage" placeholder="Type your message...">
-                <button onclick="sendMessage()">Send</button>
+            <!-- ADMIN MESSAGE -->
+            <div class="chat-message admin">
+                <div class="avatar admin-avatar">A</div>
+                <div class="bubble admin-bubble">
+                    [ADMIN] dssfsfsf
+                </div>
             </div>
 
         </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="quick-actions">
+            <button onclick="sendQuick('Enrollment')">Enrollment</button>
+            <button onclick="sendQuick('Grades')">Grades</button>
+            <button onclick="sendQuick('Schedule')">Schedule</button>
+            <button onclick="sendQuick('Help')">Talk to Admin</button>
+        </div>
+
+        <!-- INPUT -->
+        <div class="chat-input">
+            <input type="text" id="userMessage" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
     </div>
 
-   
-
+</div>
 
 </div>
 
