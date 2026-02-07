@@ -321,6 +321,23 @@ function addMessage(sender, text) {
     box.scrollTop = box.scrollHeight;
 }
 
+function addGreetingIfNeeded() {
+    const box = document.getElementById("chatBox");
+
+    // Prevent duplicate greeting
+    if (box.dataset.greeted === "true") return;
+
+    const greeting = document.createElement("div");
+    greeting.className = "bot-msg";
+    greeting.innerHTML = `
+        <strong>Hello!</strong><br>
+        I'm ESCR Academic Chatbot. How can I help you today?
+    `;
+
+    box.appendChild(greeting);
+    box.dataset.greeted = "true";
+}
+
 /* LOAD CHAT HISTORY */
 function loadChatHistory() {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -332,8 +349,18 @@ function loadChatHistory() {
             const box = document.getElementById("chatBox");
             box.innerHTML = "";
 
+            // ✅ check if user has ever sent a message
+            const hasUserMessage = data.some(row => row.user_message);
+
+            if (!hasUserMessage) {
+                addMessage(
+                    "bot",
+                    "🤖 Hello! I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
+                );
+            }
+
             data.forEach(row => {
-                if (row.user_message && row.user_message !== "[ADMIN REPLY]") {
+                if (row.user_message) {
                     addMessage("user", row.user_message);
                 }
                 if (row.bot_reply) {
