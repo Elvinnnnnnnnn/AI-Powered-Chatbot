@@ -292,8 +292,9 @@ function sendMessage() {
     })
     .then(res => res.json())
     .then(data => {
-        addMessage("bot", data.reply);
+        addMessage("admin", data.reply);
     });
+
 
     input.value = "";
 }
@@ -307,19 +308,29 @@ function sendQuick(text) {
 /* ADD MESSAGE TO CHAT BOX */
 function addMessage(sender, text) {
     const box = document.getElementById("chatBox");
-    const div = document.createElement("div");
 
-    if (sender === "admin") {
-        div.className = "bot-msg admin-reply";
-        div.textContent = "Admin: " + text;
+    let html = "";
+
+    if (sender === "user") {
+        html = `
+            <div class="chat-message user">
+                <div class="bubble user-bubble">${text}</div>
+                <div class="avatar user-avatar">U</div>
+            </div>
+        `;
     } else {
-        div.className = sender === "user" ? "user-msg" : "bot-msg";
-        div.textContent = text;
+        html = `
+            <div class="chat-message admin">
+                <div class="avatar admin-avatar">A</div>
+                <div class="bubble admin-bubble">${text}</div>
+            </div>
+        `;
     }
 
-    box.appendChild(div);
+    box.insertAdjacentHTML("beforeend", html);
     box.scrollTop = box.scrollHeight;
 }
+
 
 /* LOAD CHAT HISTORY */
 function loadChatHistory() {
@@ -337,7 +348,7 @@ function loadChatHistory() {
                     addMessage("user", row.user_message);
                 }
                 if (row.bot_reply) {
-                    addMessage("bot", row.bot_reply);
+                    addMessage("admin", row.bot_reply);
                 }
             });
         });
