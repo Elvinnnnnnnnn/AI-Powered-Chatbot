@@ -68,19 +68,6 @@ function loadConversations() {
     });
 }
 
-function filterStatus(status, btn) {
-  activeCategory = status;
-
-  // update tab UI
-  document.querySelectorAll(".tabs .tab")
-    .forEach(tab => tab.classList.remove("active"));
-
-  btn.classList.add("active");
-
-  loadConversations();
-}
-
-
 function loadConversationThread(userId) {
   fetch(`http://127.0.0.1:5000/api/admin/conversations/${userId}`)
     .then(res => res.json())
@@ -247,6 +234,7 @@ function loadKnowledgeBase() {
     .then(res => res.json())
     .then(data => {
       kbData = data;
+      renderCategoryButtons();   // 👈 ADD THIS
       renderKnowledgeBase();
     });
 }
@@ -409,3 +397,25 @@ function updateChatStatus(status) {
   .catch(err => console.error(err));
 }
 
+function renderCategoryButtons() {
+  const container = document.getElementById("kbCategories");
+  container.innerHTML = "";
+
+  // Always add "All Categories"
+  const allBtn = document.createElement("button");
+  allBtn.className = "cat active";
+  allBtn.textContent = "All Categories";
+  allBtn.onclick = () => filterCategory("All", allBtn);
+  container.appendChild(allBtn);
+
+  // Get unique categories from KB data
+  const categories = [...new Set(kbData.map(item => item.category))];
+
+  categories.forEach(category => {
+    const btn = document.createElement("button");
+    btn.className = "cat";
+    btn.textContent = category;
+    btn.onclick = () => filterCategory(category, btn);
+    container.appendChild(btn);
+  });
+}
