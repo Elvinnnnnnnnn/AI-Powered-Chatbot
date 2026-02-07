@@ -380,6 +380,25 @@ def create_knowledge_base():
 
     return jsonify({"success": True})
 
+@app.route("/api/chat/categories", methods=["GET"])
+def get_categories():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT DISTINCT category
+        FROM knowledge_base
+        WHERE status = 'active'
+        ORDER BY category ASC
+    """)
+
+    categories = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(categories)
+
 @app.route("/api/admin/conversations/reply", methods=["POST"])
 def admin_reply():
     data = request.json
@@ -466,6 +485,27 @@ def delete_knowledge_base(kb_id):
     db.close()
 
     return jsonify({"success": True})
+
+@app.route("/api/chat/questions/<category>", methods=["GET"])
+def get_questions_by_category(category):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT id, question, answer
+        FROM knowledge_base
+        WHERE category = %s
+        AND status = 'active'
+        ORDER BY id ASC
+    """, (category,))
+
+    questions = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(questions)
+
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

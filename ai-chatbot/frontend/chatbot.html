@@ -60,12 +60,10 @@
         </div>
 
         <!-- QUICK ACTIONS -->
-        <div class="quick-actions">
-            <button onclick="sendQuick('Enrollment')">Enrollment</button>
-            <button onclick="sendQuick('Grades')">Grades</button>
-            <button onclick="sendQuick('Schedule')">Schedule</button>
-            <button onclick="sendQuick('Help')">Talk to Admin</button>
+        <div class="quick-actions" id="categoryActions">
+        <!-- categories will load here -->
         </div>
+
 
         <!-- INPUT -->
         <div class="chat-input">
@@ -93,6 +91,11 @@
     function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("show");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadCategories();
+});
+
 
 </script>
 

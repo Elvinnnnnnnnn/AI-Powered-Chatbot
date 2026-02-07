@@ -331,6 +331,37 @@ function addMessage(sender, text) {
     box.scrollTop = box.scrollHeight;
 }
 
+function loadCategories() {
+    fetch("http://127.0.0.1:5000/api/chat/categories")
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("categoryActions");
+            container.innerHTML = "";
+
+            data.forEach(item => {
+                const btn = document.createElement("button");
+                btn.textContent = item.category;
+                btn.onclick = () => selectCategory(item.category);
+                container.appendChild(btn);
+            });
+        });
+}
+
+function selectCategory(category) {
+    // Show user choice in chat
+    addMessage("user", category);
+
+    // Clear category buttons
+    document.getElementById("categoryActions").innerHTML = "";
+
+    // TEMP bot response (next step will replace this)
+    addMessage(
+        "admin",
+        `You selected ${category}. Please choose a question.`
+    );
+
+    // 👉 Next step: load questions here
+}
 
 /* LOAD CHAT HISTORY */
 function loadChatHistory() {

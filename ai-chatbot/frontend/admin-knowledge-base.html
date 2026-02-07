@@ -100,28 +100,51 @@
 
 
   </main>
-</div>
+    </div>
 
-<!-- MODAL -->
-<div class="modal" id="kbModal">
- <form class="modal-content" onsubmit="saveKnowledgeBase(event)">
-    <h2>Add New Entry</h2>
+    <!-- MODAL -->
+    <div class="modal" id="kbModal">
+    <form class="modal-content" onsubmit="saveKnowledgeBase(event)">
+        <h2>Add New Entry</h2>
 
-    <label>Category</label>
-   <select id="kbCategory">
-      <option>Enrollment</option>
-      <option>Grades</option>
-      <option>Finance</option>
-      <option>Scholarship</option>
-      <option>Schedule</option>
-      <option>Academic</option>
-    </select>
+        <label>Category</label>
+      <select id="kbCategory">
+          <option>Enrollment</option>
+          <option>Grades</option>
+          <option>Finance</option>
+          <option>Scholarship</option>
+          <option>Schedule</option>
+          <option>Academic</option>
+        </select>
 
-    <label>Question</label>
-    <input type="text" id="kbQuestion" placeholder="Enter the question">
+        <label>Questions & Answers</label>
 
-    <label>Answer</label>
-    <textarea id="kbAnswer" placeholder="Enter the answer (max 500 characters)"></textarea>
+    <div id="qaContainer">
+
+      <div class="qa-block">
+        <input
+          type="text"
+          class="kb-question"
+          placeholder="Enter question"
+          required
+        >
+
+        <textarea
+          class="kb-answer"
+          placeholder="Enter answer"
+          required
+        ></textarea>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="add-question-btn"
+      onclick="addQuestionBlock()"
+    >
+      + Add another question
+    </button>
 
     <label>Status</label>
     <div class="radio-group">

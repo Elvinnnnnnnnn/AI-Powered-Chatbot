@@ -258,33 +258,50 @@ function saveKnowledgeBase(event) {
   event.preventDefault();
 
   const category = kbCategory.value;
-  const question = kbQuestion.value;
-  const answer = kbAnswer.value;
-  const status = document.querySelector("input[name='kbStatus']:checked").value;
+  const status = document.querySelector(
+    "input[name='kbStatus']:checked"
+  ).value;
 
-  if (!question || !answer) {
-    alert("Question and Answer are required");
+  const questions = document.querySelectorAll(".kb-question");
+  const answers = document.querySelectorAll(".kb-answer");
+
+  if (questions.length === 0) {
+    alert("Please add at least one question.");
     return;
   }
 
-  const url = editingKbId
-    ? `http://127.0.0.1:5000/api/admin/knowledge-base/${editingKbId}`
-    : "http://127.0.0.1:5000/api/admin/knowledge-base";
+  const requests = [];
 
-  const method = editingKbId ? "PUT" : "POST";
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i].value.trim();
+    const answer = answers[i].value.trim();
 
-  fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ category, question, answer, status })
-  })
-  .then(res => res.json())
-  .then(() => {
+    if (!question || !answer) {
+      alert("All questions and answers are required.");
+      return;
+    }
+
+    requests.push(
+      fetch("http://127.0.0.1:5000/api/admin/knowledge-base", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category,
+          question,
+          answer,
+          status
+        })
+      })
+    );
+  }
+
+  Promise.all(requests).then(() => {
     closeModal();
     loadKnowledgeBase();
     resetModal();
   });
 }
+
 
 function editKnowledgeBase(id, category, question, answer, status) {
   editingKbId = id;
@@ -313,6 +330,14 @@ function resetModal() {
 
   document.querySelector("#kbModal h2").textContent = "Add New Entry";
   document.querySelector(".modal-actions .btn-primary").textContent = "Add Entry";
+
+  document.getElementById("qaContainer").innerHTML = `
+  <div class="qa-block">
+    <input type="text" class="kb-question" placeholder="Enter question" required>
+    <textarea class="kb-answer" placeholder="Enter answer" required></textarea>
+  </div>
+`;
+
 }
 
 function deleteKnowledgeBase(id) {
@@ -445,4 +470,36 @@ function updateKbStats() {
 
   document.getElementById("statUpdated").textContent =
     latest.toLocaleDateString() + " " + latest.toLocaleTimeString();
+}
+
+function addQuestionBlock() {
+  const container = document.getElementById("qaContainer");
+
+  const block = document.createElement("div");
+  block.className = "qa-block";
+
+  block.innerHTML = `
+    <input
+      type="text"
+      class="kb-question"
+      placeholder="Enter question"
+      required
+    >
+
+    <textarea
+      class="kb-answer"
+      placeholder="Enter answer"
+      required
+    ></textarea>
+
+    <button
+      type="button"
+      class="remove-question-btn"
+      onclick="this.parentElement.remove()"
+    >
+      ✖ Remove
+    </button>
+  `;
+
+  container.appendChild(block);
 }
