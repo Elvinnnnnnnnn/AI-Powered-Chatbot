@@ -211,14 +211,18 @@ def chat():
     cursor.execute(insert_query, (user_id, message, reply, status))
     db.commit()
 
+    chat_id = cursor.lastrowid
+
     cursor.close()
     db.close()
 
     # 4️⃣ Send reply back to chatbot
     return jsonify({
         "reply": reply,
-        "status": status
+        "status": status,
+        "chat_id": chat_id   # 👈 ADD THIS
     })
+
 
 @app.route("/chat/history/<int:user_id>")
 def chat_history(user_id):
@@ -227,8 +231,10 @@ def chat_history(user_id):
 
     cursor.execute("""
         SELECT
+            id,
             user_message,
-            bot_reply
+            bot_reply,
+            feedback
         FROM chats
         WHERE user_id = %s
         ORDER BY created_at ASC

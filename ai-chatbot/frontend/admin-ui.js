@@ -324,8 +324,6 @@ function resetModal() {
   editingKbId = null;
 
   kbCategory.value = "Enrollment";
-  kbQuestion.value = "";
-  kbAnswer.value = "";
   document.querySelector("input[name='kbStatus'][value='active']").checked = true;
 
   document.querySelector("#kbModal h2").textContent = "Add New Entry";

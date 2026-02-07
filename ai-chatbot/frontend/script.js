@@ -292,8 +292,9 @@ function sendMessage() {
     })
     .then(res => res.json())
     .then(data => {
-        addMessage("admin", data.reply);
+        addMessage("admin", data.reply, data.chat_id, true);
     });
+
 
 
     input.value = "";
@@ -453,7 +454,7 @@ function loadChatHistory() {
                     addMessage("user", row.user_message);
                 }
                 if (row.bot_reply) {
-                    addMessage("admin", row.bot_reply);
+                    addMessage("admin", row.bot_reply, row.id, row.feedback === null);
                 }
             });
         });
