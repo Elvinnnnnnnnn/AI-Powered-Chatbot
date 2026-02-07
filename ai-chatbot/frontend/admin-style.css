@@ -474,6 +474,11 @@ body {
   background: #fde68a;
 }
 
+.tab.incorrect {
+  color: #c0392b;
+}
+
+
 /* CONVERSATION ITEM */
 .conversation-item {
   padding: 12px;

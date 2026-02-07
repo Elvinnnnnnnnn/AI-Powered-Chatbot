@@ -4,6 +4,7 @@ let activeCategory = "All";
 let searchText = "";
 let activeConversationUserId = null;
 let activeConversationChatId = null;
+let activeStatusFilter = "all";
 
 function goTo(page) {
   window.location.href = page;
@@ -38,29 +39,34 @@ function loadConversations() {
       const list = document.getElementById("conversationList");
       list.innerHTML = "";
 
-      data.forEach(chat => {
-        const div = document.createElement("div");
-          div.className = "conversation-item";
-          div.onclick = () => loadConversationThread(chat.user_id);
+      data
+        .filter(chat => {
+          if (activeStatusFilter === "all") return true;
+          return chat.status === activeStatusFilter;
+        })
+          .forEach(chat => {
+            const div = document.createElement("div");
+              div.className = "conversation-item";
+              div.onclick = () => loadConversationThread(chat.user_id);
 
-        div.innerHTML = `
-          <div class="item-header">
-            <strong>${chat.first_name} ${chat.last_name}</strong>
-            <span class="badge ${chat.status}">
-              ${chat.status}
-            </span>
-          </div>
+            div.innerHTML = `
+              <div class="item-header">
+                <strong>${chat.first_name} ${chat.last_name}</strong>
+                <span class="badge ${chat.status}">
+                  ${chat.status}
+                </span>
+              </div>
 
-          <p class="last-message">
-            ${chat.user_message || "(no message)"}
-          </p>
+              <p class="last-message">
+                ${chat.user_message || "(no message)"}
+              </p>
 
-          <div class="item-footer">
-            <span class="time">
-              ${new Date(chat.created_at).toLocaleString()}
-            </span>
-          </div>
-        `;
+              <div class="item-footer">
+                <span class="time">
+                  ${new Date(chat.created_at).toLocaleString()}
+                </span>
+              </div>
+            `;
 ;
 
         list.appendChild(div);
@@ -511,3 +517,22 @@ function addQuestionBlock() {
 
   container.appendChild(block);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".tabs .tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      // Remove active class
+      document.querySelectorAll(".tabs .tab")
+        .forEach(t => t.classList.remove("active"));
+
+      tab.classList.add("active");
+
+      const label = tab.textContent.toLowerCase();
+
+      if (label === "all") activeStatusFilter = "all";
+      else activeStatusFilter = label; // resolved | escalated | incorrect
+
+      loadConversations();
+    });
+  });
+});
