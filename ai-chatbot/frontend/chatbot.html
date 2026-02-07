@@ -32,31 +32,6 @@
         <!-- MESSAGES -->
         <div class="chat-box" id="chatBox">
 
-            <!-- ADMIN MESSAGE -->
-            <div class="chat-message admin">
-                <div class="avatar admin-avatar">A</div>
-                <div class="bubble admin-bubble">
-                    I'm sorry, I couldn't find an answer to your question.
-                    Your concern has been forwarded to the admin.
-                </div>
-            </div>
-
-            <!-- USER MESSAGE -->
-            <div class="chat-message user">
-                <div class="bubble user-bubble">
-                    Schedule
-                </div>
-                <div class="avatar user-avatar">U</div>
-            </div>
-
-            <!-- ADMIN MESSAGE -->
-            <div class="chat-message admin">
-                <div class="avatar admin-avatar">A</div>
-                <div class="bubble admin-bubble">
-                    [ADMIN] dssfsfsf
-                </div>
-            </div>
-
         </div>
 
         <!-- QUICK ACTIONS -->
@@ -79,16 +54,9 @@
 
 </body>
 <script src="script.js"></script>
-<script>
-    requireLogin();
-    loadChatHistory();
-
-    // auto refresh every 5 seconds
-    setInterval(loadChatHistory, 5000);
-</script>
 
 <script>
-    function toggleSidebar() {
+function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("show");
 }
 
@@ -98,13 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionStorage.removeItem("activeCategory");
     isInCategoryFlow = false;
 
-    showWelcomeMessage();   // 👈 ADD THIS
     loadCategories();
+    loadChatHistory();
 
     setInterval(loadChatHistory, 5000);
 });
-
 </script>
-
 
 </html>

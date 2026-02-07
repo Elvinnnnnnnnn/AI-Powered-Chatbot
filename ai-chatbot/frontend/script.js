@@ -478,31 +478,37 @@ function selectQuestion(question, answer) {
 
 /* LOAD CHAT HISTORY */
 function loadChatHistory() {
-    if (isInCategoryFlow) return; 
+    if (isInCategoryFlow) return;
+
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (!user) return;
 
     fetch(`http://127.0.0.1:5000/chat/history/${user.id}`)
         .then(res => res.json())
-            .then(data => {
-        const box = document.getElementById("chatBox");
-        box.innerHTML = "";
+        .then(data => {
+            const box = document.getElementById("chatBox");
+            box.innerHTML = "";
 
-        data.forEach(row => {
-            if (row.user_message) {
-                addMessage("user", row.user_message);
+            // ✅ SHOW WELCOME ONLY WHEN THERE IS NO CHAT HISTORY
+            if (!data || data.length === 0) {
+                showWelcomeMessage();
+                return;
             }
-            if (row.bot_reply) {
-                addMessage("admin", row.bot_reply, row.id, row.feedback === null);
+
+            data.forEach(row => {
+                if (row.user_message) {
+                    addMessage("user", row.user_message);
+                }
+                if (row.bot_reply) {
+                    addMessage("admin", row.bot_reply, row.id, row.feedback === null);
+                }
+            });
+
+            const activeCategory = sessionStorage.getItem("activeCategory");
+            if (activeCategory) {
+                loadCategoryQuestions(activeCategory);
             }
         });
-
-        // ✅ RESTORE QUESTIONS IF USER IS IN CATEGORY
-        const activeCategory = sessionStorage.getItem("activeCategory");
-        if (activeCategory) {
-            loadCategoryQuestions(activeCategory);
-        }
-    });
 }
 
 /* =====================================================
@@ -582,14 +588,8 @@ function loadClassSchedule() {
 }
 
 function showWelcomeMessage() {
-    const alreadyWelcomed = sessionStorage.getItem("chatbotWelcomed");
-
-    if (alreadyWelcomed) return;
-
     addMessage(
         "admin",
         "Hello! 👋 I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
     );
-
-    sessionStorage.setItem("chatbotWelcomed", "true");
 }

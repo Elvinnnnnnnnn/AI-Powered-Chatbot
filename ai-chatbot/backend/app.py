@@ -627,29 +627,6 @@ def chat_category():
         "chat_id": chat_id
     })
 
-@app.route("/chat/welcome", methods=["POST"])
-def chat_welcome():
-    data = request.json
-    user_id = data.get("user_id")
-
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    cursor.execute("""
-        INSERT INTO chats (user_id, bot_reply, status)
-        VALUES (%s, %s, 'resolved')
-    """, (
-        user_id,
-        "Hello! I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
-    ))
-
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return jsonify({"success": True})
-
-
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
     app.run(debug=True)
