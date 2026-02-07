@@ -375,47 +375,107 @@ footer {
    CHATBOT PAGE (chatbot.html)
 ===================================================== */
 
+/* CHAT CONTAINER */
+/* CHAT BOX */
 .chat-box {
-    height: 400px;
-    background: white;
-    padding: 15px;
+    height: 420px;
+    background: #ffffff;
+    padding: 20px;
     overflow-y: auto;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-.chat-input {
+/* MESSAGE WRAPPER */
+.message {
     display: flex;
+    margin-bottom: 12px;
+    align-items: flex-start;
 }
 
-.chat-input input {
-    flex: 1;
-    padding: 10px;
-}
-
-.chat-input button {
-    padding: 10px 20px;
-    background: #b71c1c;
-    color: white;
-    border: none;
-}
-
+/* BOT MESSAGE */
 .bot-msg {
-    background: #eee;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    width: fit-content;
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 14px;
+    max-width: 70%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    font-size: 14px;
+}
+
+/* BOT AVATAR */
+.bot-avatar {
+    width: 32px;
+    height: 32px;
+    background: #d32f2f;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+/* USER MESSAGE */
+.user-message {
+    justify-content: flex-end;
 }
 
 .user-msg {
     background: #d32f2f;
     color: white;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    max-width: 70%;
+    font-size: 14px;
+}
+
+/* QUICK ACTION BUTTONS */
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 10px;
-    margin-left: auto;
-    width: fit-content;
+}
+
+.quick-actions button {
+    background: #fff3e0;
+    border: 1px solid #ff9800;
+    color: #e65100;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.quick-actions button:hover {
+    background: #ff9800;
+    color: white;
+}
+
+/* INPUT BAR */
+.chat-input {
+    display: flex;
+    gap: 6px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.chat-input button {
+    padding: 0 18px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 /* =====================================================
