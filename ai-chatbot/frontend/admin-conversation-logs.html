@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <title>Conversation Logs | Admin</title>
+    <link rel="stylesheet" href="css/admin-navbar.css">
     <link rel="stylesheet" href="admin-style.css">
   </head>
 
   <body class="admin-body">
-
-    <!-- ================= TOPBAR ================= -->
-<div class="topbar">
+<!-- ================= ADMIN TOPBAR ================= -->
+<header class="admin-topbar">
   <div class="topbar-left">
     <button class="menu-btn">☰</button>
     <img src="images/escr-logo.png" class="logo">
-    <div class="title">
-      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+    <div class="brand">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
       <span>Admin Portal</span>
     </div>
   </div>
@@ -22,51 +22,66 @@
   <div class="topbar-right">
     <div class="admin-user">
       <div class="avatar">A</div>
-      <div>
-        <strong>Joel Mariano</strong><br>
-        <span class="role">Admin</span>
+      <div class="user-info">
+        <strong>Joel Mariano</strong>
+        <span>Admin</span>
       </div>
     </div>
   </div>
-</div>
+</header>
 
-<!-- ================= LAYOUT ================= -->
+<!-- ================= PAGE LAYOUT ================= -->
 <div class="admin-layout">
 
-  <!-- SIDEBAR -->
+    <!-- ================= SIDEBAR ================= -->
+  <!-- ================= ADMIN SIDEBAR ================= -->
   <aside class="admin-sidebar">
-    <ul class="menu">
-    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
-      Dashboard
-    </li>
-    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
-      Conversation Logs
-    </li>
-    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
-      Knowledge Base
-    </li>
-    <li data-page="users" onclick="goTo('admin-user-management.html')">
-      User Management
-    </li>
-    <li data-page="analytics" onclick="goTo('admin-analytics.html')">
-      Analytics
-    </li>
-    <li data-page="settings" onclick="goTo('admin-settings.html')">
-      Settings
-    </li>
-  </ul>
+    <ul class="nav-menu">
+      <li class="active" onclick="goTo('admin-dashboard.html')">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+      </li>
 
-    <button class="logout-btn">Logout</button>
+      <li onclick="goTo('admin-conversation-logs.html')">
+        <span class="icon">💬</span>
+        <span class="label">Conversation Logs</span>
+      </li>
+
+      <li onclick="goTo('admin-knowledge-base.html')">
+        <span class="icon">📘</span>
+        <span class="label">Knowledge Base</span>
+      </li>
+
+      <li onclick="goTo('admin-user-management.html')">
+        <span class="icon">👤</span>
+        <span class="label">User Management</span>
+      </li>
+
+      <li onclick="goTo('admin-analytics.html')">
+        <span class="icon">📈</span>
+        <span class="label">Analytics</span>
+      </li>
+
+      <li onclick="goTo('admin-settings.html')">
+        <span class="icon">⚙️</span>
+        <span class="label">Settings</span>
+      </li>
+    </ul>
+
+    <button class="logout-btn">
+      <span class="icon">↩️</span>
+      Logout
+    </button>
+
   </aside>
 
     <!-- 🔒 ADMIN CHECK -->
     <script>
-      if (!localStorage.getItem("admin")) {
+      const admin = localStorage.getItem("admin");
+      if (!admin) {
         window.location.href = "admin-login.html";
       }
     </script>
-
-    <div class="admin-layout">
 
       <!-- CONTENT -->
       <main class="admin-content">
