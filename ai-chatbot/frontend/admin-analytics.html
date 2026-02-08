@@ -77,6 +77,12 @@
 
 
   <!-- 🔒 ADMIN AUTH CHECK -->
+    <script>
+      const admin = localStorage.getItem("admin");
+      if (!admin) {
+        window.location.href = "admin-login.html";
+      }
+    </script>
 
 
   <!-- CONTENT -->

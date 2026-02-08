@@ -1,0 +1,160 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: #1f5fbf;
+  position: relative;
+}
+
+/* =========================
+   LEFT SIDE CONTENT
+========================= */
+.left-section {
+  position: absolute;
+  left: 140px;
+  top: 140px;
+  width: 420px;
+  color: #fff;
+  text-align: center;
+}
+
+.school-logo {
+  width: 200px;
+  margin: 0 auto 25px auto;
+  display: block;
+}
+
+.left-section h1 {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.portal {
+    cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.portal.active {
+  text-decoration: underline;
+}
+
+/* =========================
+   LOGIN CARD (WIDTH ONLY)
+========================= */
+.login-card {
+  position: absolute;
+  right: 120px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 620px;              /* SAME WIDTH AS STUDENT LOGIN */
+  background: #fff;
+  border-radius: 14px;
+  padding: 45px 40px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.login-card h2 {
+  font-size: 26px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* INPUTS */
+.login-card label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* REMEMBER + FORGOT */
+.remember-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.forgot {
+  color: #f39c12;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* BUTTONS */
+.btn-signin {
+  width: 100%;
+  background: #d9251c;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 22px;
+}
+
+/* DIVIDER */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 18px 0;
+  font-size: 14px;
+}
+
+.divider span {
+  background: #fff;
+  padding: 0 12px;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  z-index: -1;
+}
+
+/* OUTLINE BUTTON */
+.btn-outline {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border: 2px solid #f39c12;
+  color: #f39c12;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+/* BACK BUTTON */
+.btn-back {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border: 1px solid #ccc;
+  color: #000;
+  border-radius: 6px;
+  text-decoration: none;
+}

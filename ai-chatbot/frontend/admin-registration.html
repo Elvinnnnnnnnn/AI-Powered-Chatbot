@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Register | ESCR</title>
+  <link rel="stylesheet" href="css/admin-registration.css">
+</head>
+<body>
+
+<!-- LEFT CONTENT -->
+<div class="left-section">
+  <img src="images/school-logo-removebg-preview.png" alt="ESCR Logo" class="school-logo">
+
+  <h1>East Systems Colleges of Rizal</h1>
+
+  <p class="portal">STUDENT PORTAL</p>
+  <p class="portal active">ADMIN PORTAL</p>
+</div>
+
+<!-- RIGHT REGISTER CARD -->
+<div class="register-card">
+
+  <h2>Account Information</h2>
+
+  <label>Username *</label>
+  <input id="username" type="text">
+
+  <label>Password *</label>
+  <input id="password" type="password">
+
+  <label>Confirm Password *</label>
+  <input id="confirm_password" type="password">
+
+  <!-- TERMS -->
+  <label class="checkbox">
+    <input type="checkbox">
+    I agree to the
+    <a href="#">Terms and Conditions</a>
+    and
+    <a href="#">Privacy Policy</a>
+  </label>
+
+  <!-- ACTION BUTTONS -->
+  <div class="form-actions">
+    <a href="admin-login.html" class="btn secondary">Back</a>
+    <button class="btn primary" onclick="registerAdmin()">Complete Registration</button>
+  </div>
+
+  <p class="signin-text">
+    Already have an account?
+    <a href="admin-login.html">Sign In</a>
+  </p>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

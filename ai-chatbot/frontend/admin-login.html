@@ -3,52 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Login | ESCR</title>
-  <link rel="stylesheet" href="admin-style.css">
+  <link rel="stylesheet" href="css/admin-login.css">
 </head>
-<body class="auth-body">
+<body>
 
-<div class="auth-container">
+<!-- LEFT CONTENT -->
+<div class="left-section">
+  <img src="images/school-logo-removebg-preview.png" alt="ESCR Logo" class="school-logo">
 
-  <!-- LEFT SIDE -->
-  <div class="auth-left">
-    <img src="images/escr-logo.png" alt="ESCR Logo" class="auth-logo">
-    <h2>East Systems Colleges of Rizal</h2>
+  <h1>East Systems Colleges of Rizal</h1>
 
-    <div class="portal-links">
-      <a href="login.html">STUDENT PORTAL</a>
-      <a href="admin-login.html" class="active">ADMIN PORTAL</a>
+  <p href="login.html" class="portal">STUDENT PORTAL</p>
+  <p class="portal active">ADMIN PORTAL</p>
+</div>
+
+<!-- RIGHT LOGIN CARD -->
+<div class="login-card">
+
+  <h2>WELCOME BACK!</h2>
+
+  <form id="adminLoginForm">
+
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter" required>
+
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter your password" required>
+
+    <div class="remember-row">
+      <label>
+        <input type="checkbox">
+        Remember Me
+      </label>
+      <a href="#" class="forgot">Forgot Password?</a>
     </div>
-  </div>
 
-  <!-- RIGHT SIDE -->
-  <div class="auth-right">
-    <h1>WELCOME BACK!</h1>
+    <button type="submit" class="btn-signin">Sign In</button>
 
-    <form id="adminLoginForm">
-      <label>Email</label>
-      <input type="email" id="email" placeholder="Enter" required>
+    <div class="divider">
+      <span>New Account?</span>
+    </div>
 
-      <label>Password</label>
-      <div class="password-field">
-        <input type="password" id="password" placeholder="Enter your password" required>
-      </div>
+    <a href="admin-registration.html" class="btn-outline">Create Account</a>
+    <a href="index.html" class="btn-back">Back to Home</a>
 
-      <div class="auth-options">
-        <label>
-          <input type="checkbox"> Remember Me
-        </label>
-        <a href="#">Forgot Password?</a>
-      </div>
-
-      <button type="submit" class="btn-primary">Sign In</button>
-
-      <div class="divider">New Account?</div>
-
-      <a href="register.html" class="btn-outline">Create Account</a>
-      <a href="index.html" class="btn-light">Back to Home</a>
-    </form>
-  </div>
-
+  </form>
 </div>
 
 <script src="admin.js"></script>

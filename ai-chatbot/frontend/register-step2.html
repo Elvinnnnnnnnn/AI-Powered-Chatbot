@@ -2,67 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register | Contact Information</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Register | Contact Inforemation</title>
+    <link rel="stylesheet" href="css/register2.css">
 </head>
 <body>
 
-<div class="auth-container">
+<!-- LEFT CONTENT -->
+<div class="left-section">
+    <img src="images/school-logo-removebg-preview.png" class="school-logo">
 
-    <!-- LEFT -->
-    <div class="auth-left">
-        <h1>East Systems Colleges of Rizal</h1>
-        <p class="portal">STUDENT PORTAL</p>
-        <p class="portal">ADMIN PORTAL</p>
-    </div>
+    <h1>East Systems Colleges of Rizal</h1>
 
-    <!-- RIGHT -->
-    <div class="auth-right">
-
-        <!-- STEPS -->
-        <div class="steps">
-            <div class="step done">1<br><span>Personal</span></div>
-            <div class="step active">2<br><span>Contact</span></div>
-            <div class="step">3<br><span>Account</span></div>
-        </div>
-
-        <h2>Contact Information</h2>
-
-        <label>Email Address *</label>
-        <input id="email" type="email">
-
-        <label>Phone Number *</label>
-        <input id="phone" type="text">
-
-        <label>Address *</label>
-        <input id="address" type="text">
-
-        <label>Program *</label>
-        <select id="program">
-            <option>Select Program</option>
-            <option>BSIT</option>
-            <option>BSBA</option>
-            <option>BSED</option>
-        </select>
-
-        <label>Year Level *</label>
-        <select id="year_level">
-            <option>Select Year</option>
-            <option>1st Year</option>
-            <option>2nd Year</option>
-            <option>3rd Year</option>
-            <option>4th Year</option>
-        </select>
-
-        <div class="form-actions">
-            <a href="register.html" class="btn secondary">Back</a>
-            <button class="btn primary" onclick="saveStep2()">Continue</button>
-        </div>
-
-    </div>
+    <p class="portal active">STUDENT PORTAL</p>
+    <p class="portal">ADMIN PORTAL</p>
 </div>
 
-</body>
-<script src="script.js"></script>
+<!-- RIGHT REGISTER CARD -->
+<div class="register-card">
 
+    <!-- STEPS -->
+    <div class="steps">
+        <div class="step done">1<br><span>Personal</span></div>
+        <div class="step active">2<br><span>Contact</span></div>
+        <div class="step">3<br><span>Account</span></div>
+    </div>
+
+    <h2>Contact Information</h2>
+
+    <label>Email Address *</label>
+    <input id="email" type="email">
+
+    <label>Phone Number *</label>
+    <input id="phone" type="text">
+
+    <label>Address *</label>
+    <input id="address" type="text">
+
+    <!-- PROGRAM + YEAR LEVEL ROW -->
+    <div class="row">
+        <div class="field">
+            <label>Program *</label>
+            <select id="program">
+                <option value="">Select Program</option>
+                <option>BSIT</option>
+                <option>BSBA</option>
+                <option>BSED</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Year Level *</label>
+            <select id="year_level">
+                <option value="">Select Year</option>
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a href="register.html" class="btn secondary">Back</a>
+        <button class="btn primary" onclick="saveStep2()">Continue</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
 </html>

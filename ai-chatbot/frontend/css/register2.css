@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(90deg, #e5391c 0%, #f2a43a 55%, #f4ea6a 100%);
+    position: relative;
+}
+
+/* =========================
+   LEFT SIDE CONTENT
+========================= */
+.left-section {
+    position: absolute;
+    left: 140px;
+    top: 140px;
+    width: 420px;
+    color: #fff;
+    text-align: center;
+}
+
+.school-logo {
+    width: 200px;
+    margin: 0 auto 25px auto;
+    display: block;
+}
+
+.left-section h1 {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.portal {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.portal.active {
+    text-decoration: underline;
+}
+
+/* =========================
+   REGISTER CARD
+========================= */
+.register-card {
+    position: absolute;
+    right: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 620px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 45px 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* STEPS */
+.steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.step {
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.step span {
+    font-size: 12px;
+}
+
+.step.active {
+    color: #e5391c;
+    font-weight: bold;
+}
+
+.step.done {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* TITLE */
+.register-card h2 {
+    font-size: 26px;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* LABELS */
+.register-card label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* INPUTS */
+.register-card input,
+.register-card select {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* =========================
+   TWO-COLUMN ROW
+========================= */
+.row {
+    display: flex;
+    gap: 20px;
+}
+
+.field {
+    flex: 1;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn {
+    flex: 1;
+    text-align: center;
+    padding: 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background: #d9251c;
+    color: #fff;
+    border: none;
+}
+
+.btn.secondary {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #000;
+}
+
+/* =========================
+   CHECKBOX TERMS
+========================= */
+.checkbox {
+    font-size: 14px;
+    margin: 15px 0 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.checkbox input {
+    margin-top: 3px;
+}
+
+.checkbox a {
+    color: #f39c12;
+    font-weight: bold;
+    text-decoration: none;
+}

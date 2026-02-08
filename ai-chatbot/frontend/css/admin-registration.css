@@ -1,0 +1,145 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: #1f5fbf;
+  position: relative;
+}
+
+/* =========================
+   LEFT SIDE CONTENT
+========================= */
+.left-section {
+  position: absolute;
+  left: 140px;
+  top: 140px;
+  width: 420px;
+  color: #fff;
+  text-align: center;
+}
+
+.school-logo {
+  width: 200px;
+  margin: 0 auto 25px auto;
+  display: block;
+}
+
+.left-section h1 {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.portal {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.portal.active {
+  text-decoration: underline;
+}
+
+/* =========================
+   REGISTER CARD (WIDTH ONLY)
+========================= */
+.register-card {
+  position: absolute;
+  right: 120px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 620px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 45px 40px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* TITLE */
+.register-card h2 {
+  font-size: 26px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* LABELS */
+.register-card label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* INPUTS */
+.register-card input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* CHECKBOX */
+.checkbox {
+  font-size: 14px;
+  margin: 15px 0 30px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.checkbox input {
+  margin-top: 3px;
+}
+
+.checkbox a {
+  color: #f39c12;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* ACTION BUTTONS */
+.form-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn {
+  flex: 1;
+  text-align: center;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #d9251c;
+  color: #fff;
+  border: none;
+}
+
+.btn.secondary {
+  background: #fff;
+  border: 1px solid #ccc;
+  color: #000;
+}
+
+/* SIGN IN TEXT */
+.signin-text {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 25px;
+}
+
+.signin-text a {
+  color: #f39c12;
+  font-weight: bold;
+  text-decoration: none;
+}

@@ -3,63 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Register | Account Information</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/register2.css">
 </head>
 <body>
 
-<div class="auth-container">
+<!-- LEFT CONTENT -->
+<div class="left-section">
+    <img src="images/school-logo-removebg-preview.png" class="school-logo">
 
-    <!-- LEFT -->
-    <div class="auth-left">
-        <h1>East Systems Colleges of Rizal</h1>
-        <p class="portal">STUDENT PORTAL</p>
-        <p class="portal">ADMIN PORTAL</p>
-    </div>
+    <h1>East Systems Colleges of Rizal</h1>
 
-    <!-- RIGHT -->
-    <div class="auth-right">
-
-        <!-- STEPS -->
-        <div class="steps">
-            <div class="step done">1<br><span>Personal</span></div>
-            <div class="step done">2<br><span>Contact</span></div>
-            <div class="step active">3<br><span>Account</span></div>
-        </div>
-
-        <h2>Account Information</h2>
-
-        <label>Username *</label>
-        <input id="username" type="text">
-
-        <label>Password *</label>
-        <input id="password" type="password">
-
-        <label>Confirm Password *</label>
-        <input type="password" placeholder="Enter">
-
-        <label class="checkbox">
-            <input type="checkbox">
-            I agree to the
-            <a href="#">Terms and Conditions</a>
-            and
-            <a href="#">Privacy Policy</a>
-        </label>
-
-        <div class="form-actions">
-            <a href="register-step2.html" class="btn secondary">Back</a>
-            <button class="btn primary" onclick="registerUser()">Complete Registration</button>
-        </div>
-
-        <p class="divider">
-            Already have an account?
-            <a href="login.html">Sign In</a>
-        </p>
-
-    </div>
+    <p class="portal active">STUDENT PORTAL</p>
+    <p class="portal">ADMIN PORTAL</p>
 </div>
 
-</body>
-<script src="script.js"></script>
-<script src="script.js"></script>
+<!-- RIGHT REGISTER CARD -->
+<div class="register-card">
 
+    <!-- STEPS -->
+    <div class="steps">
+        <div class="step done">1<br><span>Personal</span></div>
+        <div class="step done">2<br><span>Contact</span></div>
+        <div class="step active">3<br><span>Account</span></div>
+    </div>
+
+    <h2>Account Information</h2>
+
+    <label>Username *</label>
+    <input id="username" type="text">
+
+    <label>Password *</label>
+    <input id="password" type="password">
+
+    <label>Confirm Password *</label>
+    <input id="confirm_password" type="password" placeholder="Enter">
+
+    <!-- TERMS -->
+    <label class="checkbox">
+        <input type="checkbox">
+        I agree to the
+        <a href="#">Terms and Conditions</a>
+        and
+        <a href="#">Privacy Policy</a>
+    </label>
+
+    <!-- ACTIONS -->
+    <div class="form-actions">
+        <a href="register-step2.html" class="btn secondary">Back</a>
+        <button class="btn primary" onclick="registerUser()">Complete Registration</button>
+    </div>
+
+    <p class="signin-text">
+        Already have an account?
+        <a href="login.html">Sign In</a>
+    </p>
+
+</div>
+
+<script src="script.js"></script>
+</body>
 </html>
