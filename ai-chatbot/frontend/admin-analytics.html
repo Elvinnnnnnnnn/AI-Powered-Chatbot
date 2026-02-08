@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin | Analytics</title>
+  <link rel="stylesheet" href="css/admin-analytics.css">
+</head>
+<body class="admin-body">
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LAYOUT ================= -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <ul class="menu">
+      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+        Dashboard
+      </li>
+      <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+        Conversation Logs
+      </li>
+      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+        Knowledge Base
+      </li>
+      <li data-page="users" onclick="goTo('admin-user-management.html')">
+        User Management
+      </li>
+      <li data-page="analytics" onclick="goTo('admin-analytics.html')">
+        Analytics
+      </li>
+      <li data-page="settings" onclick="goTo('admin-settings.html')">
+        Settings
+      </li>
+    </ul>
+
+    <button class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- 🔒 ADMIN AUTH CHECK -->
+  <script>
+    const admin = localStorage.getItem("admin");
+    if (!admin) {
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <!-- HEADER -->
+    <div class="analytics-header">
+      <div>
+        <h1>Analytics and Reports</h1>
+        <p>Detailed insights into chatbot performance and usage</p>
+      </div>
+
+      <select class="date-filter">
+        <option>Last 7 days</option>
+        <option>Last 30 days</option>
+        <option>This Year</option>
+      </select>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span>Resolution Rate</span>
+        <h2>87.3%</h2>
+        <p class="up">↑ +3.2% from last period</p>
+      </div>
+
+      <div class="stat-card">
+        <span>Average Response Time</span>
+        <h2>2.3s</h2>
+        <p class="up">↑ -0.5s from last period</p>
+      </div>
+
+      <div class="stat-card">
+        <span>Escalation Rate</span>
+        <h2>12.7%</h2>
+        <p class="down">↓ +1.1% from last period</p>
+      </div>
+
+      <div class="stat-card">
+        <span>User Satisfaction</span>
+        <h2>4.2/5</h2>
+        <p class="up">↑ +0.3 from last period</p>
+      </div>
+    </div>
+
+    <!-- PANELS -->
+    <div class="analytics-panels">
+
+      <!-- LEFT -->
+      <div class="panel">
+        <h3>Query Distribution by Category</h3>
+
+        <div class="bar-item">
+          <label>Enrollment <span>456 queries (36.5%)</span></label>
+          <div class="bar"><div class="fill blue" style="width:36.5%"></div></div>
+        </div>
+
+        <div class="bar-item">
+          <label>Grades <span>298 queries (23.9%)</span></label>
+          <div class="bar"><div class="fill green" style="width:23.9%"></div></div>
+        </div>
+
+        <div class="bar-item">
+          <label>Finance <span>187 queries (15%)</span></label>
+          <div class="bar"><div class="fill purple" style="width:15%"></div></div>
+        </div>
+
+        <div class="bar-item">
+          <label>Scholarship <span>142 queries (11.4%)</span></label>
+          <div class="bar"><div class="fill orange" style="width:11.4%"></div></div>
+        </div>
+
+        <div class="bar-item">
+          <label>Schedule <span>98 queries (7.9%)</span></label>
+          <div class="bar"><div class="fill teal" style="width:7.9%"></div></div>
+        </div>
+
+        <div class="bar-item">
+          <label>Academic <span>66 queries (5.3%)</span></label>
+          <div class="bar"><div class="fill pink" style="width:5.3%"></div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="panel">
+        <h3>Peak Usage Hours</h3>
+
+        <div class="hour"><span>8AM</span><div class="hour-bar"><div style="width:55%">55</div></div></div>
+        <div class="hour"><span>9AM</span><div class="hour-bar"><div style="width:78%">78</div></div></div>
+        <div class="hour"><span>10AM</span><div class="hour-bar"><div style="width:92%">92</div></div></div>
+        <div class="hour"><span>11AM</span><div class="hour-bar"><div style="width:85%">85</div></div></div>
+        <div class="hour"><span>12PM</span><div class="hour-bar"><div style="width:67%">67</div></div></div>
+        <div class="hour"><span>1PM</span><div class="hour-bar"><div style="width:73%">73</div></div></div>
+        <div class="hour"><span>2PM</span><div class="hour-bar"><div style="width:88%">88</div></div></div>
+        <div class="hour"><span>3PM</span><div class="hour-bar"><div style="width:95%">95</div></div></div>
+        <div class="hour"><span>4PM</span><div class="hour-bar"><div style="width:82%">82</div></div></div>
+        <div class="hour"><span>5PM</span><div class="hour-bar"><div style="width:56%">56</div></div></div>
+        <div class="hour"><span>6PM</span><div class="hour-bar"><div style="width:45%">45</div></div></div>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ✅ ONLY FIX ADDED -->
+<script>
+  function goTo(page) {
+    window.location.href = page;
+  }
+</script>
+
+</body>
+</html>

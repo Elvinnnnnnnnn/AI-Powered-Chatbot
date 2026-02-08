@@ -1,102 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Conversation Logs | Admin</title>
-  <link rel="stylesheet" href="admin-style.css">
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <title>Conversation Logs | Admin</title>
+    <link rel="stylesheet" href="admin-style.css">
+  </head>
 
-<!-- TOP NAVBAR (reuse same layout) -->
+  <body class="admin-body">
+
+    <!-- ================= TOPBAR ================= -->
 <div class="topbar">
-    <div class="topbar-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
     </div>
-    <div class="topbar-right">
-        <strong class="student-name"></strong><br>
-        <span class="student-role"></span>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
     </div>
+  </div>
 </div>
 
-<body class="admin-body">
-
-<!-- 🔒 ADMIN CHECK -->
-<script>
-  if (!localStorage.getItem("admin")) {
-    window.location.href = "admin-login.html";
-  }
-</script>
-
+<!-- ================= LAYOUT ================= -->
 <div class="admin-layout">
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
-    <h2 class="logo">ESCR</h2>
-
     <ul class="menu">
-      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
-        Dashboard
-      </li>
-      <li data-page="logs" class="active" onclick="goTo('admin-conversation-logs.html')">
-        Conversation Logs
-      </li>
-      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
-        Knowledge Base
-      </li>
-      <li data-page="users">
-        User Management
-      </li>
-      <li data-page="analytics">
-        Analytics
-      </li>
-      <li data-page="settings">
-        Settings
-      </li>
-    </ul>
+    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+      Dashboard
+    </li>
+    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+      Conversation Logs
+    </li>
+    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+      Knowledge Base
+    </li>
+    <li data-page="users" onclick="goTo('admin-user-management.html')">
+      User Management
+    </li>
+    <li data-page="analytics" onclick="goTo('admin-analytics.html')">
+      Analytics
+    </li>
+    <li data-page="settings" onclick="goTo('admin-settings.html')">
+      Settings
+    </li>
+  </ul>
 
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <button class="logout-btn">Logout</button>
   </aside>
 
-  <!-- CONTENT -->
-  <main class="admin-content">
+    <!-- 🔒 ADMIN CHECK -->
+    <script>
+      if (!localStorage.getItem("admin")) {
+        window.location.href = "admin-login.html";
+      }
+    </script>
 
-    <h1>Conversation Logs</h1>
-    <p class="subtitle">Review and manage student-chatbot conversations</p>
+    <div class="admin-layout">
 
-    <div class="logs-layout">
+      <!-- CONTENT -->
+      <main class="admin-content">
 
-      <!-- LEFT: CONVERSATION LIST -->
-      <div class="logs-list">
+        <h1>Conversation Logs</h1>
+        <p class="subtitle">Review and manage student-chatbot conversations</p>
 
-        <input class="search-box" placeholder="Search conversations...">
+        <div class="logs-layout">
 
-        <div class="tabs">
-          <span class="tab active">All</span>
-          <span class="tab resolved">Resolved</span>
-          <span class="tab escalated">Escalated</span>
-          <span class="tab incorrect">Incorrect</span>
+          <!-- LEFT: CONVERSATION LIST -->
+          <div class="logs-list">
+
+            <input class="search-box" placeholder="Search conversations...">
+
+            <div class="tabs">
+              <span class="tab active">All</span>
+              <span class="tab resolved">Resolved</span>
+              <span class="tab escalated">Escalated</span>
+              <span class="tab incorrect">Incorrect</span>
+            </div>
+
+
+            <!-- ✅ JS WILL LOAD CONVERSATIONS HERE -->
+            <div id="conversationList">
+              <!-- conversations injected by admin-ui.js -->
+            </div>
+
+          </div>
+
+          <!-- RIGHT: CHAT VIEW -->
+          <div class="chat-panel">
+
+            <!-- EMPTY STATE -->
+            <div class="empty-chat">
+              <h3>No ticket selected</h3>
+              <p>Select a conversation to view ticket details</p>
+            </div>
+
+
         </div>
 
-
-        <!-- ✅ JS WILL LOAD CONVERSATIONS HERE -->
-        <div id="conversationList">
-          <!-- conversations injected by admin-ui.js -->
-        </div>
-
-      </div>
-
-      <!-- RIGHT: CHAT VIEW -->
-      <div class="chat-panel">
-        <p class="empty-chat">
-          Select a conversation from the left to view details
-        </p>
-      </div>
-
+      </main>
     </div>
 
-  </main>
-</div>
-
-<script src="admin-ui.js"></script>
-</body>
+    <script src="admin-ui.js"></script>
+  </body>
 </html>

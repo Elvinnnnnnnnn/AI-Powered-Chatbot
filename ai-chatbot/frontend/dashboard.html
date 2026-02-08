@@ -5,80 +5,83 @@
     <title>Dashboard | ESCR</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+    <body>
 
-<!-- TOP NAVBAR -->
-<div class="topbar">
-    <div class="topbar-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <img src="images/logo.png" class="logo">
-        <div class="title">
-            <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
-            <span>Student Portal</span>
-        </div>
-    </div>
-
-    <div class="topbar-right">
-        <div class="profile">
-            <div class="avatar">EB</div>
-            <div>
-                <strong class="student-name"></strong><br>
-                <span class="student-role"></span>
+        <!-- TOP NAVBAR -->
+        <header class="topbar modern">
+            <div class="topbar-left">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <img src="images/school-logo.jpg" class="logo">
+                <div class="title">
+                    <strong>East Systems Colleges of Rizal</strong>
+                    <span>Student Portal</span>
+                </div>
             </div>
+
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="avatar">EB</div>
+                    <div class="profile-text">
+                        <strong class="student-name"></strong>
+                        <span class="student-role"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar modern" id="sidebar">
+            <a href="dashboard.html" class="active">🏠 Dashboard</a>
+            <a href="chatbot.html">🤖 ESCR Chatbot</a>
+            <a href="class-schedule.html">📅 Class Schedule</a>
+            <a href="school-calendar.html">🗓 School Calendar</a>
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="login.html" class="logout">🚪 Logout</a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+       <div class="dashboard-container">
+
+            <!-- PROFILE SUMMARY -->
+            <section class="card profile-summary">
+                <div class="avatar xl">EB</div>
+                <h2 class="student-name"></h2>
+                <p class="student-role"></p>
+                <span class="status-badge">Active Student</span>
+            </section>
+
+            <!-- VISION -->
+            <section class="card wide">
+                <h3>🎯 Vision</h3>
+                <p>
+                    A top academic institution that produces graduates equipped with
+                    knowledge, skills, and values to become highly competent,
+                    values-driven individuals.
+                </p>
+            </section>
+
+            <!-- MISSION -->
+            <section class="card wide">
+                <h3>🚀 Mission</h3>
+                <p>
+                    To ensure quality instruction for the holistic development of
+                    Easternians committed to professionalism and excellence in
+                    local, national, and global communities.
+                </p>
+            </section>
+
         </div>
-    </div>
-</div>
 
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-    <a href="dashboard.html">Home</a>
-    <a href="chatbot.html">ESCR Chatbot</a>
-    <a href="class-schedule.html">Class Schedule</a>
-    <a href="school-calendar.html">School Calendar</a>
-    <a href="settings.html">Settings</a>
-    <a href="login.html">Logout</a>
-</div>
+        <script src="script.js"></script>
 
-<!-- MAIN CONTENT -->
-<div class="content">
-    <div class="profile-card">
-        <div class="avatar large">EB</div>
-        <strong class="student-name"></strong>
-        <span class="student-role"></span>
-    </div>
-
-    <div class="info-card">
-        <h2>VISION</h2>
-        <p>
-            A top academic institution that will produce graduates equipped
-            with the knowledge, skills and values that will enable them to
-            become values-driven and highly competent individuals.
-        </p>
-    </div>
-
-    <div class="info-card">
-        <h2>MISSION</h2>
-        <p>
-            To ensure quality instruction for the total development of
-            Easternians committed in practicing professionalism and in
-            meeting the demands of local, national and global communities.
-        </p>
-    </div>
-</div>
-
-<script src="script.js"></script>
-</body>
-
-<script>
+    <script>
     function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("show");
-}
+        document.getElementById("sidebar").classList.toggle("show");
+    }
 
-</script>
-<script>
     requireLogin();
-</script>
-<script>
     loadUserInfo();
-</script>
+    </script>
+
+    </body>
 </html>

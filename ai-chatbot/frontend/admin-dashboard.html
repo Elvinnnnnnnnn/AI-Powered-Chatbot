@@ -3,21 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard | ESCR</title>
-  <link rel="stylesheet" href="admin-style.css">
+  <link rel="stylesheet" href="css/admin-dashboard-ui.css">
 </head>
-<!-- TOP NAVBAR (reuse same layout) -->
-<div class="topbar">
-    <div class="topbar-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
-    </div>
-    <div class="topbar-right">
-        <strong class="student-name"></strong><br>
-        <span class="student-role"></span>
-    </div>
-</div>
 
 <body class="admin-body">
+
+    <!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LAYOUT ================= -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <ul class="menu">
+    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+      Dashboard
+    </li>
+    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+      Conversation Logs
+    </li>
+    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+      Knowledge Base
+    </li>
+    <li data-page="users" onclick="goTo('admin-user-management.html')">
+      User Management
+    </li>
+    <li data-page="analytics" onclick="goTo('admin-analytics.html')">
+      Analytics
+    </li>
+    <li data-page="settings" onclick="goTo('admin-settings.html')">
+      Settings
+    </li>
+  </ul>
+
+    <button class="logout-btn">Logout</button>
+  </aside>
 
 <!-- 🔒 ADMIN AUTH CHECK -->
 <script>
@@ -29,35 +69,6 @@
 
 <div class="admin-layout">
 
-  <!-- SIDEBAR -->
-  <aside class="admin-sidebar">
-  <h2 class="logo">ESCR</h2>
-
-  <ul class="menu">
-    <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
-      Dashboard
-    </li>
-    <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
-      Conversation Logs
-    </li>
-    <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
-      Knowledge Base
-    </li>
-    <li data-page="users">
-      User Management
-    </li>
-    <li data-page="analytics">
-      Analytics
-    </li>
-    <li data-page="settings">
-      Settings
-    </li>
-  </ul>
-
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</aside>
-
-
   <!-- MAIN CONTENT -->
   <main class="admin-content">
 
@@ -67,48 +78,44 @@
         <h1>Admin Dashboard</h1>
         <p>Monitor chatbot performance and system analytics.</p>
       </div>
-      <div class="admin-user">
-        <span>Joel Mariano</span>
-        <div class="avatar">A</div>
-      </div>
     </header>
 
     <!-- STATS -->
     <section class="stats-grid">
       <div class="stat-card">
         <h4>Total Queries</h4>
-        <h2>765</h2>
-        <span class="green">↑ 12% from last week</span>
+        <h2 id="statTotalQueries">—</h2>
+        <span id="chgTotal" class="green">—</span>
       </div>
 
       <div class="stat-card">
         <h4>Resolved Queries</h4>
-        <h2>489</h2>
-        <span class="green">↑ 8% from last week</span>
+        <h2 id="statResolved">—</h2>
+        <span id="chgResolved" class="green">—</span>
       </div>
 
       <div class="stat-card">
         <h4>Escalated Queries</h4>
-        <h2>125</h2>
-        <span class="red">↑ 5% from last week</span>
+        <h2 id="statEscalated">—</h2>
+        <span id="chgEscalated" class="green">—</span>
       </div>
 
       <div class="stat-card">
         <h4>Active Users</h4>
-        <h2>349</h2>
-        <span class="green">↑ 15% from last week</span>
+        <h2 id="statUsers">—</h2>
+        <span id="chgUsers" class="green">—</span>
       </div>
 
       <div class="stat-card">
         <h4>Average Response Time</h4>
-        <h2>2.3s</h2>
-        <span class="green">↓ 0.5s faster</span>
+        <h2 id="statAvgTime">—</h2>
+        <span id="chgAvgTime">—</span>
       </div>
 
       <div class="stat-card">
         <h4>Satisfaction Rate</h4>
-        <h2>87.3%</h2>
-        <span class="green">↑ 3% from last week</span>
+        <h2 id="statSatisfaction">—</h2>
+         <span id="chgSatisfaction" class="green">—</span>
       </div>
     </section>
 
@@ -123,16 +130,7 @@
         </div>
 
         <ul class="question-list">
-          <li>
-            <span class="badge">1</span>
-            What are the enrollment requirements?
-            <small>Enrollment · 156 times</small>
-          </li>
-          <li>
-            <span class="badge">2</span>
-            How do I check my grades?
-            <small>Grades · 76 times</small>
-          </li>
+          
         </ul>
       </div>
 
@@ -145,13 +143,9 @@
 
         <ul class="activity-list">
           <li>
-            <strong>Valerie Teston</strong>
-            <span>Asked about enrollment deadline</span>
             <span class="status resolved">resolved</span>
           </li>
           <li>
-            <strong>Arjayzon Mata</strong>
-            <span>Inquiry about scholarship</span>
             <span class="status resolved">resolved</span>
           </li>
         </ul>

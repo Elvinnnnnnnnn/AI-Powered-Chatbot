@@ -4,36 +4,39 @@
   <meta charset="UTF-8">
   <title>Knowledge Base | Admin</title>
   <link rel="stylesheet" href="admin-style.css">
-</head>
 
-<!-- TOP NAVBAR (reuse same layout) -->
-<div class="topbar">
-    <div class="topbar-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
-    </div>
-    <div class="topbar-right">
-        <strong class="student-name"></strong><br>
-        <span class="student-role"></span>
-    </div>
-</div>
+</head>
 
 <body class="admin-body">
 
-<!-- 🔒 ADMIN CHECK -->
-<script>
-  if (!localStorage.getItem("admin")) {
-    window.location.href = "admin-login.html";
-  }
-</script>
+  <!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
 
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LAYOUT ================= -->
 <div class="admin-layout">
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
-  <h2 class="logo">ESCR</h2>
-
-  <ul class="menu">
+    <ul class="menu">
     <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
       Dashboard
     </li>
@@ -43,20 +46,28 @@
     <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
       Knowledge Base
     </li>
-    <li data-page="users">
+    <li data-page="users" onclick="goTo('admin-user-management.html')">
       User Management
     </li>
-    <li data-page="analytics">
+    <li data-page="analytics" onclick="goTo('admin-analytics.html')">
       Analytics
     </li>
-    <li data-page="settings">
+    <li data-page="settings" onclick="goTo('admin-settings.html')">
       Settings
     </li>
   </ul>
 
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</aside>
+    <button class="logout-btn">Logout</button>
+  </aside>
 
+<!-- 🔒 ADMIN CHECK -->
+<script>
+  if (!localStorage.getItem("admin")) {
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<div class="admin-layout">
 
   <!-- CONTENT -->
   <main class="admin-content">
@@ -82,16 +93,20 @@
     <div class="kb-filters">
 
       <div class="kb-search">
+        <span class="search-icon">🔍</span>
         <input
-            type="text"
-            placeholder="Search Knowledge Base..."
-            oninput="handleSearch(this.value)"
-          >
+          type="text"
+          placeholder="Search Knowledge Base..."
+          oninput="handleSearch(this.value)"
+        >
       </div>
 
-      <div class="kb-categories" id="kbCategories"></div>
+      <div class="kb-categories" id="kbCategories">
+        <!-- buttons injected by JS -->
+      </div>
 
     </div>
+
 
 
     <!-- ENTRY LIST -->
@@ -104,74 +119,73 @@
 
     <!-- MODAL -->
     <div class="modal" id="kbModal">
-    <form class="modal-content" onsubmit="saveKnowledgeBase(event)">
-        <h2>Add New Entry</h2>
+      <div class="modal-dialog">
 
-        <label>Category</label>
-      <select id="kbCategory">
-          <option>Enrollment</option>
-          <option>Grades</option>
-          <option>Finance</option>
-          <option>Scholarship</option>
-          <option>Schedule</option>
-          <option>Academic</option>
-        </select>
+        <!-- HEADER -->
+        <div class="modal-header">
+          <h2>Add New Entry</h2>
+          <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
 
-        <label>Category Answer (shown when category is clicked)</label>
-        <textarea
-          id="kbCategoryAnswer"
-          placeholder="This answer will be shown immediately when the category is selected"
-          rows="4"
-        ></textarea>
+        <!-- BODY (SCROLLS) -->
+        <form class="modal-body" onsubmit="saveKnowledgeBase(event)">
 
-        <hr style="margin: 20px 0;">
+          <label>Category</label>
+          <select id="kbCategory">
+            <option>Enrollment</option>
+            <option>Grades</option>
+            <option>Finance</option>
+            <option>Scholarship</option>
+            <option>Schedule</option>
+            <option>Academic</option>
+          </select>
 
-        <label>Questions & Answers</label>
+          <label>Category Answer</label>
+          <textarea
+            id="kbCategoryAnswer"
+            rows="4"
+            placeholder="Shown when category is selected"
+          ></textarea>
 
+          <hr>
 
-    <div id="qaContainer">
+          <label>Questions & Answers</label>
 
-      <div class="qa-block">
-        <input
-          type="text"
-          class="kb-question"
-          placeholder="Enter question"
-          required
-        >
+          <div id="qaContainer">
+            <div class="qa-block">
+              <input type="text" class="kb-question" placeholder="Enter question" required>
+              <textarea class="kb-answer" placeholder="Enter answer" required></textarea>
+            </div>
+          </div>
 
-        <textarea
-          class="kb-answer"
-          placeholder="Enter answer"
-          required
-        ></textarea>
+          <button type="button" class="add-question-btn" onclick="addQuestionBlock()">
+            + Add another question
+          </button>
+
+          <label class="status-label">Status</label>
+
+          <div class="status-options">
+            <label class="status-option">
+              <input type="radio" name="kbStatus" value="active" checked>
+              Active
+            </label>
+
+            <label class="status-option">
+              <input type="radio" name="kbStatus" value="draft">
+              Draft
+            </label>
+          </div>
+
+          <!-- FOOTER -->
+          <div class="modal-footer">
+            <button type="button" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Add Entry</button>
+          </div>
+
+        </form>
       </div>
-
     </div>
 
-    <button
-      type="button"
-      class="add-question-btn"
-      onclick="addQuestionBlock()"
-    >
-      + Add another question
-    </button>
-
-    <label>Status</label>
-    <div class="radio-group">
-      <label>
-        <input type="radio" name="kbStatus" value="active" checked> Active
-      </label>>
-      <label>
-        <input type="radio" name="kbStatus" value="draft"> Draft
-      </label>
-    </div>
-
-    <div class="modal-actions">
-      <button type="button" onclick="closeModal()">Cancel</button>
-      <button type="submit" class="btn-primary">Add Entry</button>
-    </div>
-
-  </div>
 </div>
 
 <script src="admin-ui.js"></script>

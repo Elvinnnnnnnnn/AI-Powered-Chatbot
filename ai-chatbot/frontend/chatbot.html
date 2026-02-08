@@ -1,76 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ESCR Chatbot</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>ESCR Chatbot</title>
 
-    
-<div class="topbar">
-    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-    <strong>Class Schedule</strong>
-</div>
+        <!-- GLOBAL STYLES -->
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
 
+        <div class="layout">
 
-        <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <a href="dashboard.html">Home</a>
-        <a href="chatbot.html">ESCR Chatbot</a>
-        <a href="class-schedule.html">Class Schedule</a>
-        <a href="school-calendar.html">School Calendar</a>
-        <a href="settings.html">Settings</a>
-        <a href="login.html">Logout</a>
-    </div>
+            <!-- TOP NAVBAR -->
+            <header class="topbar modern">
+                <div class="topbar-left">
+                    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                    <img src="images/school-logo.jpg" class="logo">
+                    <div class="title">
+                        <strong>East Systems Colleges of Rizal</strong>
+                        <span>Student Portal</span>
+                    </div>
+                </div>
 
-    <!-- CHATBOT CONTENT -->
-    <div class="main-content">
+                <div class="topbar-right">
+                    <div class="profile">
+                        <div class="avatar">EB</div>
+                        <div class="profile-text">
+                            <strong class="student-name"></strong>
+                            <span class="student-role"></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-    <div class="chat-container">
+            <!-- SIDEBAR -->
+            <aside class="sidebar modern" id="sidebar">
+                <a href="dashboard.html">🏠 Dashboard</a>
+                <a href="chatbot.html" class="active">🤖 ESCR Chatbot</a>
+                <a href="class-schedule.html">📅 Class Schedule</a>
+                <a href="school-calendar.html">🗓 School Calendar</a>
+                <a href="settings.html">⚙️ Settings</a>
+                <a href="login.html" class="logout">🚪 Logout</a>
+            </aside>
 
-        <!-- MESSAGES -->
-        <div class="chat-box" id="chatBox">
+            <!-- MAIN CONTENT -->
+            <div class="main-content">
+
+                <!-- 🔴 RED CHAT WRAPPER (LIKE CALENDAR) -->
+                <div class="chat-red">
+
+                    <!-- ⚪ WHITE CHAT CARD -->
+                    <div class="chat-container">
+
+                        <!-- CHAT MESSAGES -->
+                        <div class="chat-box" id="chatBox"></div>
+
+                        <!-- CATEGORY BUTTONS -->
+                        <div class="quick-actions" id="categoryActions"></div>
+
+                        <!-- INPUT BAR -->
+                        <div class="chat-input">
+                            <input
+                                type="text"
+                                id="userMessage"
+                                placeholder="Type your message..."
+                            >
+                            <button onclick="sendMessage()">Send</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
 
         </div>
 
-        <!-- QUICK ACTIONS -->
-        <div class="quick-actions" id="categoryActions">
-        <!-- categories will load here -->
-        </div>
+        <script src="script.js"></script>
 
+        <script>
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("show");
+            }
 
-        <!-- INPUT -->
-        <div class="chat-input">
-            <input type="text" id="userMessage" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+            document.addEventListener("DOMContentLoaded", () => {
+                requireLogin();
 
-    </div>
+                sessionStorage.removeItem("activeCategory");
+                isInCategoryFlow = false;
 
-</div>
+                loadCategories();
+                loadChatHistory();
+                setInterval(loadChatHistory, 5000);
+            });
+        </script>
 
-</div>
-
-</body>
-<script src="script.js"></script>
-
-<script>
-function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("show");
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    requireLogin();
-
-    sessionStorage.removeItem("activeCategory");
-    isInCategoryFlow = false;
-
-    loadCategories();
-    loadChatHistory();
-
-    setInterval(loadChatHistory, 5000);
-});
-</script>
-
+    </body>
 </html>

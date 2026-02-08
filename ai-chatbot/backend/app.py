@@ -3,6 +3,7 @@ from flask_cors import CORS
 from db import get_db_connection
 import hashlib
 import mysql.connector
+import time
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -174,6 +175,8 @@ def get_calendar():
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    start_time = time.time()  # ⏱ start timing
+
     data = request.json
     user_id = data.get("user_id")
     message = data.get("message")
@@ -182,48 +185,60 @@ def chat():
     cursor = db.cursor(dictionary=True)
 
     # 1️⃣ Search Knowledge Base
-    query = """
+    cursor.execute("""
         SELECT answer
         FROM knowledge_base
         WHERE status = 'active'
         AND question LIKE %s
         LIMIT 1
-    """
-    cursor.execute(query, (f"%{message}%",))
+    """, (f"%{message}%",))
     result = cursor.fetchone()
 
-    # 2️⃣ Decide reply & status
-    if result:
-        reply = result["answer"]
-        status = "resolved"
-    else:
-        reply = (
-            "I'm sorry, I couldn't find an answer to your question.\n\n"
-            "Your concern has been escalated.\n"
-            f"Ticket No: #{chat_id}"
-        )
-        status = "escalated"
+    # 2️⃣ Decide status
+    status = "resolved" if result else "escalated"
 
-    # 3️⃣ Save conversation
-    insert_query = """
-        INSERT INTO chats (user_id, user_message, bot_reply, status)
-        VALUES (%s, %s, %s, %s)
-    """
-    cursor.execute(insert_query, (user_id, message, reply, status))
+    # 3️⃣ Reply
+    reply = result["answer"] if result else (
+        "I'm sorry, I couldn't find an answer to your question.\n"
+        "Your concern has been escalated."
+    )
+
+    # ⏱ stop timing
+    end_time = time.time()
+    response_time = round((end_time - start_time) * 1000, 2)
+
+    # 4️⃣ Save conversation WITH response time
+    cursor.execute("""
+        INSERT INTO chats (user_id, user_message, bot_reply, status, response_time)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (user_id, message, reply, status, response_time))
     db.commit()
 
     chat_id = cursor.lastrowid
 
+    # 5️⃣ Escalation ticket update
+    if status == "escalated":
+        reply = (
+            "I'm sorry, I couldn't find an answer to your question.\n\n"
+            f"Your concern has been escalated.\n"
+            f"Ticket No: #{chat_id}"
+        )
+
+        cursor.execute("""
+            UPDATE chats
+            SET bot_reply = %s
+            WHERE id = %s
+        """, (reply, chat_id))
+        db.commit()
+
     cursor.close()
     db.close()
 
-    # 4️⃣ Send reply back to chatbot
     return jsonify({
         "reply": reply,
         "status": status,
-        "chat_id": chat_id   # 👈 ADD THIS
+        "chat_id": chat_id
     })
-
 
 @app.route("/chat/history/<int:user_id>")
 def chat_history(user_id):
@@ -627,6 +642,158 @@ def chat_category():
         "reply": category_answer,
         "chat_id": chat_id
     })
+
+@app.route("/api/admin/dashboard-stats", methods=["GET"])
+def dashboard_stats():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    def weekly_count(where="1=1"):
+        cursor.execute(f"""
+            SELECT COUNT(*) AS count
+            FROM chats
+            WHERE {where}
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        """)
+        return cursor.fetchone()["count"]
+
+    def last_week_count(where="1=1"):
+        cursor.execute(f"""
+            SELECT COUNT(*) AS count
+            FROM chats
+            WHERE {where}
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 14 DAY)
+            AND created_at < DATE_SUB(NOW(), INTERVAL 7 DAY)
+        """)
+        return cursor.fetchone()["count"]
+
+    def calc_change(this_week, last_week):
+        if last_week == 0:
+            return 100 if this_week > 0 else 0
+        return round(((this_week - last_week) / last_week) * 100, 1)
+
+    # TOTAL
+    cursor.execute("SELECT COUNT(*) AS total FROM chats")
+    total = cursor.fetchone()["total"]
+    total_change = calc_change(
+        weekly_count(),
+        last_week_count()
+    )
+
+    # RESOLVED
+    cursor.execute("SELECT COUNT(*) AS resolved FROM chats WHERE status='resolved'")
+    resolved = cursor.fetchone()["resolved"]
+    resolved_change = calc_change(
+        weekly_count("status='resolved'"),
+        last_week_count("status='resolved'")
+    )
+
+    # ESCALATED
+    cursor.execute("SELECT COUNT(*) AS escalated FROM chats WHERE status='escalated'")
+    escalated = cursor.fetchone()["escalated"]
+    escalated_change = calc_change(
+        weekly_count("status='escalated'"),
+        last_week_count("status='escalated'")
+    )
+
+    # USERS
+    cursor.execute("SELECT COUNT(DISTINCT user_id) AS users FROM chats")
+    users = cursor.fetchone()["users"]
+    users_change = calc_change(
+        weekly_count("1=1"),
+        last_week_count("1=1")
+    )
+
+    # SATISFACTION
+    cursor.execute("""
+        SELECT
+            SUM(feedback='yes') AS yes_count,
+            COUNT(feedback) AS total_count
+        FROM chats
+        WHERE feedback IS NOT NULL
+    """)
+    row = cursor.fetchone()
+
+    satisfaction = (
+        round((row["yes_count"] / row["total_count"]) * 100, 1)
+        if row["total_count"] > 0 else 0
+    )
+
+    # ---------- AVG RESPONSE TIME ----------
+    cursor.execute("""
+        SELECT AVG(response_time) AS avg_time
+        FROM chats
+        WHERE response_time IS NOT NULL
+    """)
+    avg_time = cursor.fetchone()["avg_time"]
+    avg_time = round(avg_time, 3) if avg_time else 0
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "total": total,
+        "total_change": total_change,
+        "resolved": resolved,
+        "resolved_change": resolved_change,
+        "escalated": escalated,
+        "escalated_change": escalated_change,
+        "users": users,
+        "users_change": users_change,
+        "avg_time": avg_time,          # ✅ REAL VALUE
+        "avg_change": 0,               # ✅ TEMP (avoid NaN)
+        "satisfaction": satisfaction,
+        "satisfaction_change": 0
+    })
+
+@app.route("/api/admin/most-asked", methods=["GET"])
+def most_asked_questions():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            user_message AS question,
+            COUNT(*) AS total
+        FROM chats
+        WHERE user_message IS NOT NULL
+          AND user_message != ''
+        GROUP BY user_message
+        ORDER BY total DESC
+        LIMIT 5
+    """)
+
+    data = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(data)
+
+@app.route("/api/admin/recent-activity", methods=["GET"])
+def recent_activity():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            u.first_name,
+            u.last_name,
+            c.user_message,
+            c.status,
+            c.created_at
+        FROM chats c
+        JOIN users u ON u.id = c.user_id
+        ORDER BY c.created_at DESC
+        LIMIT 5
+    """)
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(data)
+    
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

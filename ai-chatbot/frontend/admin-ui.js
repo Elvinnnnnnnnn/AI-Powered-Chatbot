@@ -545,3 +545,165 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+function formatChange(value) {
+  const arrow = value >= 0 ? "↑" : "↓";
+  const color = value >= 0 ? "green" : "red";
+  return `<span class="${color}">${arrow} ${Math.abs(value)}% from last week</span>`;
+}
+
+function loadDashboardStats() {
+  fetch("http://127.0.0.1:5000/api/admin/dashboard-stats")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("statTotalQueries").textContent = data.total;
+      document.getElementById("statResolved").textContent = data.resolved;
+      document.getElementById("statEscalated").textContent = data.escalated;
+      document.getElementById("statUsers").textContent = data.users;
+      document.getElementById("statAvgTime").textContent = data.avg_time + " ms";
+      document.getElementById("statSatisfaction").textContent =
+      data.satisfaction === 0 ? "No data" : data.satisfaction + "%";
+
+      document.getElementById("chgTotal").innerHTML =
+        formatChange(data.total_change);
+
+      document.getElementById("chgResolved").innerHTML =
+        formatChange(data.resolved_change);
+
+      document.getElementById("chgEscalated").innerHTML =
+        formatChange(data.escalated_change);
+
+      document.getElementById("chgUsers").innerHTML =
+        formatChange(data.users_change);
+
+      if (typeof data.avg_change === "number") {
+        document.getElementById("chgAvgTime").innerHTML =
+          formatChange(data.avg_change);
+      } else {
+        document.getElementById("chgAvgTime").textContent = "—";
+      }
+
+      document.getElementById("chgSatisfaction").innerHTML =
+        formatChange(data.satisfaction_change);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.body.classList.contains("admin-body")) {
+    loadDashboardStats();
+  }
+});
+
+function loadMostAsked() {
+  fetch("http://127.0.0.1:5000/api/admin/most-asked")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.querySelector(".question-list");
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      data.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="badge">${index + 1}</span>
+          ${item.question}
+          <small>${item.total} times</small>
+        `;
+        list.appendChild(li);
+      });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadDashboardStats();
+  loadMostAsked();
+});
+
+function loadRecentActivity() {
+  fetch("http://127.0.0.1:5000/api/admin/recent-activity")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.querySelector(".activity-list");
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      data.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${item.first_name} ${item.last_name}</strong>
+          <span>${item.user_message}</span>
+          <span class="status ${item.status}">${item.status}</span>
+        `;
+        list.appendChild(li);
+      });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadDashboardStats();
+  loadMostAsked();
+  loadRecentActivity();
+});
+
+function loadMostAskedQuestions() {
+  fetch("http://127.0.0.1:5000/api/admin/most-asked")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.querySelector(".question-list");
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      data.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="badge">${index + 1}</span>
+          ${item.question}
+          <small>${item.total} times</small>
+        `;
+        list.appendChild(li);
+      });
+    })
+    .catch(err => console.error("Most Asked Error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.body.classList.contains("admin-body")) {
+    loadDashboardStats();
+    loadMostAskedQuestions(); // 👈 ADD THIS
+  }
+});
+
+function loadRecentActivity() {
+  fetch("http://127.0.0.1:5000/api/admin/recent-activity")
+    .then(res => res.json())
+    .then(data => {
+      const list = document.querySelector(".activity-list");
+      if (!list) return;
+
+      list.innerHTML = "";
+
+      data.forEach(item => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <strong>${item.first_name} ${item.last_name}</strong>
+          <span>${item.user_message}</span>
+          <span class="status ${item.status}">${item.status}</span>
+        `;
+
+        list.appendChild(li);
+      });
+    })
+    .catch(err => console.error("Recent Activity Error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.body.classList.contains("admin-body")) {
+    loadDashboardStats();
+    loadMostAskedQuestions();
+    loadRecentActivity(); // 👈 ADD THIS
+  }
+});

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin | User Management</title>
+  <link rel="stylesheet" href="css/admin-user-management.css">
+</head>
+<body class="admin-body">
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LAYOUT ================= -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <ul class="menu">
+      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+        Dashboard
+      </li>
+      <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+        Conversation Logs
+      </li>
+      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+        Knowledge Base
+      </li>
+      <li data-page="users" onclick="goTo('admin-user-management.html')">
+        User Management
+      </li>
+      <li data-page="analytics" onclick="goTo('admin-analytics.html')">
+        Analytics
+      </li>
+      <li data-page="settings" onclick="goTo('admin-settings.html')">
+        Settings
+      </li>
+    </ul>
+
+    <button class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- 🔒 ADMIN AUTH CHECK -->
+  <script>
+    const admin = localStorage.getItem("admin");
+    if (!admin) {
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-content">
+
+    <!-- HEADER -->
+    <div class="admin-header">
+      <div>
+        <h1>User Management</h1>
+        <p style="font-size:14px;color:#6b7280;">
+          Manage user accounts and permissions
+        </p>
+      </div>
+
+      <button class="btn-primary" style="border:none;">
+        + Add New User
+      </button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <small>Total Users</small>
+        <h2>835</h2>
+      </div>
+
+      <div class="stat-card">
+        <small>Students</small>
+        <h2 class="green">830</h2>
+      </div>
+
+      <div class="stat-card">
+        <small>Admins</small>
+        <h2 class="red">5</h2>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="kb-filters">
+      <div class="kb-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search by name or email...">
+      </div>
+
+      <div class="kb-categories">
+        <button class="active">All Roles</button>
+        <button>Students</button>
+        <button>Admins</button>
+      </div>
+    </div>
+
+    <!-- USERS TABLE -->
+    <div class="panel">
+      <table width="100%" cellpadding="10">
+        <thead>
+          <tr style="text-align:left;font-size:13px;color:#6b7280;">
+            <th>User</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last Active</th>
+            <th>Joined Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>
+              <strong>Maria Santos</strong><br>
+              <small>maria.santos@gmail.com</small>
+            </td>
+            <td><span class="tag enrollment">Student</span></td>
+            <td><span class="status resolved">Active</span></td>
+            <td>2 mins ago</td>
+            <td>2025-08-15</td>
+            <td>✏️ 🗑️</td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Juan Dela Cruz</strong><br>
+              <small>juandelacruz@gmail.com</small>
+            </td>
+            <td><span class="tag enrollment">Student</span></td>
+            <td><span class="status resolved">Active</span></td>
+            <td>5 mins ago</td>
+            <td>2025-06-10</td>
+            <td>✏️ 🗑️</td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Joel Mariano</strong><br>
+              <small>joelmariano@gmail.com</small>
+            </td>
+            <td><span class="tag grades">Admin</span></td>
+            <td><span class="status resolved">Active</span></td>
+            <td>1 hour ago</td>
+            <td>2025-08-15</td>
+            <td>✏️ 🗑️</td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Miguel Torres</strong><br>
+              <small>torresmiguel@gmail.com</small>
+            </td>
+            <td><span class="tag enrollment">Student</span></td>
+            <td><span class="status incorrect">Inactive</span></td>
+            <td>10 mins ago</td>
+            <td>2025-01-01</td>
+            <td>✏️ 🗑️</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- ✅ ONLY FIX: ADD THIS -->
+<script>
+  function goTo(page) {
+    window.location.href = page;
+  }
+</script>
+
+</body>
+</html>

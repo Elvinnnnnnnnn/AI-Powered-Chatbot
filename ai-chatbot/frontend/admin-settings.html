@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin | System Settings</title>
+  <link rel="stylesheet" href="css/admin-settings.css">
+</head>
+<body class="admin-body">
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn">☰</button>
+    <img src="images/escr-logo.png" class="logo">
+    <div class="title">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong><br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <div class="avatar">A</div>
+      <div>
+        <strong>Joel Mariano</strong><br>
+        <span class="role">Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LAYOUT ================= -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <ul class="menu">
+      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
+        Dashboard
+      </li>
+      <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
+        Conversation Logs
+      </li>
+      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
+        Knowledge Base
+      </li>
+      <li data-page="users" onclick="goTo('admin-user-management.html')">
+        User Management
+      </li>
+      <li data-page="analytics" onclick="goTo('admin-analytics.html')">
+        Analytics
+      </li>
+      <li data-page="settings" onclick="goTo('admin-settings.html')">
+        Settings
+      </li>
+    </ul>
+
+    <button class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- 🔒 ADMIN AUTH CHECK -->
+  <script>
+    const admin = localStorage.getItem("admin");
+    if (!admin) {
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <!-- HEADER -->
+    <div class="settings-header">
+      <h1>System Settings</h1>
+      <p>Configure chatbot behavior and system preferences</p>
+    </div>
+
+    <!-- SETTINGS CARD -->
+    <div class="settings-card">
+
+      <!-- TABS -->
+      <div class="settings-tabs">
+        <button class="tab active" data-tab="general">⚙ General</button>
+        <button class="tab" data-tab="chatbot">🤖 Chatbot Configuration</button>
+      </div>
+
+      <!-- ================= GENERAL ================= -->
+      <div class="settings-section tab-content active" id="general">
+
+        <h3>General Settings</h3>
+
+        <label>System Name</label>
+        <input type="text" value="ESCR Academic Chatbot">
+
+        <label>Institution Name</label>
+        <input type="text" value="East Systems Colleges of Rizal">
+
+        <label>Time Zone</label>
+        <select>
+          <option>Asia/Manila (GMT +8)</option>
+          <option>UTC</option>
+        </select>
+
+        <div class="maintenance">
+          <div>
+            <strong>Enable System Maintenance Mode</strong>
+            <p>Temporarily disable chatbot for maintenance</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- ================= CHATBOT ================= -->
+      <div class="settings-section tab-content" id="chatbot">
+
+        <h3>Chatbot Configuration</h3>
+
+        <label>System Name</label>
+        <input type="text" value="ESCR Academic Chatbot">
+
+        <label>Welcome Message</label>
+        <input type="text"
+          value="Hello! I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?">
+
+        <label>Fallback Message</label>
+        <input type="text"
+          value="I'm sorry, I don't have information about that. Would you like me to escalate your message to the admin?">
+
+        <label>Confidence Threshold</label>
+        <div class="slider-row">
+          <input type="range" min="0" max="100" value="75"
+            oninput="this.nextElementSibling.textContent=this.value+'%'">
+          <span>75%</span>
+        </div>
+        <p class="hint">Minimum confidence level before escalating to admin</p>
+
+        <div class="maintenance">
+          <div>
+            <strong>Enable Auto-Escalation</strong>
+            <p>Automatically forward low-confidence queries to staff</p>
+          </div>
+
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="settings-footer">
+        <button class="btn-cancel">Cancel</button>
+        <button class="btn-save">Save Changes</button>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- TAB SCRIPT -->
+<script>
+  const tabs = document.querySelectorAll(".tab");
+  const contents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      contents.forEach(c => c.classList.remove("active"));
+
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+    });
+  });
+</script>
+
+<!-- ✅ ONLY FIX ADDED -->
+<script>
+  function goTo(page) {
+    window.location.href = page;
+  }
+</script>
+
+</body>
+</html>

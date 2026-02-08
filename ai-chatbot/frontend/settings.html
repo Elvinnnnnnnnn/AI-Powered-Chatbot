@@ -11,30 +11,40 @@
     requireLogin();
 </script>
 
-<!-- TOP NAVBAR (reuse same layout) -->
-<div class="topbar">
-    <div class="topbar-left">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
-    </div>
-    <div class="topbar-right">
-        <strong class="student-name"></strong><br>
-        <span class="student-role"></span>
-    </div>
-</div>
+<div class="layout">
 
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-    <a href="dashboard.html">Home</a>
-    <a href="chatbot.html">ESCR Chatbot</a>
-    <a href="class-schedule.html">Class Schedule</a>
-    <a href="school-calendar.html">School Calendar</a>
-    <a href="settings.html">Settings</a>
-    <a href="login.html">Logout</a>
-</div>
+                    <!-- TOP NAVBAR -->
+                    <header class="topbar modern">
+                        <div class="topbar-left">
+                            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                            <img src="images/school-logo.jpg" class="logo">
+                            <div class="title">
+                                <strong>East Systems Colleges of Rizal</strong>
+                                <span>Student Portal</span>
+                            </div>
+                        </div>
 
+                        <div class="topbar-right">
+                            <div class="profile">
+                                <div class="avatar">EB</div>
+                                <div class="profile-text">
+                                    <strong class="student-name"></strong>
+                                    <span class="student-role"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
 
-        <!-- CONTENT -->
+                        <!-- SIDEBAR -->
+                        <aside class="sidebar modern" id="sidebar">
+                            <a href="dashboard.html">🏠 Dashboard</a>
+                            <a href="chatbot.html" class="active">🤖 ESCR Chatbot</a>
+                            <a href="class-schedule.html">📅 Class Schedule</a>
+                            <a href="school-calendar.html">🗓 School Calendar</a>
+                            <a href="settings.html">⚙️ Settings</a>
+                            <a href="login.html" class="logout">🚪 Logout</a>
+                        </aside>
+ <!-- CONTENT -->
        <div class="content-single">
 
             <div class="settings-card">
@@ -147,6 +157,13 @@
 
             </div>
         </div>
+
+            </div>
+
+        </div>
+
+
+       
 
 
 <script src="script.js"></script>
