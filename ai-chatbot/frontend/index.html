@@ -1,45 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ESCR Chatbot</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>ESCR Chatbot</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
-<!-- HERO SECTION -->
+<!-- ================= HEADER ================= -->
+<header class="top-nav">
+  <div class="nav-left">
+    <img src="images/school-logo-removebg-preview.png" class="nav-logo">
+    <div class="nav-title">
+      <strong>ESCR Chatbot</strong>
+      <span>East Systems Colleges of Rizal</span>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <a href="login.html" class="nav-btn student">Student</a>
+    <a href="admin-login.html" class="nav-btn admin">Admin</a>
+  </div>
+</header>
+
+<!-- ================= HERO SECTION ================= -->
 <section class="hero">
+
+  <div class="hero-text">
     <h1>AI-Powered Academic Assistant</h1>
     <p>
-        Get instant answers to your academic questions 24/7.
-        Our intelligent chatbot helps students with enrollment,
-        grades, schedules, and more.
+      Get instant answers to your academic questions 24/7.
+      Our intelligent chatbot helps students with enrollment,
+      grades, schedules, and more.
     </p>
+  </div>
 
-    <div class="buttons">
-        <a href="login.html" class="btn primary">Start Chatting</a>
-        <a href="#" class="btn secondary">Learn More</a>
+  <div class="hero-buttons">
+    <a href="#" class="btn primary">Start Chatting</a>
+    <a href="#" class="btn secondary">Learn More</a>
+  </div>
+
+  <div class="hero-chat">
+    <div class="chat-frame">
+      <div class="chat-msg bot">
+        <span class="bot-icon">🤖</span>
+        <div class="bubble">Hello! How can I help you today?</div>
+      </div>
+
+      <div class="chat-msg user">
+        <div class="bubble">What are the enrollment requirements?</div>
+        <span class="user-icon">👤</span>
+      </div>
+
+      <div class="chat-msg bot">
+        <span class="bot-icon">🤖</span>
+        <div class="bubble">
+          For enrollment, you will need Form 138,
+          Certificate of Good Moral Certificate...
+        </div>
+      </div>
     </div>
+  </div>
+
 </section>
 
-<!-- FEATURES -->
+<!-- ================= KEY FEATURES SECTION ================= -->
 <section class="features">
-    <h2>Key Features</h2>
-    <p>Everything you need for academic support.</p>
 
-    <div class="feature-grid">
-        <div class="card">24/7 Availability</div>
-        <div class="card">Smart Responses</div>
-        <div class="card">Human Escalation</div>
-        <div class="card">Knowledge Base</div>
-        <div class="card">Analytics Dashboard</div>
-        <div class="card">Secure & Reliable</div>
+  <h2>Key Features</h2>
+  <p class="features-sub">
+    Everything you need for academic support.
+  </p>
+
+  <div class="features-grid">
+
+    <div class="feature-card blue">
+      <div class="icon">💬</div>
+      <h3>24/7 Availability</h3>
+      <p>
+        Get instant answers to your questions anytime, anywhere.
+        No waiting for office hours.
+      </p>
     </div>
+
+    <div class="feature-card purple">
+      <div class="icon">🧠</div>
+      <h3>Smart Responses</h3>
+      <p>
+        AI-powered chatbot trained on academic policies
+        and frequently asked questions.
+      </p>
+    </div>
+
+    <div class="feature-card green">
+      <div class="icon">👤</div>
+      <h3>Human Escalation</h3>
+      <p>
+        Complex queries are automatically forwarded to staff
+        members for personalized assistance.
+      </p>
+    </div>
+
+    <div class="feature-card orange">
+      <div class="icon">📘</div>
+      <h3>Knowledge Base</h3>
+      <p>
+        Comprehensive database of enrollment, grades,
+        scholarships, and academic policies.
+      </p>
+    </div>
+
+    <div class="feature-card lime">
+      <div class="icon">📊</div>
+      <h3>Analytics Dashboard</h3>
+      <p>
+        Track performance, monitor queries, and improve
+        responses with detailed analytics.
+      </p>
+    </div>
+
+    <div class="feature-card red">
+      <div class="icon">🔒</div>
+      <h3>Secure & Reliable</h3>
+      <p>
+        Your data is protected with enterprise-grade
+        security and privacy measures.
+      </p>
+    </div>
+
+  </div>
+
 </section>
 
-<!-- FOOTER -->
-<footer>
-    <p>© 2025 East Systems Colleges of Rizal. All rights reserved.</p>
+<!-- ================= CALL TO ACTION ================= -->
+<section class="cta">
+
+  <h2>Ready to get started?</h2>
+  <p>
+    Experience the future of academic support with our AI-powered
+    chatbot system.
+  </p>
+
+  <a href="#" class="cta-btn">Click here</a>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+
+  <div class="footer-grid">
+
+    <div>
+      <h3>ESCR Chatbot System</h3>
+      <p>
+        AI-powered academic assistant for East
+        Systems Colleges of Rizal students.
+      </p>
+    </div>
+
+    <div>
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="#">Student Portal</a></li>
+        <li><a href="#">Admin Portal</a></li>
+        <li><a href="#">Features</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Contacts</h3>
+      <p>East Systems Colleges of Rizal</p>
+      <p>Morong, Rizal</p>
+      <p>+639-000-000-0000</p>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2025 East Systems Colleges of Rizal. All rights reserved.
+  </div>
+
 </footer>
 
 </body>
