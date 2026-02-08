@@ -5,7 +5,8 @@
   <title>Admin | User Management</title>
   <link rel="stylesheet" href="css/admin-user-management.css">
 </head>
-<body class="admin-body">
+
+<body class="admin-body users-page">
 
 <!-- ================= TOPBAR ================= -->
 <div class="topbar">
@@ -35,27 +36,15 @@
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <ul class="menu">
-      <li data-page="dashboard" onclick="goTo('admin-dashboard.html')">
-        Dashboard
-      </li>
-      <li data-page="logs" onclick="goTo('admin-conversation-logs.html')">
-        Conversation Logs
-      </li>
-      <li data-page="kb" onclick="goTo('admin-knowledge-base.html')">
-        Knowledge Base
-      </li>
-      <li data-page="users" onclick="goTo('admin-user-management.html')">
-        User Management
-      </li>
-      <li data-page="analytics" onclick="goTo('admin-analytics.html')">
-        Analytics
-      </li>
-      <li data-page="settings" onclick="goTo('admin-settings.html')">
-        Settings
-      </li>
+      <li onclick="goTo('admin-dashboard.html')">Dashboard</li>
+      <li onclick="goTo('admin-conversation-logs.html')">Conversation Logs</li>
+      <li onclick="goTo('admin-knowledge-base.html')">Knowledge Base</li>
+      <li class="active">User Management</li>
+      <li onclick="goTo('admin-analytics.html')">Analytics</li>
+      <li onclick="goTo('admin-settings.html')">Settings</li>
     </ul>
 
-    <button class="logout-btn">Logout</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </aside>
 
   <!-- 🔒 ADMIN AUTH CHECK -->
@@ -78,26 +67,24 @@
         </p>
       </div>
 
-      <button class="btn-primary" style="border:none;">
-        + Add New User
-      </button>
+      <button class="btn-primary">+ Add New User</button>
     </div>
 
-    <!-- STATS -->
+    <!-- STATS (can be wired later) -->
     <div class="stats-grid">
       <div class="stat-card">
         <small>Total Users</small>
-        <h2>835</h2>
+        <h2 id="statUsersTotal">—</h2>
       </div>
 
       <div class="stat-card">
         <small>Students</small>
-        <h2 class="green">830</h2>
+        <h2 class="green" id="statStudents">—</h2>
       </div>
 
       <div class="stat-card">
         <small>Admins</small>
-        <h2 class="red">5</h2>
+        <h2 class="red" id="statAdmins">—</h2>
       </div>
     </div>
 
@@ -109,10 +96,11 @@
       </div>
 
       <div class="kb-categories">
-        <button class="active">All Roles</button>
-        <button>Students</button>
-        <button>Admins</button>
-      </div>
+        <button class="active" data-role="all">All Roles</button>
+        <button data-role="student">Students</button>
+        <button data-role="admin">Admins</button>
+    </div>
+
     </div>
 
     <!-- USERS TABLE -->
@@ -129,67 +117,14 @@
           </tr>
         </thead>
 
-        <tbody>
-          <tr>
-            <td>
-              <strong>Maria Santos</strong><br>
-              <small>maria.santos@gmail.com</small>
-            </td>
-            <td><span class="tag enrollment">Student</span></td>
-            <td><span class="status resolved">Active</span></td>
-            <td>2 mins ago</td>
-            <td>2025-08-15</td>
-            <td>✏️ 🗑️</td>
-          </tr>
-
-          <tr>
-            <td>
-              <strong>Juan Dela Cruz</strong><br>
-              <small>juandelacruz@gmail.com</small>
-            </td>
-            <td><span class="tag enrollment">Student</span></td>
-            <td><span class="status resolved">Active</span></td>
-            <td>5 mins ago</td>
-            <td>2025-06-10</td>
-            <td>✏️ 🗑️</td>
-          </tr>
-
-          <tr>
-            <td>
-              <strong>Joel Mariano</strong><br>
-              <small>joelmariano@gmail.com</small>
-            </td>
-            <td><span class="tag grades">Admin</span></td>
-            <td><span class="status resolved">Active</span></td>
-            <td>1 hour ago</td>
-            <td>2025-08-15</td>
-            <td>✏️ 🗑️</td>
-          </tr>
-
-          <tr>
-            <td>
-              <strong>Miguel Torres</strong><br>
-              <small>torresmiguel@gmail.com</small>
-            </td>
-            <td><span class="tag enrollment">Student</span></td>
-            <td><span class="status incorrect">Inactive</span></td>
-            <td>10 mins ago</td>
-            <td>2025-01-01</td>
-            <td>✏️ 🗑️</td>
-          </tr>
-        </tbody>
+        <!-- 🔥 BACKEND WILL POPULATE -->
+        <tbody id="usersTableBody"></tbody>
       </table>
     </div>
 
   </main>
 </div>
 
-<!-- ✅ ONLY FIX: ADD THIS -->
-<script>
-  function goTo(page) {
-    window.location.href = page;
-  }
-</script>
-
+<script src="admin-ui.js"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ let searchText = "";
 let activeConversationUserId = null;
 let activeConversationChatId = null;
 let activeStatusFilter = "all";
+let activeUserRole = "all";
 
 function goTo(page) {
   window.location.href = page;
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadConversations() {
-  fetch("http://127.0.0.1:5000/api/admin/conversations")
+  fetch("http://localhost:5000/api/admin/conversations")
     .then(res => res.json())
     .then(data => {
       const list = document.getElementById("conversationList");
@@ -84,7 +85,7 @@ function loadConversations() {
 }
 
 function loadConversationThread(userId) {
-  fetch(`http://127.0.0.1:5000/api/admin/conversations/${userId}`)
+  fetch(`http://localhost:5000/api/admin/conversations/${userId}`)
     .then(res => res.json())
     .then(data => {
       if (data.length === 0) return;
@@ -205,7 +206,7 @@ function sendAdminReply() {
     return;
   }
 
-  fetch("http://127.0.0.1:5000/api/admin/conversations/reply", {
+  fetch("http://localhost:5000/api/admin/conversations/reply", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -245,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadKnowledgeBase() {
-  fetch("http://127.0.0.1:5000/api/admin/knowledge-base")
+  fetch("http://localhost:5000/api/admin/knowledge-base")
     .then(res => res.json())
     .then(data => {
       kbData = data;
@@ -289,7 +290,7 @@ function saveKnowledgeBase(event) {
   // ✅ 1️⃣ SAVE CATEGORY ANSWER
   if (categoryAnswer) {
     requests.push(
-      fetch("http://127.0.0.1:5000/api/admin/knowledge-base", {
+      fetch("http://localhost:5000/api/admin/knowledge-base", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -310,7 +311,7 @@ function saveKnowledgeBase(event) {
     if (!question || !answer) return;
 
     requests.push(
-      fetch("http://127.0.0.1:5000/api/admin/knowledge-base", {
+      fetch("http://localhost:5000/api/admin/knowledge-base", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -366,7 +367,7 @@ function resetModal() {
 function deleteKnowledgeBase(id) {
   if (!confirm("Are you sure you want to delete this entry?")) return;
 
-  fetch(`http://127.0.0.1:5000/api/admin/knowledge-base/${id}`, {
+  fetch(`http://localhost:5000/api/admin/knowledge-base/${id}`, {
     method: "DELETE"
   })
   .then(res => res.json())
@@ -433,7 +434,7 @@ function filterCategory(category, btn) {
 function updateChatStatus(status) {
   if (!activeConversationUserId) return;
 
-  fetch(`http://127.0.0.1:5000/api/admin/conversations/${activeConversationUserId}/status`, {
+  fetch(`http://localhost:5000/api/admin/conversations/${activeConversationUserId}/status`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status })
@@ -553,16 +554,21 @@ function formatChange(value) {
 }
 
 function loadDashboardStats() {
-  fetch("http://127.0.0.1:5000/api/admin/dashboard-stats")
+  fetch("http://localhost:5000/api/admin/dashboard-stats")
     .then(res => res.json())
     .then(data => {
-      document.getElementById("statTotalQueries").textContent = data.total;
+
+      const totalEl = document.getElementById("statTotalQueries");
+      if (!totalEl) return; // ⛔ NOT ON DASHBOARD → STOP
+
+      totalEl.textContent = data.total;
       document.getElementById("statResolved").textContent = data.resolved;
       document.getElementById("statEscalated").textContent = data.escalated;
       document.getElementById("statUsers").textContent = data.users;
       document.getElementById("statAvgTime").textContent = data.avg_time + " ms";
+
       document.getElementById("statSatisfaction").textContent =
-      data.satisfaction === 0 ? "No data" : data.satisfaction + "%";
+        data.satisfaction === 0 ? "No data" : data.satisfaction + "%";
 
       document.getElementById("chgTotal").innerHTML =
         formatChange(data.total_change);
@@ -576,12 +582,10 @@ function loadDashboardStats() {
       document.getElementById("chgUsers").innerHTML =
         formatChange(data.users_change);
 
-      if (typeof data.avg_change === "number") {
-        document.getElementById("chgAvgTime").innerHTML =
-          formatChange(data.avg_change);
-      } else {
-        document.getElementById("chgAvgTime").textContent = "—";
-      }
+      document.getElementById("chgAvgTime").innerHTML =
+        typeof data.avg_change === "number"
+          ? formatChange(data.avg_change)
+          : "—";
 
       document.getElementById("chgSatisfaction").innerHTML =
         formatChange(data.satisfaction_change);
@@ -595,7 +599,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadMostAsked() {
-  fetch("http://127.0.0.1:5000/api/admin/most-asked")
+  fetch("http://localhost:5000/api/admin/most-asked")
     .then(res => res.json())
     .then(data => {
       const list = document.querySelector(".question-list");
@@ -621,7 +625,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadRecentActivity() {
-  fetch("http://127.0.0.1:5000/api/admin/recent-activity")
+  fetch("http://localhost:5000/api/admin/recent-activity")
     .then(res => res.json())
     .then(data => {
       const list = document.querySelector(".activity-list");
@@ -648,7 +652,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadMostAskedQuestions() {
-  fetch("http://127.0.0.1:5000/api/admin/most-asked")
+  fetch("http://localhost:5000/api/admin/most-asked")
     .then(res => res.json())
     .then(data => {
       const list = document.querySelector(".question-list");
@@ -677,7 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadRecentActivity() {
-  fetch("http://127.0.0.1:5000/api/admin/recent-activity")
+  fetch("http://localhost:5000/api/admin/recent-activity")
     .then(res => res.json())
     .then(data => {
       const list = document.querySelector(".activity-list");
@@ -706,4 +710,80 @@ document.addEventListener("DOMContentLoaded", () => {
     loadMostAskedQuestions();
     loadRecentActivity(); // 👈 ADD THIS
   }
+});
+
+function loadUsers() {
+  fetch(`http://localhost:5000/api/admin/users?role=${activeUserRole}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Server error");
+      return res.json();
+    })
+    .then(users => {
+      const tbody = document.getElementById("usersTableBody");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      users.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <strong>${user.name}</strong><br>
+            <small>${user.email}</small>
+          </td>
+          <td><span class="tag ${user.role.toLowerCase()}">${user.role}</span></td>
+          <td><span class="status ${user.status}">${user.status}</span></td>
+          <td>—</td>
+          <td>${new Date(user.created_at).toLocaleDateString()}</td>
+          <td>✏️ 🗑️</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => console.error("Load users error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.body.classList.contains("users-page")) {
+    loadUsers();
+  }
+});
+
+function loadUserStats() {
+  fetch("http://localhost:5000/api/admin/users/stats")
+    .then(res => {
+      if (!res.ok) throw new Error("Stats fetch failed");
+      return res.json();
+    })
+    .then(stats => {
+      document.getElementById("statUsersTotal").textContent = stats.total;
+      document.getElementById("statStudents").textContent = stats.students;
+      document.getElementById("statAdmins").textContent = stats.admins;
+    })
+    .catch(err => console.error("User stats error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.body.classList.contains("users-page")) {
+    loadUsers();
+    loadUserStats(); // 👈 ADD THIS
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const roleButtons = document.querySelectorAll(".kb-categories button");
+
+  roleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // UI active state
+      roleButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Set role filter
+      activeUserRole = btn.dataset.role;
+
+      // Reload users
+      loadUsers();
+    });
+  });
 });

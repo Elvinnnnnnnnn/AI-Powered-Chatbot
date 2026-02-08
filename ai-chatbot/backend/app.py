@@ -6,7 +6,27 @@ import mysql.connector
 import time
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:5500",
+                "http://127.0.0.1:5500"
+            ]
+        }
+    }
+)
+@app.after_request
+def after_request(response):
+    origin = request.headers.get("Origin")
+    if origin in ("http://localhost:5500", "http://127.0.0.1:5500"):
+        response.headers["Access-Control-Allow-Origin"] = origin
+
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+    return response
+
 
 # ---------------- REGISTER ----------------
 @app.route("/register", methods=["POST"])
@@ -793,7 +813,123 @@ def recent_activity():
     db.close()
 
     return jsonify(data)
-    
+
+@app.route("/api/admin/users", methods=["GET"])
+def get_users():
+    role = request.args.get("role", "all")
+    search = request.args.get("search", "")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    base_query = """
+        SELECT
+            id,
+            CONCAT(first_name, ' ', last_name) AS name,
+            email,
+            'student' AS role,
+            status,
+            created_at,
+            NULL AS last_active
+        FROM users
+        WHERE (first_name LIKE %s OR last_name LIKE %s OR email LIKE %s)
+
+        UNION ALL
+
+        SELECT
+            id,
+            name,
+            email,
+            'admin' AS role,
+            'active' AS status,
+            created_at,
+            NULL AS last_active
+        FROM admins
+    """
+
+    params = [f"%{search}%", f"%{search}%", f"%{search}%"]
+
+    # 🔥 ROLE FILTER (IMPORTANT)
+    if role != "all":
+        base_query = f"""
+            SELECT * FROM ({base_query}) AS all_users
+            WHERE role = %s
+        """
+        params.append(role)
+
+    base_query += " ORDER BY created_at DESC"
+
+    try:
+        cursor.execute(base_query, params)
+        users = cursor.fetchall()
+    except Exception as e:
+        print("GET USERS ERROR:", e)
+        return jsonify({"error": "Server error"}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify(users)
+
+@app.route("/api/admin/users/stats", methods=["GET"])
+def user_stats():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) AS total FROM users")
+    total = cursor.fetchone()["total"]
+
+    cursor.execute("SELECT COUNT(*) AS students FROM users WHERE role='student'")
+    students = cursor.fetchone()["students"]
+
+    cursor.execute("SELECT COUNT(*) AS admins FROM admins")
+    admins = cursor.fetchone()["admins"]
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "total": total,
+        "students": students,
+        "admins": admins
+    })
+
+@app.route("/api/admin/users/<int:user_id>", methods=["PUT"])
+def update_user(user_id):
+    data = request.json
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET role=%s, status=%s
+        WHERE id=%s
+    """, (
+        data["role"],
+        data["status"],
+        user_id
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
 
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":

@@ -593,3 +593,38 @@ function showWelcomeMessage() {
         "Hello! 👋 I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
     );
 }
+
+function loadUsers() {
+  fetch("http://127.0.0.1:5000/api/admin/users")
+    .then(res => res.json())
+    .then(users => {
+      const tbody = document.querySelector("tbody");
+      tbody.innerHTML = "";
+
+      users.forEach(user => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>
+            <strong>${user.name}</strong><br>
+            <small>${user.email}</small>
+          </td>
+          <td><span class="tag">${user.role}</span></td>
+          <td>
+            <span class="status ${user.status}">
+              ${user.status}
+            </span>
+          </td>
+          <td>${user.last_active || "—"}</td>
+          <td>${new Date(user.created_at).toLocaleDateString()}</td>
+          <td>
+            ✏️ <span onclick="deleteUser(${user.id})">🗑️</span>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadUsers);
