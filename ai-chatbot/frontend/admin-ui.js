@@ -12,8 +12,11 @@ function goTo(page) {
 }
 
 function logout() {
+  // Clear admin session
   localStorage.removeItem("admin");
-  window.location.href = "admin-login.html";
+
+  // Force redirect (prevents back button issues)
+  window.location.replace("admin-login.html");
 }
 
 /* AUTO-HIGHLIGHT ACTIVE MENU */
@@ -107,7 +110,7 @@ function loadConversationThread(userId) {
             <p>${user.program} · ${user.year_level}</p>
           </div>
           <span class="badge ${user.status}">
-            ${user.status}
+            ${user.status.toUpperCase()}
           </span>
         </div>
 
@@ -239,12 +242,6 @@ function sendAdminReply() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("conversationList")) {
-    loadConversations();
-  }
-});
-
 function loadKnowledgeBase() {
   fetch("http://localhost:5000/api/admin/knowledge-base")
     .then(res => res.json())
@@ -275,19 +272,14 @@ function saveKnowledgeBase(event) {
 
   const category = kbCategory.value;
   const status = document.querySelector("input[name='kbStatus']:checked").value;
+
   const categoryAnswer = document.getElementById("kbCategoryAnswer").value.trim();
 
-  const questions = document.querySelectorAll(".kb-question");
-  const answers = document.querySelectorAll(".kb-answer");
-
-  if (questions.length === 0 && !categoryAnswer) {
-    alert("Please add at least a category answer or one question.");
-    return;
-  }
+  const qaBlocks = document.querySelectorAll(".qa-block");
 
   const requests = [];
 
-  // ✅ 1️⃣ SAVE CATEGORY ANSWER
+  // ⭐ SAVE CATEGORY ANSWER
   if (categoryAnswer) {
     requests.push(
       fetch("http://localhost:5000/api/admin/knowledge-base", {
@@ -295,7 +287,7 @@ function saveKnowledgeBase(event) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: category,
-          question: "__CATEGORY__",   // 🔑 MAGIC KEY
+          question: "__CATEGORY__",
           answer: categoryAnswer,
           status: status
         })
@@ -303,10 +295,10 @@ function saveKnowledgeBase(event) {
     );
   }
 
-  // ✅ 2️⃣ SAVE QUESTIONS
-  questions.forEach((qEl, index) => {
-    const question = qEl.value.trim();
-    const answer = answers[index].value.trim();
+  // ⭐ SAVE QUESTIONS
+  qaBlocks.forEach(block => {
+    const question = block.querySelector(".kb-question").value.trim();
+    const answer = block.querySelector(".kb-answer").value.trim();
 
     if (!question || !answer) return;
 
@@ -336,20 +328,39 @@ function editKnowledgeBase(id, category, question, answer, status) {
   editingKbId = id;
 
   document.getElementById("kbCategory").value = category;
-  document.getElementById("kbQuestion").value = question;
-  document.getElementById("kbAnswer").value = answer;
+  document.getElementById("kbCategoryAnswer").value =
+    question === "__CATEGORY__" ? answer : "";
+
+  const qaContainer = document.getElementById("qaContainer");
+  qaContainer.innerHTML = "";
+
+  if (question !== "__CATEGORY__") {
+    qaContainer.innerHTML = `
+      <div class="qa-block">
+        <input type="text" class="kb-question" value="${question}" readonly>
+        <textarea class="kb-answer">${answer}</textarea>
+      </div>
+    `;
+  }
+
+  // ❌ DISABLE ADD QUESTION BUTTON
+  const addBtn = document.getElementById("addQuestionBtn");
+  if (addBtn) addBtn.style.display = "none";
 
   document.querySelector(
     `input[name="kbStatus"][value="${status}"]`
   ).checked = true;
 
   document.querySelector("#kbModal h2").textContent = "Edit Entry";
-  document.querySelector(".modal-actions .btn-primary").textContent = "Save Changes";
+  document.querySelector(".modal-footer .btn-primary").textContent =
+    "Save Changes";
 
   openModal();
 }
 
 function resetModal() {
+  editingKbId = null;
+
   document.getElementById("kbCategory").value = "Enrollment";
   document.getElementById("kbCategoryAnswer").value = "";
 
@@ -360,9 +371,15 @@ function resetModal() {
     </div>
   `;
 
-  document.querySelector("input[name='kbStatus'][value='active']").checked = true;
-}
+  const addBtn = document.getElementById("addQuestionBtn");
+  if (addBtn) addBtn.style.display = "inline-flex";
 
+  document.querySelector("input[name='kbStatus'][value='active']").checked = true;
+
+  document.querySelector("#kbModal h2").textContent = "Add New Entry";
+  document.querySelector(".modal-footer .btn-primary").textContent =
+    "Add Entry";
+}
 
 function deleteKnowledgeBase(id) {
   if (!confirm("Are you sure you want to delete this entry?")) return;
@@ -592,65 +609,6 @@ function loadDashboardStats() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.body.classList.contains("admin-body")) {
-    loadDashboardStats();
-  }
-});
-
-function loadMostAsked() {
-  fetch("http://localhost:5000/api/admin/most-asked")
-    .then(res => res.json())
-    .then(data => {
-      const list = document.querySelector(".question-list");
-      if (!list) return;
-
-      list.innerHTML = "";
-
-      data.forEach((item, index) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <span class="badge">${index + 1}</span>
-          ${item.question}
-          <small>${item.total} times</small>
-        `;
-        list.appendChild(li);
-      });
-    });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadDashboardStats();
-  loadMostAsked();
-});
-
-function loadRecentActivity() {
-  fetch("http://localhost:5000/api/admin/recent-activity")
-    .then(res => res.json())
-    .then(data => {
-      const list = document.querySelector(".activity-list");
-      if (!list) return;
-
-      list.innerHTML = "";
-
-      data.forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <strong>${item.first_name} ${item.last_name}</strong>
-          <span>${item.user_message}</span>
-          <span class="status ${item.status}">${item.status}</span>
-        `;
-        list.appendChild(li);
-      });
-    });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadDashboardStats();
-  loadMostAsked();
-  loadRecentActivity();
-});
-
 function loadMostAskedQuestions() {
   fetch("http://localhost:5000/api/admin/most-asked")
     .then(res => res.json())
@@ -673,44 +631,72 @@ function loadMostAskedQuestions() {
     .catch(err => console.error("Most Asked Error:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.body.classList.contains("admin-body")) {
-    loadDashboardStats();
-    loadMostAskedQuestions(); // 👈 ADD THIS
-  }
-});
-
 function loadRecentActivity() {
   fetch("http://localhost:5000/api/admin/recent-activity")
     .then(res => res.json())
     .then(data => {
-      const list = document.querySelector(".activity-list");
-      if (!list) return;
 
-      list.innerHTML = "";
+      // 🔹 FULL PAGE VERSION
+      const fullContainer = document.getElementById("activityList");
 
-      data.forEach(item => {
-        const li = document.createElement("li");
+      // 🔹 DASHBOARD VERSION
+      const dashboardList = document.querySelector(".activity-list");
 
-        li.innerHTML = `
-          <strong>${item.first_name} ${item.last_name}</strong>
-          <span>${item.user_message}</span>
-          <span class="status ${item.status}">${item.status}</span>
-        `;
+      if (!fullContainer && !dashboardList) return;
 
-        list.appendChild(li);
+      if (fullContainer) fullContainer.innerHTML = "";
+      if (dashboardList) dashboardList.innerHTML = "";
+
+      if (data.length === 0) {
+        if (fullContainer) {
+          fullContainer.innerHTML = "<p>No recent activity found.</p>";
+        }
+        if (dashboardList) {
+          dashboardList.innerHTML = "<li>No activity found</li>";
+        }
+        return;
+      }
+
+      data.slice(0, 5).forEach(item => {
+
+        // FULL PAGE STYLE
+        if (fullContainer) {
+          const div = document.createElement("div");
+          div.className = "activity-item";
+          div.innerHTML = `
+            <strong>${item.first_name} ${item.last_name}</strong>
+            <span>${item.user_message}</span>
+            <span class="status-badge ${item.status}">
+              ${formatStatus(item.status)}
+            </span>
+          `;
+          fullContainer.appendChild(div);
+        }
+
+        // DASHBOARD STYLE
+        if (dashboardList) {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <span class="status ${item.status}">
+              ${item.status}
+            </span>
+            ${item.first_name}: ${item.user_message}
+          `;
+          dashboardList.appendChild(li);
+        }
+
       });
     })
     .catch(err => console.error("Recent Activity Error:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.body.classList.contains("admin-body")) {
-    loadDashboardStats();
-    loadMostAskedQuestions();
-    loadRecentActivity(); // 👈 ADD THIS
-  }
-});
+function formatStatus(status) {
+  if (status === "resolved") return "✔ Resolved";
+  if (status === "escalated") return "⚠ Escalated";
+  if (status === "incorrect") return "✖ Incorrect";
+  return status;
+}
+
 
 function loadUsers() {
   fetch(`http://localhost:5000/api/admin/users?role=${activeUserRole}`)
@@ -735,7 +721,12 @@ function loadUsers() {
           <td><span class="status ${user.status}">${user.status}</span></td>
           <td>—</td>
           <td>${new Date(user.created_at).toLocaleDateString()}</td>
-          <td>✏️ 🗑️</td>
+          <td>
+            <td>
+              <span class="action-btn" onclick="openEditUserModal(${user.id}, '${user.role}', '${user.status}')">✏️</span>
+              <span class="action-btn" onclick="deleteUser(${user.id})">🗑️</span>
+            </td>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -748,6 +739,60 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUsers();
   }
 });
+
+function deleteUser(userId) {
+  if (!confirm("Are you sure you want to delete this user?")) return;
+
+  fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+    method: "DELETE"
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("User deleted successfully");
+      loadUsers();
+      loadUserStats();
+    } else {
+      alert("Delete failed");
+    }
+  })
+  .catch(err => {
+    console.error("Delete error:", err);
+    alert("Server error");
+  });
+}
+
+function editUser(userId) {
+  const newRole = prompt("Enter new role (student/admin):");
+  const newStatus = prompt("Enter new status (active/inactive):");
+
+  if (!newRole || !newStatus) {
+    alert("Role and status required");
+    return;
+  }
+
+  fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      role: newRole,
+      status: newStatus
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("User updated successfully");
+      loadUsers();
+    } else {
+      alert("Update failed");
+    }
+  })
+  .catch(err => {
+    console.error("Update error:", err);
+    alert("Server error");
+  });
+}
 
 function loadUserStats() {
   fetch("http://localhost:5000/api/admin/users/stats")
@@ -787,3 +832,486 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+function loadAnalytics(range = "7d") {
+  const resolutionEl = document.getElementById("resolutionRate");
+  if (!resolutionEl) return; // ⛔ NOT ON ANALYTICS PAGE
+
+  fetch(`http://localhost:5000/api/admin/analytics?range=${range}`)
+    .then(res => res.json())
+    .then(data => {
+      resolutionEl.textContent = data.resolution_rate + "%";
+      document.getElementById("avgResponse").textContent =
+        data.avg_response_time + "s";
+      document.getElementById("escalationRate").textContent =
+        data.escalation_rate + "%";
+      document.getElementById("satisfaction").textContent =
+        data.satisfaction + "%";
+
+      document.getElementById("resolutionChange").textContent = "Live data";
+      document.getElementById("avgChange").textContent = "Live data";
+      document.getElementById("escalationChange").textContent = "Live data";
+      document.getElementById("satisfactionChange").textContent = "Live data";
+    })
+    .catch(err => console.error("Analytics error:", err));
+}
+
+
+function loadCategoryDistribution(range = "7d") {
+  fetch(`http://localhost:5000/api/admin/analytics/categories?range=${range}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("categoryBars");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      data.forEach(item => {
+        const bar = document.createElement("div");
+        bar.className = "bar-item";
+
+        bar.innerHTML = `
+          <label>
+            ${item.category}
+            <span>${item.total} queries (${item.percent}%)</span>
+          </label>
+          <div class="bar">
+            <div class="fill ${categoryColor(item.category)}"
+                 style="width:${item.percent}%"></div>
+          </div>
+        `;
+
+        container.appendChild(bar);
+      });
+    })
+    .catch(err => console.error("Category analytics error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const filter = document.getElementById("dateFilter");
+  if (!filter) return; // ⛔ not analytics page
+
+  const range = filter.value;
+  loadAnalytics(range);
+  loadCategoryDistribution(range);
+  loadPeakUsageHours(range);
+
+  filter.addEventListener("change", () => {
+    const r = filter.value;
+    loadAnalytics(r);
+    loadCategoryDistribution(r);
+    loadPeakUsageHours(r);
+  });
+});
+
+
+function categoryColor(category) {
+  const map = {
+    Enrollment: "blue",
+    Grades: "green",
+    Finance: "purple",
+    Scholarship: "orange",
+    Schedule: "teal",
+    Academic: "pink"
+  };
+  return map[category] || "blue";
+}
+
+function formatHour(hour) {
+  const h = hour % 12 || 12;
+  const suffix = hour < 12 ? "AM" : "PM";
+  return `${h}${suffix}`;
+}
+
+function loadPeakUsageHours(range = "7d") {
+  fetch(`http://localhost:5000/api/admin/analytics/hours?range=${range}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("peakHours");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      const max = Math.max(...data.map(d => d.total), 1);
+
+      data.forEach(item => {
+        const percent = Math.round((item.total / max) * 100);
+
+        const row = document.createElement("div");
+        row.className = "hour";
+
+        row.innerHTML = `
+          <span>${formatHour(item.hour)}</span>
+          <div class="hour-bar">
+            <div style="width:${percent}%">${item.total}</div>
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+    })
+    .catch(err => console.error("Peak hours error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const filter = document.getElementById("dateFilter");
+  if (!filter) return;
+
+  // Initial load
+  const initialRange = filter.value;
+  loadAnalytics(initialRange);
+  loadCategoryDistribution(initialRange);
+  loadPeakUsageHours(initialRange);
+
+  // On change
+  filter.addEventListener("change", () => {
+    const range = filter.value;
+
+    loadAnalytics(range);
+    loadCategoryDistribution(range);
+    loadPeakUsageHours(range);
+  });
+});
+
+function loadGeneralSettings() {
+  fetch("http://localhost:5000/api/admin/settings/general")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("systemName").value = data.system_name;
+      document.getElementById("institutionName").value = data.institution_name;
+      document.getElementById("timezone").value = data.timezone;
+      document.getElementById("maintenanceMode").checked = !!data.maintenance_mode;
+    })
+    .catch(err => console.error("Load settings error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("general")) {
+    loadGeneralSettings();
+    loadChatbotSettings();
+    loadAdminProfile();
+  }
+});
+
+function saveGeneralSettings() {
+  const payload = {
+    system_name: document.getElementById("systemName").value.trim(),
+    institution_name: document.getElementById("institutionName").value.trim(),
+    timezone: document.getElementById("timezone").value,
+    maintenance_mode: document.getElementById("maintenanceMode").checked ? 1 : 0
+  };
+
+  fetch("http://localhost:5000/api/admin/settings/general", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(() => {
+      alert("General settings saved successfully.");
+    })
+    .catch(err => console.error("Save settings error:", err));
+}
+
+function loadChatbotSettings() {
+  fetch("http://localhost:5000/api/admin/settings/chatbot")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("chatbotName").value = data.chatbot_name;
+      document.getElementById("welcomeMessage").value = data.welcome_message;
+      document.getElementById("fallbackMessage").value = data.fallback_message;
+
+      document.getElementById("confidenceThreshold").value =
+        data.confidence_threshold;
+
+      document.getElementById("confidenceValue").textContent =
+        data.confidence_threshold + "%";
+
+      document.getElementById("autoEscalation").checked =
+        !!data.auto_escalation;
+    })
+    .catch(err => console.error("Load chatbot settings error:", err));
+}
+
+function saveSettings() {
+  saveGeneralSettings();
+  saveChatbotSettings();
+  saveAdminProfile();  // 👈 ADD THIS
+}
+
+function saveAdminProfile() {
+  const formData = new FormData();
+
+  formData.append("name",
+    document.getElementById("adminNameInput").value.trim()
+  );
+
+  formData.append("email",
+    document.getElementById("adminEmailInput").value.trim()
+  );
+
+  const photoFile =
+    document.getElementById("adminPhotoInput").files[0];
+
+  if (photoFile) {
+    formData.append("photo", photoFile);
+  }
+
+  fetch("http://localhost:5000/api/admin/profile", {
+    method: "PUT",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Profile updated successfully.");
+        loadAdminProfile();
+      } else {
+        alert(data.message || "Profile update failed");
+      }
+    })
+    .catch(err => console.error("Profile save error:", err));
+}
+
+function saveChatbotSettings() {
+  const payload = {
+    chatbot_name: document.getElementById("chatbotName").value.trim(),
+    welcome_message: document.getElementById("welcomeMessage").value.trim(),
+    fallback_message: document.getElementById("fallbackMessage").value.trim(),
+    confidence_threshold:
+      Number(document.getElementById("confidenceThreshold").value),
+    auto_escalation:
+      document.getElementById("autoEscalation").checked ? 1 : 0
+  };
+
+  fetch("http://localhost:5000/api/admin/settings/chatbot", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(() => {
+      alert("Chatbot configuration saved successfully.");
+    })
+    .catch(err => console.error("Save chatbot settings error:", err));
+}
+
+function startNewChat() {
+  fetch("http://localhost:5000/api/chat/new", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id })
+  }).then(() => {
+    document.getElementById("chatBox").innerHTML = "";
+    loadChatHistory();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const addUserModal = document.getElementById("addUserModal");
+  const addUserBtn = document.querySelector(".add-user-btn");
+
+  if (!addUserModal || !addUserBtn) return;
+
+  addUserBtn.addEventListener("click", () => {
+    addUserModal.classList.add("active");
+  });
+
+  addUserModal.addEventListener("click", (e) => {
+    if (e.target === addUserModal) {
+      addUserModal.classList.remove("active");
+    }
+  });
+
+  window.closeAddUserModal = () => {
+    addUserModal.classList.remove("active");
+  };
+});
+
+function submitAddUser() {
+  const modal = document.getElementById("addUserModal");
+
+  const name = modal.querySelector("input[placeholder='Enter full name']").value.trim();
+  const email = modal.querySelector("input[type='email']").value.trim();
+  const role = modal.querySelector("select").value;
+  const password = modal.querySelector("input[type='password']").value;
+
+  if (!name || !email || !role || !password) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  fetch("http://localhost:5000/api/admin/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name,
+      email,
+      role,
+      password
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        alert(data.message || "Failed to add user");
+        return;
+      }
+
+      alert("User added successfully!");
+      closeAddUserModal();
+      loadUsers();       // refresh table
+      loadUserStats();   // refresh stats
+
+      // reset form
+      modal.querySelectorAll("input").forEach(i => i.value = "");
+      modal.querySelector("select").selectedIndex = 0;
+    })
+    .catch(err => {
+      console.error("ADD USER ERROR:", err);
+      alert("Server error");
+    });
+}
+
+function loadMostAskedTable(range = "7d") {
+  fetch(`http://localhost:5000/api/admin/most-asked?range=${range}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("mostAskedTable");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      data.slice(0, 5).forEach((item, index) => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td><span class="rank-badge">${index + 1}</span></td>
+          <td>${item.question}</td>
+          <td>
+            <span class="tag ${item.category?.toLowerCase() || 'general'}">
+              ${item.category || "General"}
+            </span>
+          </td>
+          <td>${item.total}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => console.error("Most Asked Table Error:", err));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const filter = document.getElementById("analyticsFilter");
+  if (!filter) return;
+
+  loadMostAskedTable("7d"); // default
+
+  filter.addEventListener("change", () => {
+    const value = filter.value;
+
+    let range = "7d";
+    if (value.includes("30")) range = "30d";
+    if (value.includes("90")) range = "90d";
+
+    loadMostAskedTable(range);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // DASHBOARD
+  if (document.querySelector(".question-list")) {
+    loadDashboardStats();
+    loadMostAskedQuestions();
+    loadRecentActivity();
+  }
+
+  // CONVERSATIONS PAGE
+  if (document.getElementById("conversationList")) {
+    loadConversations();
+  }
+
+  // KNOWLEDGE BASE
+  if (document.getElementById("kbList")) {
+    loadKnowledgeBase();
+  }
+
+});
+
+function loadAdminProfile() {
+  console.log("LOAD ADMIN PROFILE RUNNING");
+  fetch("http://localhost:5000/api/admin/profile")
+    .then(res => res.json())
+    .then(data => {
+
+      const name = data.name || "Administrator";
+
+      // Inputs
+      document.getElementById("adminNameInput").value = name;
+      document.getElementById("adminEmailInput").value = data.email || "";
+
+      // Topbar Name
+      document.getElementById("topbarAdminName").textContent = name;
+
+      const defaultImage = "images/ai-profile.jpg";
+
+      // If photo exists in DB
+      if (data.photo) {
+        const photoURL = "http://localhost:5000/uploads/" + data.photo;
+
+        document.getElementById("adminPhotoPreview").src = photoURL;
+        document.getElementById("topbarPhoto").src = photoURL;
+      } else {
+        // fallback
+        document.getElementById("adminPhotoPreview").src = defaultImage;
+        document.getElementById("topbarPhoto").src = defaultImage;
+      }
+    })
+    .catch(err => console.error("Load profile error:", err));
+}
+
+function registerAdmin() {
+
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirm_password").value;
+
+  if (!username || !password || !confirmPassword) {
+    alert("All fields are required");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  fetch("http://localhost:5000/api/admin/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: username,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    if (!data.success) {
+      alert(data.message);
+      return;
+    }
+
+    alert("Admin account created successfully!");
+    window.location.href = "admin-login.html";
+
+  })
+  .catch(err => {
+    console.error("Register error:", err);
+    alert("Server error");
+  });
+}

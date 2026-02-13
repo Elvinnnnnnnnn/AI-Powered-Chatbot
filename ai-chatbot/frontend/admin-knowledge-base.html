@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <title>Knowledge Base | Admin</title>
   <link rel="stylesheet" href="css/admin-navbar.css">
-  <link rel="stylesheet" href="admin-style.css">
-
+  <link rel="stylesheet" href="css/admin-knowledge-base.css">
 </head>
 
 <body class="admin-body">
@@ -13,20 +12,21 @@
 <!-- ================= ADMIN TOPBAR ================= -->
 <header class="admin-topbar">
   <div class="topbar-left">
-    <button class="menu-btn">☰</button>
-    <img src="images/escr-logo.png" class="logo">
+    <img src="images/school-logo-remove-background.png" class="logo">
     <div class="brand">
       <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+      <br>
       <span>Admin Portal</span>
     </div>
   </div>
 
   <div class="topbar-right">
     <div class="admin-user">
-      <div class="avatar">A</div>
+      <img id="topbarPhoto" class="topbar-photo" src="images/ai-profile.jpg">
       <div class="user-info">
-        <strong>Joel Mariano</strong>
-        <span>Admin</span>
+        <strong id="topbarAdminName"></strong>
+        <br>
+        <span>Administrator</span>
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@
       </li>
     </ul>
 
-    <button class="logout-btn">
+    <button class="logout-btn" onclick="logout()">
       <span class="icon">↩️</span>
       Logout
     </button>
@@ -78,15 +78,17 @@
   </aside>
 
 <!-- 🔒 ADMIN CHECK -->
-    <script>
-      const admin = localStorage.getItem("admin");
-      if (!admin) {
-        window.location.href = "admin-login.html";
-      }
-    </script>
+      <script>
+        if (!localStorage.getItem("admin")) {
+          window.location.replace("admin-login.html");
+        }
+      </script>
 
   <!-- CONTENT -->
   <main class="admin-content">
+
+  <!-- ================= KNOWLEDGE BASE WRAPPER ================= -->
+  <div class="knowledge-base-wrapper">
 
     <!-- HEADER -->
     <div class="kb-header">
@@ -94,20 +96,33 @@
         <h1>Knowledge Base</h1>
         <p>Manage FAQs, policies, and academic information</p>
       </div>
-      <button type="button" class="btn-primary" onclick="openModal()">+ Add Entry</button>
+      <button type="button" class="add-entry-btn" onclick="openModal()">
+        + Add Entry
+      </button>
     </div>
 
     <!-- STATS -->
     <div class="kb-stats">
-      <div class="kb-card">Total Entries <strong id="statTotal">0</strong></div>
-      <div class="kb-card">Active <strong id="statActive">0</strong></div>
-      <div class="kb-card">Categories <strong id="statCategories">0</strong></div>
-      <div class="kb-card">Last Updated <strong id="statUpdated">—</strong></div>
+      <div class="kb-card">
+        Total Entries
+        <strong id="statTotal">0</strong>
+      </div>
+      <div class="kb-card">
+        Active
+        <strong id="statActive">0</strong>
+      </div>
+      <div class="kb-card">
+        Categories
+        <strong id="statCategories">0</strong>
+      </div>
+      <div class="kb-card">
+        Last Updated
+        <strong id="statUpdated">—</strong>
+      </div>
     </div>
 
-    <!-- SEARCH & CATEGORY FILTER -->
+    <!-- FILTERS -->
     <div class="kb-filters">
-
       <div class="kb-search">
         <span class="search-icon">🔍</span>
         <input
@@ -118,19 +133,18 @@
       </div>
 
       <div class="kb-categories" id="kbCategories">
-        <!-- buttons injected by JS -->
+        <!-- injected by JS -->
       </div>
-
     </div>
 
+    <!-- ENTRIES -->
+    <div id="kbList"></div>
 
+  </div>
+  <!-- ================= END KNOWLEDGE BASE WRAPPER ================= -->
 
-    <!-- ENTRY LIST -->
-    <div id="kbList">
-    </div>
+</main>
 
-
-  </main>
     </div>
 
     <!-- MODAL -->
@@ -204,6 +218,7 @@
 
 </div>
 
+<script src="admin.js"></script>
 <script src="admin-ui.js"></script>
 </body>
 </html>

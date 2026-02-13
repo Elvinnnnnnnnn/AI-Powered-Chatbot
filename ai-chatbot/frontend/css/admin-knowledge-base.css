@@ -1,0 +1,529 @@
+/* =====================================================
+   KNOWLEDGE BASE PAGE ONLY
+   admin-knowledge-base.html
+===================================================== */
+
+/* ================= HEADER ================= */
+
+.kb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.kb-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.kb-header p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ================= STATS ================= */
+
+.kb-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.kb-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  font-size: 14px;
+}
+
+.kb-card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 22px;
+}
+
+/* ================= FILTER BAR ================= */
+
+.kb-filters {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.kb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.kb-search input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 220px;
+}
+
+.search-icon {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.kb-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kb-categories button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #e5e7eb;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.kb-categories button.active {
+  background: #4f6ef7;
+  color: #ffffff;
+}
+
+.kb-categories button:hover:not(.active) {
+  background: #d1d5db;
+}
+
+/* ================= KB ENTRIES ================= */
+
+.kb-entry {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  position: relative;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.enrollment { background: #dbeafe; color: #1e40af; }
+.grades { background: #dcfce7; color: #166534; }
+.scholarship { background: #e0e7ff; color: #3730a3; }
+
+.entry-actions {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.entry-actions span {
+  cursor: pointer;
+  font-size: 15px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.entry-actions span:hover {
+  background: #f3f4f6;
+}
+
+.entry-actions span:last-child:hover {
+  background: #fee2e2;
+}
+
+/* ================= MODAL ================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-dialog {
+  background: #ffffff;
+  width: 560px;
+  max-width: 95%;
+  max-height: 90vh;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+}
+
+/* HEADER */
+.modal-header {
+  padding: 22px 26px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* BODY */
+.modal-body {
+  padding: 26px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-body label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 16px;
+  display: block;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+}
+
+.modal-body textarea {
+  resize: vertical;
+}
+
+/* QUESTIONS */
+.qa-block {
+  margin-bottom: 16px;
+}
+
+.add-question-btn {
+  margin-top: 12px;
+  background: #eef2ff;
+  border: 1px dashed #6366f1;
+  color: #4f46e5;
+  padding: 12px;
+  width: 100%;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* STATUS */
+.status-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 18px;
+}
+
+.status-options {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* FOOTER */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 26px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-footer button {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-footer button[type="button"] {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.modal-footer .btn-primary {
+  background: #4f6ef7;
+  color: #ffffff;
+  border: none;
+}
+
+/* =====================================================
+   ADD ENTRY MODAL (FIXED / UNIFIED STYLE)
+===================================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+/* MODAL CARD */
+.modal-dialog {
+  background: #ffffff;
+  width: 580px;
+  max-width: 95%;
+  max-height: 90vh;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+  animation: kbModalFade 0.25s ease;
+}
+
+@keyframes kbModalFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* HEADER */
+.modal-header {
+  padding: 22px 26px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* BODY */
+.modal-body {
+  padding: 26px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-body label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 16px;
+  display: block;
+}
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+}
+
+.modal-body textarea {
+  resize: vertical;
+}
+
+/* QA BLOCK */
+.qa-block {
+  margin-bottom: 16px;
+}
+
+/* ADD QUESTION */
+.add-question-btn {
+  margin-top: 12px;
+  background: #eef2ff;
+  border: 1px dashed #6366f1;
+  color: #4f46e5;
+  padding: 12px;
+  width: 100%;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* STATUS */
+.status-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 18px;
+}
+
+.status-options {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+/* FOOTER */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 26px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* CANCEL */
+.modal-footer button[type="button"] {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ADD ENTRY (WHITE TEXT FIX) */
+.modal-footer .btn-primary {
+  background: #4f6ef7;
+  color: #ffffff !important;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =====================================================
+   ADD ENTRY BUTTON (KNOWLEDGE BASE)
+===================================================== */
+
+.add-entry-btn {
+  background: linear-gradient(135deg, #4f6ef7, #2563eb);
+  color: #ffffff !important;     /* 🔥 force white text */
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.add-entry-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.45);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* Click */
+.add-entry-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+}
+
+/* =====================================================
+   REMOVE QUESTION BUTTON (ADD ENTRY MODAL)
+===================================================== */
+
+.remove-question-btn {
+  margin-top: 8px;
+  align-self: flex-end;
+  background: transparent;
+  border: none;
+  color: #9ca3af;              /* muted gray */
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Hover = destructive intent */
+.remove-question-btn:hover {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Active click */
+.remove-question-btn:active {
+  background: #fecaca;
+}

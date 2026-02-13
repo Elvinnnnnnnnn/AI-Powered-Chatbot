@@ -1,0 +1,182 @@
+/* =====================================================
+   NAVBAR VARIABLES
+===================================================== */
+
+:root {
+    --topbar-height: 90px;
+    --sidebar-width: 230px;
+}
+
+/* =====================================================
+   TOPBAR (FIXED)
+===================================================== */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: var(--topbar-height);
+    width: 100%;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+/* Left & Right sections */
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+/* Menu button */
+.menu-btn {
+    font-size: 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Logo */
+.topbar .logo {
+    width: 80px;
+    margin-left: 20px;
+}
+
+/* Title Text */
+.topbar .title .school-text {
+    font-size: 30px;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.topbar .title .portal-text {
+    font-size: 15px;
+    color: #777;
+}
+
+/* Profile text in navbar */
+.topbar .profile-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.topbar .student-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.topbar .student-role {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Profile container (top right section) */
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* space between avatar and text */
+}
+
+/* Avatar for Topbar */
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #d32f2f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+/* =====================================================
+   SIDEBAR (FIXED)
+===================================================== */
+
+.sidebar {
+    position: fixed;
+    top: var(--topbar-height);
+    left: -230px;
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--topbar-height));
+    background: linear-gradient(180deg, #b71c1c, #d32f2f);
+    padding: 20px;
+    box-sizing: border-box;
+    transition: left 0.3s ease;
+    z-index: 999;
+}
+
+/* When sidebar opens */
+.sidebar.show {
+    left: 0;
+}
+
+/* Sidebar links */
+.sidebar a {
+    display: block;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar .logout {
+    margin-top: 20px;
+    background: rgba(0,0,0,0.2);
+}
+
+/* =====================================================
+   PUSH CONTENT (LAYOUT SAFE VERSION)
+===================================================== */
+
+.content-single,
+.main-content {
+    margin-top: var(--topbar-height);
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+}
+
+/* When sidebar opens */
+.sidebar.show ~ .content-single,
+.sidebar.show ~ .main-content {
+    margin-left: var(--sidebar-width);
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .sidebar.show ~ .main-content {
+        margin-left: 200px;
+    }
+
+    .sidebar.show ~ .topbar {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}

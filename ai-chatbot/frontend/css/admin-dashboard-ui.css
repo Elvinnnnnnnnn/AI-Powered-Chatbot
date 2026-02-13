@@ -34,10 +34,6 @@
   cursor: pointer;
 }
 
-.logo {
-  width: 42px;
-}
-
 .title strong {
   font-size: 16px;
 }
@@ -111,16 +107,6 @@
   color: #ffffff;
 }
 
-.logout-btn {
-  margin-top: auto;
-  padding: 12px;
-  background: #fee2e2;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 /* ================= MAIN CONTENT ================= */
 .admin-content {
   flex: 1;
@@ -139,6 +125,20 @@
   color: #6b7280;
 }
 
+/* Limit Recent Activity height */
+.panel .activity-list {
+  max-height: 260px;   /* adjust height if needed */
+  overflow-y: auto;
+  padding-right: 6px;  /* space for scrollbar */
+}
+.panel .activity-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel .activity-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
 /* ================= STATS ================= */
 .stats-grid {
   display: grid;

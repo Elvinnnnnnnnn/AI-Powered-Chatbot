@@ -1,0 +1,133 @@
+/* =====================================================
+   CLASS SCHEDULE PAGE ONLY
+   (Requires navbar.css)
+===================================================== */
+
+/* ===============================
+   PAGE BACKGROUND
+=============================== */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #e53935, #fdd835);
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+=============================== */
+
+.content-single {
+    margin-top: 200px;
+    padding: 50px 30px;
+    min-height: calc(100vh - var(--topbar-height));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* ===============================
+   YEAR BUTTON WRAPPER
+=============================== */
+
+/* ===============================
+   SCHEDULE IMAGE CONTAINER
+=============================== */
+
+.schedule-image-box {
+    width: 100%;
+    max-width: 700px;
+    height: 70vh; /* prevents super tall image */
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.25);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* hides extra tall parts */
+    margin-top: -100px;
+    margin-left: 100px;
+}
+
+/* THE IMAGE */
+.schedule-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* keeps full schedule visible */
+    border-radius: 10px;
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+    .schedule-image-box {
+        height: 60vh;
+        padding: 10px;
+    }
+}
+
+
+.year-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    justify-content: center;
+    gap: 45px 120px;
+}
+
+/* ===============================
+   YEAR BUTTON STYLE
+=============================== */
+
+.year-btn {
+    width: 260px;
+    padding: 22px 0;
+    border-radius: 12px;
+    border: none;
+    background: #d92519;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transition: all 0.25s ease;
+    justify-self: center;
+}
+
+.year-btn:hover {
+    background: #ef6c00;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 35px rgba(0,0,0,0.3);
+}
+
+/* ===============================
+   SCHEDULE OUTPUT AREA
+=============================== */
+
+#scheduleTable {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+
+@media (max-width: 768px) {
+    .content-single {
+        padding: 30px 20px;
+    }
+
+    .year-wrapper {
+        gap: 30px;
+    }
+
+    .year-btn {
+        width: 100%;
+    }
+}

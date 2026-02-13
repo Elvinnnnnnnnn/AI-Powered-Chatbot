@@ -1,0 +1,253 @@
+/* =====================================================
+   SETTINGS PAGE ONLY
+   (Requires navbar.css for topbar & sidebar)
+===================================================== */
+
+/* ===============================
+   PAGE BACKGROUND
+=============================== */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #e53935, #fdd835);
+}
+
+/* ===============================
+   MAIN CONTENT WRAPPER
+   (Below fixed navbar)
+=============================== */
+
+.content-single {
+    margin-top: var(--topbar-height); /* push below navbar */
+    padding: 40px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - var(--topbar-height));
+    box-sizing: border-box;
+}
+
+/* ===============================
+   SETTINGS CARD
+=============================== */
+
+.settings-card {
+    width: 100%;
+    max-width: 1100px;
+    background: white;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* ===============================
+   TABS
+=============================== */
+
+.tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.tabs button {
+    background: transparent;
+    border: none;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s ease;
+}
+
+.tabs button:hover {
+    background: #f5f5f5;
+    color: #d32f2f;
+}
+
+.tabs button.active {
+    background: #ffffff;
+    color: #d32f2f;
+    border-bottom: 3px solid #d32f2f;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===============================
+   PROFILE SECTION
+=============================== */
+
+.profile-card-ui {
+    border-radius: 12px;
+}
+
+/* Profile Header */
+.profile-header {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Avatar */
+.avatar.large {
+    background: #d32f2f;
+    color: white;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Profile photo section */
+.profile-photo-actions small {
+    display: block;
+    color: #666;
+    margin: 6px 0 12px;
+}
+
+.photo-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+/* ===============================
+   FORM GRID
+=============================== */
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 25px;
+}
+
+.profile-form-grid > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-form-grid label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.profile-form-grid input {
+    margin-top: 6px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* ===============================
+   ACCOUNT SECTION
+=============================== */
+
+.account-info-box {
+    background: #fff7d6;
+    border: 1px solid #f0e2a0;
+    border-radius: 8px;
+    padding: 15px 18px;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.account-info-box strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.status-active {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+.account-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.account-form label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.account-form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* ===============================
+   BUTTONS
+=============================== */
+
+.btn {
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.primary {
+    background: #d32f2f;
+    color: white;
+}
+
+.secondary {
+    background: #eee;
+    color: #333;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+
+@media (max-width: 768px) {
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}

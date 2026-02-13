@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics and Reports</title>
+  <link rel="stylesheet" href="css/admin-navbar.css">
+  <link rel="stylesheet" href="css/admin-view-analytics.css">
+</head>
+
+<body class="admin-body">
+
+<!-- ================= ADMIN TOPBAR ================= -->
+<header class="admin-topbar">
+  <div class="topbar-left">
+    <img src="images/school-logo-remove-background.png" class="logo">
+    <div class="brand">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+      <br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <img id="topbarPhoto" class="topbar-photo" src="images/ai-profile.jpg">
+      <div class="user-info">
+        <strong id="topbarAdminName"></strong>
+        <br>
+        <span>Administrator</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAGE LAYOUT ================= -->
+<div class="admin-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+  <!-- ================= ADMIN SIDEBAR ================= -->
+  <aside class="admin-sidebar">
+    <ul class="nav-menu">
+      <li class="active" onclick="goTo('admin-dashboard.html')">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+      </li>
+
+      <li onclick="goTo('admin-conversation-logs.html')">
+        <span class="icon">💬</span>
+        <span class="label">Conversation Logs</span>
+      </li>
+
+      <li onclick="goTo('admin-knowledge-base.html')">
+        <span class="icon">📘</span>
+        <span class="label">Knowledge Base</span>
+      </li>
+
+      <li onclick="goTo('admin-user-management.html')">
+        <span class="icon">👤</span>
+        <span class="label">User Management</span>
+      </li>
+
+      <li onclick="goTo('admin-analytics.html')">
+        <span class="icon">📈</span>
+        <span class="label">Analytics</span>
+      </li>
+
+      <li onclick="goTo('admin-settings.html')">
+        <span class="icon">⚙️</span>
+        <span class="label">Settings</span>
+      </li>
+    </ul>
+
+    <button class="logout-btn" onclick="logout()">
+      <span class="icon">↩️</span>
+      Logout
+    </button>
+
+
+  </aside>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="admin-content">
+
+    <div class="page-header">
+      <div>
+        <h1>Analytics and Reports</h1>
+        <p>Detailed insights into chatbot performance and usage</p>
+      </div>
+
+      <select class="filter-select" id="analyticsFilter">
+        <option>Last 7 days</option>
+        <option>Last 30 days</option>
+        <option>Last 90 days</option>
+      </select>
+    </div>
+
+    <div class="analytics-card">
+      <h2>Most Asked Questions</h2>
+
+      <table class="analytics-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Question</th>
+            <th>Category</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+
+        <tbody id="mostAskedTable">
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </main>
+</div>
+
+</body>
+<script src="admin.js"></script>
+<script src="admin-ui.js"></script>
+</html>

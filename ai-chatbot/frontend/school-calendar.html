@@ -1,73 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>School Calendar</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>School Calendar</title>
+        <link rel="stylesheet" href="css/navbar.css">
+        <link rel="stylesheet" href="css/calendar.css">
+    </head>
+    <body>
 
-<div class="layout">
-
-    <!-- TOP NAVBAR -->
-    <header class="topbar modern">
-        <div class="topbar-left">
-            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <img src="images/school-logo.jpg" class="logo">
-            <div class="title">
-                <strong>East Systems Colleges of Rizal</strong>
-                <span>Student Portal</span>
+        <!-- TOP NAVBAR -->
+        <header class="topbar modern">
+            <div class="topbar-left">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <img src="images/school-logo.jpg" class="logo">
+                <div class="title">
+                    <strong class="school-text">East Systems Colleges of Rizal</strong>
+                    <br>
+                    <span class="portal-text">Student Portal</span>
+                </div>
             </div>
-        </div>
 
-        <div class="topbar-right">
-            <div class="profile">
-                <div class="avatar">EB</div>
-                <div class="profile-text">
-                    <strong class="student-name">Juan Dela Cruz</strong>
-                    <span class="student-role">Student</span>
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="avatar"></div>
+                    <div class="profile-text">
+                        <strong class="student-name"></strong>
+                        <span class="student-role"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar modern" id="sidebar">
+            <a href="dashboard.html">🏠 Dashboard</a>
+            <a href="chatbot.html">🤖 ESCR Chatbot</a>
+            <a href="class-schedule.html">📅 Class Schedule</a>
+            <a href="school-calendar.html" class="active">🗓 School Calendar</a>
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="login.html" class="logout">🚪 Logout</a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="content-single">
+            <div class="calendar-red">
+                <div class="calendar-white">
+                    <img
+                        src="images/calendar.png"
+                        alt="Academic Calendar"
+                        class="calendar-image"
+                    >
                 </div>
             </div>
         </div>
-    </header>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar modern" id="sidebar">
-        <a href="dashboard.html">🏠 Dashboard</a>
-        <a href="chatbot.html">🤖 ESCR Chatbot</a>
-        <a href="class-schedule.html">📅 Class Schedule</a>
-        <a href="school-calendar.html" class="active">🗓 School Calendar</a>
-        <a href="settings.html">⚙️ Settings</a>
-        <a href="login.html" class="logout">🚪 Logout</a>
-    </aside>
+    <script src="script.js"></script>
 
-    <!-- MAIN CONTENT -->
-    <div class="content-single">
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("show");
+        }
+    </script>
 
-        <!-- RED + WHITE CALENDAR CONTAINER -->
-        <div class="calendar-red">
-            <div class="calendar-white">
-                <img
-                    src="images/calendar.png"
-                    alt="Academic Calendar"
-                    class="calendar-image"
-                >
-            </div>
-        </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            requireLogin();
+            loadUserInfo();
+            loadAvatarEverywhere();
+        });
+    </script>
 
-    </div>
-
-</div>
-
-<script src="script.js"></script>
-
-<script>
-    function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle("show");
-    }
-
-    requireLogin();
-</script>
-
-</body>
+    </body>
 </html>

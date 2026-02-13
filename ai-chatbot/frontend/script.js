@@ -5,7 +5,9 @@
    register-step3.html
 ===================================================== */
 
+let lastChatId = null;        // ⭐ REQUIRED
 let isInCategoryFlow = false;
+let cachedWelcomeMessage = null;
 
 /* STEP 1 → SAVE PERSONAL INFO */
 function saveStep1() {
@@ -130,9 +132,25 @@ function loadSettings() {
             document.getElementById("set_email").value = data.email;
             document.getElementById("set_phone").value = data.phone;
             document.getElementById("set_address").value = data.address;
-            document.getElementById("set_birthdate").value = data.birth_date;
+            if (data.birth_date) {
+                const date = new Date(data.birth_date);
+                const formatted = date.toISOString().split("T")[0];
+                document.getElementById("set_birthdate").value = formatted;
+            }
         });
 }
+
+function loadProfilePhoto() {
+    const savedPhoto = localStorage.getItem("profile_photo");
+    if (!savedPhoto) return;
+
+    const avatar = document.getElementById("profileAvatar");
+    avatar.textContent = "";
+    avatar.style.backgroundImage = `url(${savedPhoto})`;
+    avatar.style.backgroundSize = "cover";
+    avatar.style.backgroundPosition = "center";
+}
+
 
 /* UPDATE PROFILE INFO */
 function updateProfile() {
@@ -152,8 +170,24 @@ function updateProfile() {
         })
     })
     .then(res => res.json())
-    .then(() => alert("Profile updated"));
+    .then(res => {
+        if (!res.success) {
+            alert(res.message);
+            return;
+        }
+
+        // 🔥 Update session user
+        sessionStorage.setItem("user", JSON.stringify(res.user));
+
+        // 🔄 Refresh topbar name
+        loadUserInfo();
+        loadAvatarEverywhere();
+
+        alert("Profile updated successfully");
+    })
+    .catch(() => alert("Something went wrong"));
 }
+
 
 /* CHANGE ACCOUNT PASSWORD */
 function changePassword() {
@@ -181,18 +215,22 @@ function changePassword() {
 }
 
 /* TAB SWITCHING (PROFILE / ACCOUNT) */
-function showTab(tabId) {
+function showTab(tabId, btn) {
+    // hide all tab contents
     document.querySelectorAll(".tab-content").forEach(tab => {
         tab.classList.remove("active");
     });
 
-    document.querySelectorAll(".tabs button").forEach(btn => {
-        btn.classList.remove("active");
+    // remove active state from buttons
+    document.querySelectorAll(".tabs button").forEach(button => {
+        button.classList.remove("active");
     });
 
+    // show selected tab
     document.getElementById(tabId).classList.add("active");
-    event.target.classList.add("active");
+    btn.classList.add("active");
 }
+
 
 /* =====================================================
    CLASS SCHEDULE (TABLE VERSION)
@@ -287,9 +325,9 @@ function sendMessage() {
 
     addMessage("user", msg);
 
-    fetch("http://127.0.0.1:5000/chat", {
+    fetch("http://localhost:5000/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
             user_id: user.id,
             message: msg
@@ -297,10 +335,12 @@ function sendMessage() {
     })
     .then(res => res.json())
     .then(data => {
-        addMessage("admin", data.reply, data.chat_id, true);
+
+        // ⭐ STORE CHAT ID FOR FEEDBACK
+        lastChatId = data.chat_id;
+
+        addMessage("admin", data.reply);
     });
-
-
 
     input.value = "";
 }
@@ -314,32 +354,55 @@ function sendQuick(text) {
 /* ADD MESSAGE TO CHAT BOX */
 function addMessage(sender, text, chatId = null, withFeedback = false) {
     const box = document.getElementById("chatBox");
+    if (!box) return;
+
     let html = "";
 
     if (sender === "user") {
+
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (!user) return;
+
+        const savedPhoto = localStorage.getItem(`profile_photo_${user.id}`);
+        const initials = getInitials(user.first_name, user.last_name);
+
+        const avatarStyle = savedPhoto
+            ? `background-image:url('${savedPhoto}');
+               background-size:cover;
+               background-position:center;
+               background-repeat:no-repeat;`
+            : `background-color:#d32f2f;`;
+
+        const avatarContent = savedPhoto ? "" : initials;
+
         html = `
             <div class="chat-message user">
                 <div class="bubble user-bubble">${text}</div>
-                <div class="avatar user-avatar">U</div>
+                <div class="avatar user-avatar"
+                    style="${avatarStyle}">
+                    ${avatarContent}
+                </div>
             </div>
         `;
+
     } else {
+
+        const adminPhoto = chatbotAdmin?.photo
+            ? `http://127.0.0.1:5000/uploads/${chatbotAdmin.photo}`
+            : "images/ai-profile.jpg";
+
+        const adminName = chatbotAdmin?.name || "Administrator";
+
         html = `
             <div class="chat-message admin">
-                <div class="avatar admin-avatar">A</div>
+                <div class="avatar admin-avatar"
+                    style="background-image:url('${adminPhoto}');
+                           background-size:cover;
+                           background-position:center;">
+                </div>
                 <div class="bubble admin-bubble">
+                    <strong>${adminName}</strong><br>
                     ${text}
-                    ${
-                      withFeedback && chatId
-                        ? `
-                          <div class="feedback">
-                            <span>Was this helpful?</span>
-                            <button onclick="sendFeedback(${chatId}, 'yes')">👍</button>
-                            <button onclick="sendFeedback(${chatId}, 'no')">👎</button>
-                          </div>
-                        `
-                        : ""
-                    }
                 </div>
             </div>
         `;
@@ -349,24 +412,63 @@ function addMessage(sender, text, chatId = null, withFeedback = false) {
     box.scrollTop = box.scrollHeight;
 }
 
-function sendFeedback(chatId, feedback) {
-    fetch("http://127.0.0.1:5000/chat/feedback", {
+function openFeedbackModal() {
+    document.getElementById("feedbackModal").style.display = "flex";
+}
+
+function closeFeedbackModal() {
+    document.getElementById("feedbackModal").style.display = "none";
+}
+
+function submitFeedback(type) {
+
+    if (!lastChatId) {
+        alert("No message to rate yet.");
+        return;
+    }
+
+    fetch("http://localhost:5000/chat/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-            chat_id: chatId,
-            feedback: feedback
+            feedback: type,
+            chat_id: lastChatId
         })
     })
-    .then(() => {
-        addMessage(
-            "admin",
-            feedback === "yes"
-              ? "Thanks! Glad I could help 😊"
-              : "Thanks for the feedback. I’ll forward this to the admin."
-        );
+    .then(res => {
+        if (!res.ok) throw new Error("Server error");
+        return res.json();
+    })
+    .then(data => {
+        closeFeedbackModal();
+        alert("Thank you for your feedback!");
+    })
+    .catch(err => {
+        console.error("Feedback error:", err);
+        alert("Something went wrong.");
     });
 }
+
+function sendFeedback(chatId, feedback) {
+    selectedChatId = chatId;
+    selectedFeedbackType = feedback;
+
+    const modal = document.getElementById("feedbackModal");
+    const text = document.getElementById("feedbackTypeText");
+
+    text.textContent =
+        feedback === "yes"
+            ? "You selected 👍 Helpful"
+            : "You selected 👎 Not Helpful";
+
+    modal.style.display = "flex";
+}
+
+function closeFeedbackModal() {
+    const modal = document.getElementById("feedbackModal");
+    if (modal) modal.style.display = "none";
+}
+
 
 
 function loadCategories() {
@@ -384,6 +486,14 @@ function loadCategories() {
             });
         });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const feedbackBtn = document.getElementById("giveFeedbackBtn");
+
+    if (feedbackBtn) {
+        feedbackBtn.addEventListener("click", openFeedbackModal);
+    }
+});
 
 function loadCategoryQuestions(category) {
     fetch(`http://127.0.0.1:5000/api/chat/questions/${encodeURIComponent(category)}`)
@@ -442,6 +552,7 @@ function selectCategory(category) {
     })
     .then(res => res.json())
     .then(data => {
+        lastChatId = data.chat_id;
         addMessage("admin", data.reply, data.chat_id, true);
         loadCategoryQuestions(category);
     })
@@ -471,6 +582,7 @@ function selectQuestion(question, answer) {
     .then(res => res.json())
     .then(data => {
         // show bot answer WITH feedback
+        lastChatId = data.chat_id;
         addMessage("admin", data.reply, data.chat_id, true);
     });
 
@@ -480,16 +592,17 @@ function selectQuestion(question, answer) {
 function loadChatHistory() {
     if (isInCategoryFlow) return;
 
+    const box = document.getElementById("chatBox");
+    if (!box) return;
+
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (!user) return;
 
     fetch(`http://127.0.0.1:5000/chat/history/${user.id}`)
         .then(res => res.json())
         .then(data => {
-            const box = document.getElementById("chatBox");
             box.innerHTML = "";
 
-            // ✅ SHOW WELCOME ONLY WHEN THERE IS NO CHAT HISTORY
             if (!data || data.length === 0) {
                 showWelcomeMessage();
                 return;
@@ -501,6 +614,9 @@ function loadChatHistory() {
                 }
                 if (row.bot_reply) {
                     addMessage("admin", row.bot_reply, row.id, row.feedback === null);
+
+                    // ⭐ always keep latest message id
+                    lastChatId = row.id;
                 }
             });
 
@@ -511,120 +627,268 @@ function loadChatHistory() {
         });
 }
 
+
+
 /* =====================================================
    CLASS SCHEDULE FLOW (WIZARD STYLE)
    class-schedule.html (EXPERIMENTAL)
 ===================================================== */
 
+/* =====================================================
+   CLASS SCHEDULE FLOW (KEEP CURRENT UI DESIGN)
+===================================================== */
+
+/* =====================================================
+   CLASS SCHEDULE FLOW (KEEP CURRENT UI DESIGN)
+===================================================== */
+
+const collegeCourses = ["BSBA", "BSIT", "BSOA", "BSAIS", "BT-FSM", "BT-ET"];
+const scheduleBlocks = ["BLK A", "BLK B", "BLK C","BLK D", "BLK E", "BLK F", "BLK G", "BLK H"];
+const shsStrands = ["GAS", "ABM", "TVL HE TOURISM HRM", "HUMSS", "ICT"];
+
 let selectedYearLevel = "";
 let selectedCourse = "";
 let selectedBlock = "";
 
-const yearLevels = ["SHS", "1st Year", "2nd Year", "3rd Year", "4th Year"];
-const courses = ["BSBA", "BSIT", "BSCS", "BSAIS", "BTVTED", "BSOA"];
-const blocks = ["BLK A", "BLK B", "BLK C", "BLK D"];
-
+/* INITIALIZE BUTTONS */
 document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("stepContainer")) {
-        showYearLevelStep();
-    }
+
+    const buttons = document.querySelectorAll(".year-btn");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const text = btn.textContent.trim();
+            handleYearClick(text);
+        });
+    });
+
 });
 
-/* STEP 1 → YEAR LEVEL */
-function showYearLevelStep() {
-    selectedYearLevel = "";
-    selectedCourse = "";
-    selectedBlock = "";
-
-    document.getElementById("stepTitle").textContent = "Select Year Level";
-    renderButtons(yearLevels, selectYearLevel);
+function formatCollegeYear(year) {
+    if (year === "1st Year") return "1-2";
+    if (year === "2nd Year") return "2-2";
+    if (year === "3rd Year") return "3-2";
+    if (year === "4th Year") return "4-2";
 }
 
-/* STEP 2 → COURSE */
-function selectYearLevel(year) {
+
+/* FIRST CLICK */
+function handleYearClick(year) {
+
     selectedYearLevel = year;
-    document.getElementById("stepTitle").textContent = "Select Course";
-    renderButtons(courses, selectCourse);
+
+    // SHS FLOW
+    if (year === "SHS") {
+        renderNextButtons(["Grade 11", "Grade 12"], handleSHSClick);
+    }
+
+    // COLLEGE FLOW
+    else {
+        renderNextButtons(collegeCourses, handleCourseClick);
+    }
 }
 
-/* STEP 3 → BLOCK */
-function selectCourse(course) {
-    selectedCourse = course;
-    document.getElementById("stepTitle").textContent = "Select Block";
-    renderButtons(blocks, selectBlock);
+function handleSHSClick(grade) {
+
+    selectedCourse = grade;
+
+    // Show strand buttons instead of image
+    renderNextButtons(shsStrands, handleStrandClick);
 }
 
-/* STEP 4 → LOAD SCHEDULE */
-function selectBlock(block) {
-    selectedBlock = block;
-    loadClassSchedule();
+function formatSHS(text) {
+    return text
+        .replace("Grade 11", "GRADE11")
+        .replace("Grade 12", "GRADE12")
+        .replace(/\s+/g, ""); // remove spaces
 }
 
-/* RENDER DYNAMIC BUTTONS */
-function renderButtons(list, handler) {
-    const container = document.getElementById("stepContainer");
-    container.innerHTML = "";
 
-    list.forEach(item => {
-        const btn = document.createElement("button");
-        btn.textContent = item;
-        btn.onclick = () => handler(item);
-        container.appendChild(btn);
-    });
-}
+function handleStrandClick(strand) {
 
-/* LOAD SCHEDULE (WIZARD VERSION) */
-function loadClassSchedule() {
-    fetch("http://127.0.0.1:5000/schedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            year_level: selectedYearLevel,
-            program: selectedCourse
-        })
-    })
-    .then(res => res.json())
-    .then(data => renderSchedule(data));
-}
+    selectedBlock = strand;
 
-function showWelcomeMessage() {
-    addMessage(
-        "admin",
-        "Hello! 👋 I'm ESCR Academic Chatbot. How can I help you today with your academic inquiries?"
+    const gradeFormatted = formatSHS(selectedCourse);
+    const strandFormatted = strand.replace(/\s+/g, "");
+
+    showScheduleImage(
+        `images/schedules/SHS_${gradeFormatted}_${strandFormatted}.jpg`
     );
 }
 
-function loadUsers() {
-  fetch("http://127.0.0.1:5000/api/admin/users")
-    .then(res => res.json())
-    .then(users => {
-      const tbody = document.querySelector("tbody");
-      tbody.innerHTML = "";
+/* COLLEGE → COURSE */
+function handleCourseClick(course) {
 
-      users.forEach(user => {
-        const tr = document.createElement("tr");
+    selectedCourse = course;
 
-        tr.innerHTML = `
-          <td>
-            <strong>${user.name}</strong><br>
-            <small>${user.email}</small>
-          </td>
-          <td><span class="tag">${user.role}</span></td>
-          <td>
-            <span class="status ${user.status}">
-              ${user.status}
-            </span>
-          </td>
-          <td>${user.last_active || "—"}</td>
-          <td>${new Date(user.created_at).toLocaleDateString()}</td>
-          <td>
-            ✏️ <span onclick="deleteUser(${user.id})">🗑️</span>
-          </td>
-        `;
+    renderNextButtons(scheduleBlocks, handleBlockClick);
+}
 
-        tbody.appendChild(tr);
-      });
+/* COLLEGE → BLOCK */
+function handleBlockClick(block) {
+
+    selectedBlock = block;
+
+    const yearFormatted = formatCollegeYear(selectedYearLevel);
+    const blockFormatted = block.replace(" ", "-"); // BLK A → BLK-A
+
+    showScheduleImage(
+        `images/schedules/${selectedCourse}_${yearFormatted}_${blockFormatted}.jpg`
+    );
+}
+
+
+/* RENDER BUTTONS (SAME UI STYLE) */
+function renderNextButtons(list, clickHandler) {
+
+    const wrapper = document.querySelector(".year-wrapper");
+    wrapper.innerHTML = "";
+
+    list.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "year-btn";
+        btn.textContent = item;
+
+        btn.addEventListener("click", () => {
+            clickHandler(item);
+        });
+
+        wrapper.appendChild(btn);
     });
 }
 
-document.addEventListener("DOMContentLoaded", loadUsers);
+/* SHOW IMAGE */
+function showScheduleImage(imagePath) {
+
+    const wrapper = document.querySelector(".year-wrapper");
+    wrapper.innerHTML = "";
+
+    const img = new Image();
+    img.src = imagePath;
+
+    img.onload = function () {
+        wrapper.innerHTML = `
+            <div class="schedule-image-box">
+                <img src="${imagePath}" class="schedule-image">
+            </div>
+        `;
+    };
+
+    img.onerror = function () {
+        wrapper.innerHTML = `
+            <div style="
+                background:white;
+                padding:40px;
+                border-radius:12px;
+                font-weight:bold;
+                text-align:center;">
+                No schedule available for this selection.
+            </div>
+        `;
+    };
+}
+
+function showWelcomeMessage() {
+    if (cachedWelcomeMessage) {
+        addMessage("admin", cachedWelcomeMessage);
+        return;
+    }
+
+    fetch("http://127.0.0.1:5000/api/admin/settings/chatbot")
+        .then(res => res.json())
+        .then(data => {
+            cachedWelcomeMessage =
+                data.welcome_message ||
+                "Hello! 👋 How can I help you today?";
+
+            addMessage("admin", cachedWelcomeMessage);
+        })
+        .catch(() => {
+            addMessage(
+                "admin",
+                "Hello! 👋 How can I help you today?"
+            );
+        });
+}
+
+function triggerPhotoUpload() {
+    document.getElementById("profilePhotoInput").click();
+}
+
+document.getElementById("profilePhotoInput")?.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        const imageData = reader.result;
+
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (!user) return;
+
+        const avatar = document.getElementById("profileAvatar");
+        avatar.textContent = "";
+        avatar.style.backgroundImage = `url(${imageData})`;
+        avatar.style.backgroundSize = "cover";
+        avatar.style.backgroundPosition = "center";
+
+        // ✅ SAVE PER USER
+        localStorage.setItem(`profile_photo_${user.id}`, imageData);
+    };
+
+    reader.readAsDataURL(file);
+});
+
+function loadProfilePhotoEverywhere() {
+    const photo = localStorage.getItem("profile_photo");
+    if (!photo) return;
+
+    document.querySelectorAll(".avatar").forEach(avatar => {
+        avatar.textContent = "";
+        avatar.style.backgroundImage = `url(${photo})`;
+        avatar.style.backgroundSize = "cover";
+        avatar.style.backgroundPosition = "center";
+    });
+}
+
+function getInitials(firstName, lastName) {
+    const first = firstName?.charAt(0).toUpperCase() || "";
+    const last = lastName?.charAt(0).toUpperCase() || "";
+    return first + last;
+}
+
+function loadAvatarEverywhere() {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user) return;
+
+    const savedPhoto = localStorage.getItem(`profile_photo_${user.id}`);
+    const initials = getInitials(user.first_name, user.last_name);
+
+    document.querySelectorAll(".avatar").forEach(avatar => {
+        if (savedPhoto) {
+            avatar.textContent = "";
+            avatar.style.backgroundImage = `url(${savedPhoto})`;
+            avatar.style.backgroundSize = "cover";
+            avatar.style.backgroundPosition = "center";
+            avatar.style.backgroundRepeat = "no-repeat";
+            avatar.style.backgroundColor = "transparent";
+        } else {
+            avatar.style.backgroundImage = "none";
+            avatar.style.backgroundColor = "#d32f2f";
+            avatar.textContent = initials;
+        }
+    });
+}
+
+let chatbotAdmin = null;
+
+function loadChatbotAdminProfile() {
+    fetch("http://127.0.0.1:5000/api/admin/profile")
+        .then(res => res.json())
+        .then(data => {
+            chatbotAdmin = data;
+        })
+        .catch(err => {
+            console.error("Failed to load admin profile:", err);
+        });
+}

@@ -1,81 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Settings | ESCR</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Settings | ESCR</title>
+        <link rel="stylesheet" href="css/navbar.css">
+        <link rel="stylesheet" href="css/settings.css">
+    </head>
+    <body>
 
-<script>
-    requireLogin();
-</script>
+        <!-- TOP NAVBAR -->
+        <header class="topbar modern">
+            <div class="topbar-left">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <img src="images/school-logo.jpg" class="logo">
+                <div class="title">
+                    <strong class="school-text">East Systems Colleges of Rizal</strong>
+                    <br>
+                    <span class="portal-text">Student Portal</span>
+                </div>
+            </div>
 
-<div class="layout">
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="avatar"></div>
+                    <div class="profile-text">
+                        <strong class="student-name"></strong>
+                        <span class="student-role"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-                    <!-- TOP NAVBAR -->
-                    <header class="topbar modern">
-                        <div class="topbar-left">
-                            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                            <img src="images/school-logo.jpg" class="logo">
-                            <div class="title">
-                                <strong>East Systems Colleges of Rizal</strong>
-                                <span>Student Portal</span>
-                            </div>
-                        </div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar modern" id="sidebar">
+            <a href="dashboard.html">🏠 Dashboard</a>
+            <a href="chatbot.html">🤖 ESCR Chatbot</a>
+            <a href="class-schedule.html">📅 Class Schedule</a>
+            <a href="school-calendar.html">🗓 School Calendar</a>
+            <a href="settings.html" class="active">⚙️ Settings</a>
+            <a href="login.html" class="logout">🚪 Logout</a>
+        </aside>
 
-                        <div class="topbar-right">
-                            <div class="profile">
-                                <div class="avatar">EB</div>
-                                <div class="profile-text">
-                                    <strong class="student-name"></strong>
-                                    <span class="student-role"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
-
-                        <!-- SIDEBAR -->
-                        <aside class="sidebar modern" id="sidebar">
-                            <a href="dashboard.html">🏠 Dashboard</a>
-                            <a href="chatbot.html" class="active">🤖 ESCR Chatbot</a>
-                            <a href="class-schedule.html">📅 Class Schedule</a>
-                            <a href="school-calendar.html">🗓 School Calendar</a>
-                            <a href="settings.html">⚙️ Settings</a>
-                            <a href="login.html" class="logout">🚪 Logout</a>
-                        </aside>
- <!-- CONTENT -->
-       <div class="content-single">
-
+        <!-- CONTENT -->
+        <div class="content-single">
             <div class="settings-card">
 
                 <!-- TABS -->
                 <div class="tabs">
-                    <button onclick="showTab('profile')" class="active">Profile</button>
-                    <button onclick="showTab('account')">Account</button>
+                    <button onclick="showTab('profile', this)" class="active">Profile</button>
+                    <button onclick="showTab('account', this)">Account</button>
                 </div>
 
-                <!-- ================= PROFILE TAB ================= -->
+                <!-- PROFILE TAB -->
                 <div id="profile" class="tab-content active profile-card-ui">
 
-                    <!-- HEADER -->
                     <div class="profile-header">
-                        <div class="avatar large" id="profileAvatar">JD</div>
+                        <div class="avatar large" id="profileAvatar"></div>
 
                         <div class="profile-photo-actions">
                             <strong>Profile Picture</strong>
                             <small>Upload your profile photo</small>
 
                             <div class="photo-buttons">
-                                <button class="btn primary">Upload Photo</button>
-                                <button class="btn secondary">Remove</button>
+                                <button class="btn primary" onclick="triggerPhotoUpload()">Upload Photo</button>
+                                <button class="btn secondary" onclick="removePhoto()">Remove</button>
                             </div>
+
+                            <input
+                                type="file"
+                                id="profilePhotoInput"
+                                accept="image/*"
+                                style="display:none"
+                            >
                         </div>
                     </div>
 
-                    <!-- FORM -->
                     <div class="profile-form-grid">
-
                         <div>
                             <label>First Name</label>
                             <input id="set_first_name">
@@ -105,21 +105,16 @@
                             <label>Birthdate</label>
                             <input id="set_birthdate" type="date">
                         </div>
-
                     </div>
 
-                    <!-- ACTIONS -->
                     <div class="profile-actions">
                         <button class="btn secondary">Cancel</button>
                         <button class="btn primary" onclick="updateProfile()">Save Changes</button>
                     </div>
-
                 </div>
 
-                <!-- ================= ACCOUNT TAB ================= -->
+                <!-- ACCOUNT TAB -->
                 <div id="account" class="tab-content">
-
-                    <!-- ACCOUNT INFO BOX -->
                     <div class="account-info-box">
                         <strong>Account Information</strong>
                         <p><b>Program:</b> Bachelor of Science in Information Technology</p>
@@ -127,9 +122,7 @@
                         <p class="status-active"><b>Account Status:</b> Active</p>
                     </div>
 
-                    <!-- PASSWORD FORM -->
                     <div class="account-form">
-
                         <div>
                             <label>Current Password</label>
                             <input id="current_password" type="password">
@@ -144,39 +137,57 @@
                             <label>Confirm New Password</label>
                             <input id="confirm_password" type="password">
                         </div>
-
                     </div>
 
-                    <!-- ACTIONS -->
                     <div class="profile-actions">
                         <button class="btn secondary">Cancel</button>
                         <button class="btn primary" onclick="changePassword()">Save Changes</button>
                     </div>
-
                 </div>
 
             </div>
         </div>
 
-            </div>
+    <script src="script.js"></script>
 
-        </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            requireLogin();
+            loadUserInfo();
+            loadAvatarEverywhere();
+        });
 
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("show");
+        }
 
-       
+        function triggerPhotoUpload() {
+            document.getElementById("profilePhotoInput").click();
+        }
 
+       document.getElementById("profilePhotoInput").addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
 
-<script src="script.js"></script>
-<script>
-    loadUserInfo();
-    loadSettings();
-</script>
-<script>
-    function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("show");
-}
+    const reader = new FileReader();
 
-</script>
+    reader.onload = () => {
+        const imageData = reader.result;
 
-</body>
+        const avatar = document.getElementById("profileAvatar");
+        avatar.textContent = "";
+        avatar.style.backgroundImage = `url(${imageData})`;
+        avatar.style.backgroundSize = "cover";
+        avatar.style.backgroundPosition = "center";
+
+        // ✅ SAVE HERE (after image is loaded)
+        localStorage.setItem("profile_photo", imageData);
+    };
+
+    reader.readAsDataURL(file);
+});
+
+    </script>
+
+    </body>
 </html>

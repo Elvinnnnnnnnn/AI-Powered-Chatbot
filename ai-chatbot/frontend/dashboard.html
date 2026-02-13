@@ -3,85 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard | ESCR</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
-    <body>
 
-        <!-- TOP NAVBAR -->
-        <header class="topbar modern">
-            <div class="topbar-left">
-                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <img src="images/school-logo.jpg" class="logo">
-                <div class="title">
-                    <strong>East Systems Colleges of Rizal</strong>
-                    <span>Student Portal</span>
-                </div>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <header class="topbar modern">
+        <div class="topbar-left">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <img src="images/school-logo.jpg" class="logo">
+            <div class="title">
+                <strong class="school-text">East Systems Colleges of Rizal</strong>
+                <br>
+                <span class="portal-text">Student Portal</span>
             </div>
-
-            <div class="topbar-right">
-                <div class="profile">
-                    <div class="avatar">EB</div>
-                    <div class="profile-text">
-                        <strong class="student-name"></strong>
-                        <span class="student-role"></span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- SIDEBAR -->
-        <aside class="sidebar modern" id="sidebar">
-            <a href="dashboard.html" class="active">🏠 Dashboard</a>
-            <a href="chatbot.html">🤖 ESCR Chatbot</a>
-            <a href="class-schedule.html">📅 Class Schedule</a>
-            <a href="school-calendar.html">🗓 School Calendar</a>
-            <a href="settings.html">⚙️ Settings</a>
-            <a href="login.html" class="logout">🚪 Logout</a>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-       <div class="dashboard-container">
-
-            <!-- PROFILE SUMMARY -->
-            <section class="card profile-summary">
-                <div class="avatar xl">EB</div>
-                <h2 class="student-name"></h2>
-                <p class="student-role"></p>
-                <span class="status-badge">Active Student</span>
-            </section>
-
-            <!-- VISION -->
-            <section class="card wide">
-                <h3>🎯 Vision</h3>
-                <p>
-                    A top academic institution that produces graduates equipped with
-                    knowledge, skills, and values to become highly competent,
-                    values-driven individuals.
-                </p>
-            </section>
-
-            <!-- MISSION -->
-            <section class="card wide">
-                <h3>🚀 Mission</h3>
-                <p>
-                    To ensure quality instruction for the holistic development of
-                    Easternians committed to professionalism and excellence in
-                    local, national, and global communities.
-                </p>
-            </section>
-
         </div>
 
-        <script src="script.js"></script>
+        <div class="topbar-right">
+            <div class="profile">
+                <div class="avatar"></div>
+                <div class="profile-text">
+                    <strong class="student-name"></strong>
+                    <span class="student-role"></span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <script>
-    function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle("show");
-    }
+    <!-- SIDEBAR -->
+    <aside class="sidebar modern" id="sidebar">
+        <a href="dashboard.html" class="active">🏠 Dashboard</a>
+        <a href="chatbot.html">🤖 ESCR Chatbot</a>
+        <a href="class-schedule.html">📅 Class Schedule</a>
+        <a href="school-calendar.html">🗓 School Calendar</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a href="login.html" class="logout">🚪 Logout</a>
+    </aside>
 
-    requireLogin();
-    loadUserInfo();
-    </script>
+    <!-- MAIN CONTENT -->
+    <div class="dashboard-container">
 
-    </body>
+        <!-- PROFILE SUMMARY -->
+        <section class="card profile-summary">
+            <div class="avatar xl"></div>
+            <h2 class="student-name"></h2>
+            <p class="student-role"></p>
+        </section>
+
+        <!-- VISION -->
+        <section class="card wide">
+            <h3>🎯 Vision</h3>
+            <p>
+                A top academic institution that produces graduates equipped with
+                knowledge, skills, and values to become highly competent,
+                values-driven individuals.
+            </p>
+        </section>
+
+        <!-- MISSION -->
+        <section class="card wide">
+            <h3>🚀 Mission</h3>
+            <p>
+                To ensure quality instruction for the holistic development of
+                Easternians committed to professionalism and excellence in
+                local, national, and global communities.
+            </p>
+        </section>
+
+    </div>
+
+<script src="script.js"></script>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+requireLogin();
+loadUserInfo();
+loadProfilePhotoEverywhere();
+loadAvatarEverywhere();
+</script>
+
+</body>
 </html>

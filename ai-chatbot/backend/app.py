@@ -1,22 +1,83 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from db import get_db_connection
 import hashlib
 import mysql.connector
 import time
+import re
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(
-    app,
-    resources={
-        r"/api/*": {
-            "origins": [
-                "http://localhost:5500",
-                "http://127.0.0.1:5500"
-            ]
-        }
-    }
-)
+CORS(app, supports_credentials=True)
+
+UPLOAD_FOLDER = "uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+@app.route("/api/admin/profile", methods=["GET"])
+def get_admin_profile():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT id, name, email, photo
+        FROM admins
+        LIMIT 1
+    """)
+
+    admin = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if not admin:
+        return jsonify({})
+
+    return jsonify(admin)
+
+@app.route("/api/admin/profile", methods=["PUT"])
+def update_admin_profile():
+    name = request.form.get("name")
+    email = request.form.get("email")
+    photo_file = request.files.get("photo")
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    photo_filename = None
+
+    # 🔹 If new photo uploaded
+    if photo_file:
+        filename = secure_filename(photo_file.filename)
+        photo_filename = f"admin_{int(time.time())}_{filename}"
+        photo_path = os.path.join(app.config["UPLOAD_FOLDER"], photo_filename)
+        photo_file.save(photo_path)
+
+        cursor.execute("""
+            UPDATE admins
+            SET name=%s, email=%s, photo=%s
+            LIMIT 1
+        """, (name, email, photo_filename))
+    else:
+        cursor.execute("""
+            UPDATE admins
+            SET name=%s, email=%s
+            LIMIT 1
+        """, (name, email))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
 @app.after_request
 def after_request(response):
     origin = request.headers.get("Origin")
@@ -82,10 +143,10 @@ def login():
     cursor = conn.cursor(dictionary=True)
 
     query = """
-    SELECT id, first_name, last_name, role, program, year_level
-    FROM users
-    WHERE email=%s AND password=%s
-    """
+        SELECT id, first_name, last_name, role, program, year_level, status
+        FROM users
+        WHERE email=%s AND password=%s
+        """
     cursor.execute(query, (email, hashed_password))
     user = cursor.fetchone()
 
@@ -114,32 +175,83 @@ def get_user(user_id):
 def update_profile():
     data = request.json
 
+    required_fields = [
+        "id", "first_name", "last_name",
+        "email", "phone", "address", "birth_date"
+    ]
+
+    # 1️⃣ Required field validation
+    for field in required_fields:
+        if field not in data or not str(data[field]).strip():
+            return jsonify({
+                "success": False,
+                "message": f"{field.replace('_', ' ').title()} is required"
+            }), 400
+
+    # 2️⃣ Email format validation  ✅ HERE
+    email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(email_regex, data["email"]):
+        return jsonify({
+            "success": False,
+            "message": "Invalid email format"
+        }), 400
+
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-    query = """
-    UPDATE users SET
-        first_name=%s,
-        last_name=%s,
-        email=%s,
-        phone=%s,
-        address=%s,
-        birth_date=%s
-    WHERE id=%s
-    """
+    # 3️⃣ Check duplicate email (exclude self)
+    cursor.execute("""
+        SELECT id FROM users
+        WHERE email = %s AND id != %s
+    """, (data["email"], data["id"]))
 
-    cursor.execute(query, (
-        data["first_name"],
-        data["last_name"],
-        data["email"],
-        data["phone"],
-        data["address"],
+    if cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return jsonify({
+            "success": False,
+            "message": "Email is already in use"
+        }), 409
+
+    # 4️⃣ Update profile
+    cursor.execute("""
+        UPDATE users
+        SET
+            first_name = %s,
+            last_name = %s,
+            email = %s,
+            phone = %s,
+            address = %s,
+            birth_date = %s
+        WHERE id = %s
+    """, (
+        data["first_name"].strip(),
+        data["last_name"].strip(),
+        data["email"].strip(),
+        data["phone"].strip(),
+        data["address"].strip(),
         data["birth_date"],
         data["id"]
     ))
 
     conn.commit()
-    return jsonify({"success": True})
+
+    # 5️⃣ Return updated user
+    cursor.execute("""
+        SELECT id, first_name, last_name, email, role
+        FROM users WHERE id = %s
+    """, (data["id"],))
+
+    updated_user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Profile updated successfully",
+        "user": updated_user
+    })
 
 @app.route("/change-password", methods=["POST"])
 def change_password():
@@ -199,12 +311,26 @@ def chat():
 
     data = request.json
     user_id = data.get("user_id")
-    message = data.get("message")
+    message = (data.get("message") or "").strip()
+
+    # 🔹 Load global chatbot settings (ADMIN CONTROLLED)
+    settings = get_system_settings()
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # 1️⃣ Search Knowledge Base
+    # ======================================================
+    # 1️⃣ CHECK IF THIS IS USER'S FIRST CHAT → SEND WELCOME
+    # ======================================================
+    cursor.execute(
+        "SELECT COUNT(*) AS total FROM chats WHERE user_id = %s",
+        (user_id,)
+    )
+    is_first_chat = cursor.fetchone()["total"] == 0
+
+    # ======================================================
+    # 2️⃣ SEARCH KNOWLEDGE BASE
+    # ======================================================
     cursor.execute("""
         SELECT answer
         FROM knowledge_base
@@ -214,20 +340,25 @@ def chat():
     """, (f"%{message}%",))
     result = cursor.fetchone()
 
-    # 2️⃣ Decide status
-    status = "resolved" if result else "escalated"
+    # ======================================================
+    # 3️⃣ DECIDE STATUS + REPLY
+    # ======================================================
+    if result:
+        reply = result["answer"]
+        status = "resolved"
+    else:
+        reply = settings["fallback_message"]
+        status = "escalated" if settings["auto_escalation"] else "resolved"
 
-    # 3️⃣ Reply
-    reply = result["answer"] if result else (
-        "I'm sorry, I couldn't find an answer to your question.\n"
-        "Your concern has been escalated."
-    )
-
-    # ⏱ stop timing
+    # ======================================================
+    # 4️⃣ RESPONSE TIME
+    # ======================================================
     end_time = time.time()
     response_time = round((end_time - start_time) * 1000, 2)
 
-    # 4️⃣ Save conversation WITH response time
+    # ======================================================
+    # 5️⃣ SAVE CHAT
+    # ======================================================
     cursor.execute("""
         INSERT INTO chats (user_id, user_message, bot_reply, status, response_time)
         VALUES (%s, %s, %s, %s, %s)
@@ -236,11 +367,12 @@ def chat():
 
     chat_id = cursor.lastrowid
 
-    # 5️⃣ Escalation ticket update
+    # ======================================================
+    # 6️⃣ ESCALATION TICKET NUMBER (IF ENABLED)
+    # ======================================================
     if status == "escalated":
         reply = (
-            "I'm sorry, I couldn't find an answer to your question.\n\n"
-            f"Your concern has been escalated.\n"
+            f"{reply}\n\n"
             f"Ticket No: #{chat_id}"
         )
 
@@ -310,6 +442,46 @@ def admin_login():
         return jsonify({"success": True, "admin": admin})
     else:
         return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
+    
+@app.route("/api/admin/register", methods=["POST"])
+def admin_register():
+    data = request.json
+
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({
+            "success": False,
+            "message": "All fields are required"
+        }), 400
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # 🔹 Check duplicate username/email
+    cursor.execute("SELECT id FROM admins WHERE email=%s", (username,))
+    if cursor.fetchone():
+        return jsonify({
+            "success": False,
+            "message": "Admin already exists"
+        }), 409
+
+    cursor.execute("""
+        INSERT INTO admins (name, email, password)
+        VALUES (%s, %s, %s)
+    """, (username, username, hashed_password))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Admin account created successfully"
+    })
     
 @app.route("/api/admin/conversations", methods=["GET"])
 def get_conversations():
@@ -768,19 +940,32 @@ def dashboard_stats():
 
 @app.route("/api/admin/most-asked", methods=["GET"])
 def most_asked_questions():
+    range = request.args.get("range", "7d")
+
+    if range == "30d":
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    elif range == "90d":
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)"
+    else:
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(f"""
         SELECT 
-            user_message AS question,
+            c.user_message AS question,
+            kb.category AS category,
             COUNT(*) AS total
-        FROM chats
-        WHERE user_message IS NOT NULL
-          AND user_message != ''
-        GROUP BY user_message
+        FROM chats c
+        LEFT JOIN knowledge_base kb
+            ON c.user_message = kb.question
+        WHERE c.user_message IS NOT NULL
+          AND c.user_message != ''
+          AND {date_filter}
+        GROUP BY c.user_message, kb.category
         ORDER BY total DESC
-        LIMIT 5
+        LIMIT 10
     """)
 
     data = cursor.fetchall()
@@ -804,11 +989,14 @@ def recent_activity():
             c.created_at
         FROM chats c
         JOIN users u ON u.id = c.user_id
+        WHERE c.user_message IS NOT NULL
+          AND c.user_message != ''
         ORDER BY c.created_at DESC
-        LIMIT 5
+        LIMIT 20
     """)
 
     data = cursor.fetchall()
+
     cursor.close()
     db.close()
 
@@ -876,14 +1064,13 @@ def user_stats():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT COUNT(*) AS total FROM users")
-    total = cursor.fetchone()["total"]
-
-    cursor.execute("SELECT COUNT(*) AS students FROM users WHERE role='student'")
+    cursor.execute("SELECT COUNT(*) AS students FROM users")
     students = cursor.fetchone()["students"]
 
     cursor.execute("SELECT COUNT(*) AS admins FROM admins")
     admins = cursor.fetchone()["admins"]
+
+    total = students + admins
 
     cursor.close()
     db.close()
@@ -897,19 +1084,16 @@ def user_stats():
 @app.route("/api/admin/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
     data = request.json
+    status = data.get("status")
 
     db = get_db_connection()
     cursor = db.cursor()
 
     cursor.execute("""
         UPDATE users
-        SET role=%s, status=%s
+        SET status=%s
         WHERE id=%s
-    """, (
-        data["role"],
-        data["status"],
-        user_id
-    ))
+    """, (status, user_id))
 
     db.commit()
     cursor.close()
@@ -922,13 +1106,405 @@ def delete_user(user_id):
     db = get_db_connection()
     cursor = db.cursor()
 
+    # Try deleting from users
     cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+    deleted_users = cursor.rowcount
+
+    # Try deleting from admins
+    cursor.execute("DELETE FROM admins WHERE id=%s", (user_id,))
+    deleted_admins = cursor.rowcount
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    if deleted_users or deleted_admins:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "message": "User not found"}), 404
+
+@app.route("/api/admin/analytics", methods=["GET"])
+def analytics():
+    range = request.args.get("range", "7d")
+
+    # date condition
+    if range == "30d":
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    elif range == "year":
+        date_filter = "YEAR(created_at) = YEAR(NOW())"
+    else:
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # ---------- TOTAL CHATS ----------
+    cursor.execute(f"""
+        SELECT COUNT(*) AS total
+        FROM chats
+        WHERE {date_filter}
+    """)
+    total = cursor.fetchone()["total"]
+
+    # ---------- RESOLVED ----------
+    cursor.execute(f"""
+        SELECT COUNT(*) AS resolved
+        FROM chats
+        WHERE status='resolved' AND {date_filter}
+    """)
+    resolved = cursor.fetchone()["resolved"]
+
+    # ---------- ESCALATED ----------
+    cursor.execute(f"""
+        SELECT COUNT(*) AS escalated
+        FROM chats
+        WHERE status='escalated' AND {date_filter}
+    """)
+    escalated = cursor.fetchone()["escalated"]
+
+    # ---------- SATISFACTION ----------
+    cursor.execute(f"""
+        SELECT
+            SUM(feedback='yes') AS yes_count,
+            COUNT(feedback) AS total_count
+        FROM chats
+        WHERE feedback IS NOT NULL AND {date_filter}
+    """)
+    row = cursor.fetchone()
+    satisfaction = (
+        round((row["yes_count"] / row["total_count"]) * 100, 1)
+        if row["total_count"] else 0
+    )
+
+    # ---------- AVG RESPONSE TIME ----------
+    cursor.execute(f"""
+        SELECT ROUND(AVG(response_time)/1000, 2) AS avg_time
+        FROM chats
+        WHERE response_time IS NOT NULL AND {date_filter}
+    """)
+    avg_time = cursor.fetchone()["avg_time"] or 0
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "total": total,
+        "resolved": resolved,
+        "escalated": escalated,
+        "resolution_rate": round((resolved / total) * 100, 1) if total else 0,
+        "escalation_rate": round((escalated / total) * 100, 1) if total else 0,
+        "avg_response_time": avg_time,
+        "satisfaction": satisfaction
+    })
+
+@app.route("/api/admin/analytics/categories", methods=["GET"])
+def analytics_categories():
+    range = request.args.get("range", "7d")
+
+    if range == "30d":
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    elif range == "year":
+        date_filter = "YEAR(created_at) = YEAR(NOW())"
+    else:
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute(f"""
+        SELECT
+            user_message AS category,
+            COUNT(*) AS total
+        FROM chats
+        WHERE user_message IN (
+            SELECT DISTINCT category FROM knowledge_base
+        )
+        AND {date_filter}
+        GROUP BY user_message
+        ORDER BY total DESC
+    """)
+
+    rows = cursor.fetchall()
+    total = sum(r["total"] for r in rows)
+
+    result = [
+        {
+            "category": r["category"],
+            "total": r["total"],
+            "percent": round((r["total"] / total) * 100, 1)
+        }
+        for r in rows
+    ]
+
+    cursor.close()
+    db.close()
+
+    return jsonify(result)
+
+@app.route("/api/admin/analytics/hours", methods=["GET"])
+def analytics_hours():
+    range = request.args.get("range", "7d")
+
+    if range == "30d":
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+    elif range == "year":
+        date_filter = "YEAR(created_at) = YEAR(NOW())"
+    else:
+        date_filter = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute(f"""
+        SELECT
+            HOUR(created_at) AS hour,
+            COUNT(*) AS total
+        FROM chats
+        WHERE {date_filter}
+        GROUP BY hour
+        ORDER BY hour
+    """)
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(data)
+
+@app.route("/api/admin/settings/general", methods=["GET"])
+def get_general_settings():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT system_name, institution_name, timezone, maintenance_mode
+        FROM system_settings
+        WHERE id = 1
+    """)
+    settings = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(settings)
+
+@app.route("/api/admin/settings/general", methods=["PUT"])
+def update_general_settings():
+    data = request.json
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE system_settings
+        SET
+          system_name = %s,
+          institution_name = %s,
+          timezone = %s,
+          maintenance_mode = %s
+        WHERE id = 1
+    """, (
+        data["system_name"],
+        data["institution_name"],
+        data["timezone"],
+        data["maintenance_mode"]
+    ))
 
     db.commit()
     cursor.close()
     db.close()
 
     return jsonify({"success": True})
+
+@app.before_request
+def check_maintenance():
+    if request.path.startswith("/chat"):
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT maintenance_mode FROM system_settings WHERE id=1")
+        row = cursor.fetchone()
+        cursor.close()
+        db.close()
+
+        if row and row["maintenance_mode"]:
+            return jsonify({
+                "message": "System is under maintenance. Please try again later."
+            }), 503
+
+@app.route("/api/admin/settings/chatbot", methods=["GET"])
+def get_chatbot_settings():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+          chatbot_name,
+          welcome_message,
+          fallback_message,
+          confidence_threshold,
+          auto_escalation
+        FROM system_settings
+        WHERE id = 1
+    """)
+
+    settings = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(settings)
+
+@app.route("/api/admin/settings/chatbot", methods=["PUT"])
+def update_chatbot_settings():
+    data = request.json
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE system_settings
+        SET
+          chatbot_name = %s,
+          welcome_message = %s,
+          fallback_message = %s,
+          confidence_threshold = %s,
+          auto_escalation = %s
+        WHERE id = 1
+    """, (
+        data["chatbot_name"],
+        data["welcome_message"],
+        data["fallback_message"],
+        data["confidence_threshold"],
+        data["auto_escalation"]
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+def get_system_settings():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+          maintenance_mode,
+          chatbot_name,
+          welcome_message,
+          fallback_message,
+          confidence_threshold,
+          auto_escalation
+        FROM system_settings
+        WHERE id = 1
+    """)
+
+    settings = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return settings
+
+@app.route("/api/chat/new", methods=["POST"])
+def start_new_chat():
+    data = request.json
+    user_id = data["user_id"]
+
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM chats WHERE user_id = %s", (user_id,))
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/api/admin/users", methods=["POST"])
+def admin_create_user():
+    data = request.json
+
+    full_name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    role = data.get("role")
+    password = data.get("password")
+
+    # ---------------- VALIDATION ----------------
+    if not full_name or not email or not role or not password:
+        return jsonify({
+            "success": False,
+            "message": "All fields are required"
+        }), 400
+
+    if role not in ["student", "admin"]:
+        return jsonify({
+            "success": False,
+            "message": "Invalid role"
+        }), 400
+
+    email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+    if not re.match(email_regex, email):
+        return jsonify({
+            "success": False,
+            "message": "Invalid email format"
+        }), 400
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        # ---------------- STUDENT ----------------
+        if role == "student":
+            # check duplicate email
+            cursor.execute("SELECT id FROM users WHERE email=%s", (email,))
+            if cursor.fetchone():
+                return jsonify({
+                    "success": False,
+                    "message": "Email already exists"
+                }), 409
+
+            first_name, *last = full_name.split(" ", 1)
+            last_name = last[0] if last else ""
+
+            cursor.execute("""
+                INSERT INTO users
+                (first_name, last_name, email, password, role, status)
+                VALUES (%s, %s, %s, %s, 'student', 'active')
+            """, (first_name, last_name, email, hashed_password))
+
+        # ---------------- ADMIN ----------------
+        else:
+            cursor.execute("SELECT id FROM admins WHERE email=%s", (email,))
+            if cursor.fetchone():
+                return jsonify({
+                    "success": False,
+                    "message": "Admin email already exists"
+                }), 409
+
+            cursor.execute("""
+                INSERT INTO admins
+                (name, email, password)
+                VALUES (%s, %s, %s)
+            """, (full_name, email, hashed_password))
+
+        db.commit()
+
+    except Exception as e:
+        print("ADD USER ERROR:", e)
+        return jsonify({
+            "success": False,
+            "message": "Server error"
+        }), 500
+    finally:
+        cursor.close()
+        db.close()
+
+    return jsonify({
+        "success": True,
+        "message": "User created successfully"
+    })
 
 
 # ---------------- RUN SERVER ----------------

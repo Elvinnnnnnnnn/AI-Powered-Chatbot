@@ -1,92 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Class Schedule</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Class Schedule</title>
+        <link rel="stylesheet" href="css/navbar.css">
+        <link rel="stylesheet" href="css/class-schedule.css">
+    </head>
 
-<body>
+    <body>
 
-<div class="layout">
-
-    <!-- TOP NAVBAR -->
-    <header class="topbar modern">
-        <div class="topbar-left">
-            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-            <img src="images/school-logo.jpg" class="logo">
-            <div class="title">
-                <strong>East Systems Colleges of Rizal</strong>
-                <span>Student Portal</span>
-            </div>
-        </div>
-
-        <div class="topbar-right">
-            <div class="profile">
-                <div class="avatar">J</div>
-                <div class="profile-text">
-                    <strong>Juan Dela Cruz</strong>
-                    <span>Student</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar modern" id="sidebar">
-        <a href="dashboard.html">🏠 Home</a>
-        <a href="chatbot.html">🤖 ESCR Chatbot</a>
-        <a href="class-schedule.html" class="active">📅 Class Schedule</a>
-        <a href="school-calendar.html">🗓 School Calendar</a>
-        <a href="settings.html">⚙️ Settings</a>
-        <a href="login.html" class="logout">🚪 Logout</a>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="content-single">
-
-        <!-- YEAR BUTTONS -->
-        <div class="year-wrapper">
-
-            <!-- SHS -->
-            <button class="year-btn shs">SHS</button>
-
-            <div class="year-columns">
-                <!-- LEFT -->
-                <div class="year-left">
-                    <button class="year-btn">1st Year</button>
-                    <button class="year-btn">2nd Year</button>
-                </div>
-
-                <!-- RIGHT -->
-                <div class="year-right">
-                    <button class="year-btn orange">3rd Year</button>
-                    <button class="year-btn">4th Year</button>
+        <!-- TOP NAVBAR -->
+        <header class="topbar modern">
+            <div class="topbar-left">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <img src="images/school-logo.jpg" class="logo">
+                <div class="title">
+                    <strong class="school-text">East Systems Colleges of Rizal</strong>
+                    <br>
+                    <span class="portal-text">Student Portal</span>
                 </div>
             </div>
 
+            <div class="topbar-right">
+                <div class="profile">
+                    <div class="avatar"></div>
+                    <div class="profile-text">
+                        <strong class="student-name"></strong>
+                        <span class="student-role"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar modern" id="sidebar">
+            <a href="dashboard.html">🏠 Home</a>
+            <a href="chatbot.html">🤖 ESCR Chatbot</a>
+            <a href="class-schedule.html" class="active">📅 Class Schedule</a>
+            <a href="school-calendar.html">🗓 School Calendar</a>
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="login.html" class="logout">🚪 Logout</a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="content-single">
+
+            <!-- YEAR BUTTONS -->
+            <div class="year-wrapper">
+                <button class="year-btn">SHS</button>
+                <button class="year-btn">1st Year</button>
+                <button class="year-btn">2nd Year</button>
+                <button class="year-btn">3rd Year</button>
+                <button class="year-btn">4th Year</button>
+            </div>
+
+            <!-- SCHEDULE OUTPUT (for later use) -->
+            <div id="scheduleTable"></div>
+
         </div>
 
-        <!-- SCHEDULE OUTPUT (for later use) -->
-        <div id="scheduleTable"></div>
+    <!-- SCRIPTS -->
+    <script src="script.js"></script>
 
-    </div>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("show");
+        }
 
-</div>
+        document.addEventListener("DOMContentLoaded", () => {
+            requireLogin();
+            loadUserInfo();
+            loadAvatarEverywhere();
+        });
+    </script>
 
-<!-- SCRIPTS -->
-<script src="script.js"></script>
-
-<script>
-    function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle("show");
-    }
-
-    // optional login check
-    if (typeof requireLogin === "function") {
-        requireLogin();
-    }
-</script>
-
-</body>
+    </body>
 </html>

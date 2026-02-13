@@ -1,98 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>ESCR Chatbot</title>
+<head>
+    <meta charset="UTF-8">
+    <title>ESCR Chatbot</title>
 
-        <!-- GLOBAL STYLES -->
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
 
-        <div class="layout">
+    <!-- TOP NAVBAR -->
+    <header class="topbar modern">
+        <div class="topbar-left">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <img src="images/school-logo.jpg" class="logo">
+            <div class="title">
+                <strong class="school-text">East Systems Colleges of Rizal</strong>
+                <br>
+                <span class="portal-text">Student Portal</span>
+            </div>
+        </div>
 
-            <!-- TOP NAVBAR -->
-            <header class="topbar modern">
-                <div class="topbar-left">
-                    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-                    <img src="images/school-logo.jpg" class="logo">
-                    <div class="title">
-                        <strong>East Systems Colleges of Rizal</strong>
-                        <span>Student Portal</span>
+        <div class="topbar-right">
+            <div class="profile">
+                <div class="avatar"></div>
+                <div class="profile-text">
+                    <strong class="student-name"></strong>
+                    <span class="student-role"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar modern" id="sidebar">
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <a href="chatbot.html" class="active">🤖 ESCR Chatbot</a>
+        <a href="class-schedule.html">📅 Class Schedule</a>
+        <a href="school-calendar.html">🗓 School Calendar</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a href="login.html" class="logout">🚪 Logout</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <div class="chat-red">
+            <div class="chat-container">
+
+                <div class="chat-box" id="chatBox"></div>
+
+                <div class="chat-actions">
+
+                    <div class="feedback-bar">
+                        <button id="giveFeedbackBtn">Give Feedback</button>
                     </div>
+
+                    <div class="quick-actions" id="categoryActions"></div>
+
                 </div>
 
-                <div class="topbar-right">
-                    <div class="profile">
-                        <div class="avatar">EB</div>
-                        <div class="profile-text">
-                            <strong class="student-name"></strong>
-                            <span class="student-role"></span>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- SIDEBAR -->
-            <aside class="sidebar modern" id="sidebar">
-                <a href="dashboard.html">🏠 Dashboard</a>
-                <a href="chatbot.html" class="active">🤖 ESCR Chatbot</a>
-                <a href="class-schedule.html">📅 Class Schedule</a>
-                <a href="school-calendar.html">🗓 School Calendar</a>
-                <a href="settings.html">⚙️ Settings</a>
-                <a href="login.html" class="logout">🚪 Logout</a>
-            </aside>
-
-            <!-- MAIN CONTENT -->
-            <div class="main-content">
-
-                <!-- 🔴 RED CHAT WRAPPER (LIKE CALENDAR) -->
-                <div class="chat-red">
-
-                    <!-- ⚪ WHITE CHAT CARD -->
-                    <div class="chat-container">
-
-                        <!-- CHAT MESSAGES -->
-                        <div class="chat-box" id="chatBox"></div>
-
-                        <!-- CATEGORY BUTTONS -->
-                        <div class="quick-actions" id="categoryActions"></div>
-
-                        <!-- INPUT BAR -->
-                        <div class="chat-input">
-                            <input
-                                type="text"
-                                id="userMessage"
-                                placeholder="Type your message..."
-                            >
-                            <button onclick="sendMessage()">Send</button>
-                        </div>
-
-                    </div>
+                <div class="chat-input">
+                    <input
+                        type="text"
+                        id="userMessage"
+                        placeholder="Type your message..."
+                    >
+                    <button onclick="sendMessage()">Send</button>
                 </div>
 
             </div>
-
         </div>
 
-        <script src="script.js"></script>
+    </div>
+<div class="modal-overlay" id="feedbackModal">
+    <div class="modal-box">
+        <h3>Was this conversation helpful?</h3>
 
-        <script>
-            function toggleSidebar() {
-                document.getElementById("sidebar").classList.toggle("show");
-            }
+        <div class="thumb-options">
+            <button onclick="submitFeedback('yes')" class="thumb-btn">👍</button>
+            <button onclick="submitFeedback('no')" class="thumb-btn">👎</button>
+        </div>
 
-            document.addEventListener("DOMContentLoaded", () => {
-                requireLogin();
+        <div class="modal-actions">
+            <button onclick="closeFeedbackModal()" class="btn-cancel">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
 
-                sessionStorage.removeItem("activeCategory");
-                isInCategoryFlow = false;
+<script src="script.js"></script>
 
-                loadCategories();
-                loadChatHistory();
-                setInterval(loadChatHistory, 5000);
-            });
-        </script>
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("show");
+    }
 
-    </body>
+    document.addEventListener("DOMContentLoaded", () => {
+        requireLogin();
+
+        sessionStorage.removeItem("activeCategory");
+        isInCategoryFlow = false;
+
+        loadChatbotAdminProfile();   
+
+        loadCategories();
+        loadChatHistory();
+        setInterval(loadChatHistory, 5000);
+    });
+
+    requireLogin();
+    loadUserInfo();
+    loadProfilePhotoEverywhere();
+    loadAvatarEverywhere();
+</script>
+
+</body>
 </html>

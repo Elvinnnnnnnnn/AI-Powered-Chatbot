@@ -12,20 +12,21 @@
 <!-- ================= ADMIN TOPBAR ================= -->
 <header class="admin-topbar">
   <div class="topbar-left">
-    <button class="menu-btn">☰</button>
-    <img src="images/escr-logo.png" class="logo">
+    <img src="images/school-logo-remove-background.png" class="logo">
     <div class="brand">
       <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+      <br>
       <span>Admin Portal</span>
     </div>
   </div>
 
   <div class="topbar-right">
     <div class="admin-user">
-      <div class="avatar">A</div>
+      <img id="topbarPhoto" class="topbar-photo" src="images/ai-profile.jpg">
       <div class="user-info">
-        <strong>Joel Mariano</strong>
-        <span>Admin</span>
+        <strong id="topbarAdminName"></strong>
+        <br>
+        <span>Administrator</span>
       </div>
     </div>
   </div>
@@ -69,21 +70,22 @@
       </li>
     </ul>
 
-    <button class="logout-btn">
+    <button class="logout-btn" onclick="logout()">
       <span class="icon">↩️</span>
       Logout
     </button>
+
 
   </aside>
 
 
   <!-- 🔒 ADMIN AUTH CHECK -->
   <script>
-    const admin = localStorage.getItem("admin");
-    if (!admin) {
-      window.location.href = "admin-login.html";
+    if (!localStorage.getItem("admin")) {
+      window.location.replace("admin-login.html");
     }
   </script>
+
 
   <!-- MAIN CONTENT -->
   <main class="admin-content">
@@ -97,7 +99,7 @@
         </p>
       </div>
 
-      <button class="btn-primary">+ Add New User</button>
+      <button class="btn-primary add-user-btn">+ Add New User</button>
     </div>
 
     <!-- STATS (can be wired later) -->
@@ -155,6 +157,75 @@
   </main>
 </div>
 
+<!-- ================= ADD USER MODAL ================= -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add New User</h3>
+      <button class="modal-close" onclick="closeAddUserModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter full name">
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter email address">
+      </div>
+
+      <div class="form-group">
+        <label>Role</label>
+        <select>
+          <option disabled selected>Select Role</option>
+          <option value="student">Student</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Temporary Password</label>
+        <input type="password" placeholder="Enter password">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeAddUserModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitAddUser()">Add User</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EDIT USER MODAL ================= -->
+<div class="modal-overlay" id="editUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Edit User</h3>
+      <button class="modal-close" onclick="closeEditUserModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <input type="hidden" id="editUserId">
+
+      <div class="form-group">
+        <label>Status</label>
+        <select id="editUserStatus">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitEditUser()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
 <script src="admin-ui.js"></script>
 </body>
 </html>

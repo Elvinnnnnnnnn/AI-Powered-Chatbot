@@ -1,0 +1,191 @@
+/* ================= GLOBAL ================= */
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #f1f5f9;
+}
+
+.admin-layout {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* ================= TOPBAR ================= */
+
+.admin-topbar {
+  height: 70px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  background: #2563eb;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-role {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ================= SIDEBAR ================= */
+
+.admin-sidebar {
+  width: 230px;
+  background: white;
+  padding: 25px 15px;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-menu li {
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nav-menu li.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* ================= MAIN ================= */
+
+.admin-content {
+  flex: 1;
+  padding: 35px;
+  overflow-y: auto;
+}
+
+/* ================= HEADER ================= */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.page-header p {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+/* ================= CARD ================= */
+
+.analytics-card {
+  background: white;
+  padding: 25px;
+  margin-top: 25px;
+  border-radius: 14px;
+}
+
+.analytics-card h2 {
+  margin-top: 0;
+}
+
+/* ================= TABLE ================= */
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.analytics-table th {
+  text-align: left;
+  font-size: 14px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.analytics-table td {
+  padding: 16px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+/* ================= RANK BADGE ================= */
+
+.rank-badge {
+  background: #e0e7ff;
+  color: #1e40af;
+  padding: 8px 14px;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+/* ================= CATEGORY TAGS ================= */
+
+.tag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.enrollment {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.grades {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.finance {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.schedule {
+  background: #cffafe;
+  color: #0e7490;
+}
+
+.scholarship {
+  background: #fde68a;
+  color: #92400e;
+}

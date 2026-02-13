@@ -1,0 +1,84 @@
+/* =====================================================
+   SCHOOL CALENDAR PAGE ONLY
+   (Requires navbar.css)
+===================================================== */
+
+/* ===============================
+   PAGE BACKGROUND
+=============================== */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #e53935, #fdd835);
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+=============================== */
+
+.content-single {
+    margin-top: var(--topbar-height);
+    padding: 40px 30px;
+    min-height: calc(100vh - var(--topbar-height));
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+/* ===============================
+   RED OUTER CONTAINER
+=============================== */
+
+.calendar-red {
+    background: #e53935;
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 950px;
+    display: flex;
+    justify-content: center;
+}
+
+/* ===============================
+   WHITE INNER CONTAINER
+=============================== */
+
+.calendar-white {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 850px;
+}
+
+/* ===============================
+   CALENDAR IMAGE
+=============================== */
+
+.calendar-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 6px;
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+
+@media (max-width: 768px) {
+    .content-single {
+        padding: 20px;
+    }
+
+    .calendar-red {
+        padding: 20px;
+    }
+
+    .calendar-white {
+        padding: 15px;
+    }
+}
