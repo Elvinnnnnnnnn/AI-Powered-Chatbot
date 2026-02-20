@@ -5,7 +5,13 @@
         <title>School Calendar</title>
         <link rel="stylesheet" href="css/navbar.css">
         <link rel="stylesheet" href="css/calendar.css">
+        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     </head>
+    <div id="notifPanel" class="notif-panel">
+        <h3>Notifications</h3>
+        <div id="notifList"></div>
+    </div>
     <body>
 
         <!-- TOP NAVBAR -->
@@ -21,6 +27,9 @@
             </div>
 
             <div class="topbar-right">
+                <div class="notif-bell" onclick="openNotifications()">
+                    🔔 <span id="notifCount" class="notif-count">0</span>
+                </div>
                 <div class="profile">
                     <div class="avatar"></div>
                     <div class="profile-text">
@@ -45,15 +54,29 @@
         <div class="content-single">
             <div class="calendar-red">
                 <div class="calendar-white">
-                    <img
-                        src="images/calendar.png"
-                        alt="Academic Calendar"
-                        class="calendar-image"
-                    >
+                    <div id="calendar"></div>
+                    <!-- EVENT MODAL -->
+                    <div id="eventModal" class="event-modal">
+                    <div class="event-modal-box">
+
+                        <div class="event-modal-header">
+                        <h2 id="modalTitle"></h2>
+                        <button class="close-btn" onclick="closeEventModal()">×</button>
+                        </div>
+
+                        <div class="event-modal-body">
+                        <p id="modalDate"></p>
+                        <p id="modalDescription"></p>
+                        </div>
+
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
     <script src="script.js"></script>
 
     <script>
@@ -63,12 +86,71 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            requireLogin();
-            loadUserInfo();
-            loadAvatarEverywhere();
+document.addEventListener("DOMContentLoaded", async () => {
+
+    requireLogin();
+    loadUserInfo();
+    loadAvatarEverywhere();
+
+        const res = await fetch("http://localhost:5000/calendar");
+    const data = await res.json();
+
+    // IMPORTANT: map description into extendedProps
+    const events = data.map(e => ({
+        id: e.id,
+        title: e.title,
+        start: e.start,
+        end: e.end,
+        color: e.color,
+        extendedProps: {
+            description: e.description
+        }
+    }));
+
+    const calendarEl = document.getElementById("calendar");
+
+const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    height: 650,
+    events: events,
+
+    displayEventTime: false,
+
+    eventClick: function(info){
+
+        const title = info.event.title;
+        const desc = info.event.extendedProps.description || "No description";
+        const start = info.event.start.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
         });
-    </script>
+
+        let end = "";
+        if(info.event.end){
+            end = " - " + info.event.end.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            });
+        }
+
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalDate").textContent = start + end;
+        document.getElementById("modalDescription").textContent = desc;
+
+        document.getElementById("eventModal").classList.add("show");
+    }
+});
+    calendar.render();
+});
+</script>
+<script>
+function closeEventModal(){
+    document.getElementById("eventModal").classList.remove("show");
+}
+</script>
+
 
     </body>
 </html>

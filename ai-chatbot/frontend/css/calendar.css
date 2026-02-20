@@ -69,6 +69,181 @@ body {
    RESPONSIVE
 =============================== */
 
+/* CLICKABLE EVENTS */
+.fc-daygrid-event {
+    cursor: pointer;
+}
+
+/* MODAL BACKGROUND */
+.event-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s;
+    z-index: 9999;
+}
+
+.event-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* MODAL BOX */
+.event-modal-box {
+    background: white;
+    width: 400px;
+    max-width: 90%;
+    border-radius: 14px;
+    overflow: hidden;
+    animation: pop .18s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(.9); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+}
+
+.event-modal-header {
+    background: #e53935;
+    color: white;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.event-modal-body {
+    padding: 18px;
+}
+
+#modalDate {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+/* CALENDAR SIZE CONTROL */
+#calendar {
+    max-width: 760px;
+    margin: auto;
+    font-size: 13px;
+}
+
+/* reduce row height */
+.fc .fc-daygrid-day-frame {
+    min-height: 80px;
+}
+
+/* less tall header */
+.fc .fc-toolbar-title {
+    font-size: 18px !important;
+    font-weight: 600;
+}
+
+/* calendar container look */
+.calendar-white {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 820px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+/* header buttons */
+.fc .fc-button {
+    background: #e53935 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+}
+
+.fc .fc-button:hover {
+    background: #c62828 !important;
+}
+
+/* today button special */
+.fc .fc-today-button {
+    background: #ffb300 !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+/* day numbers */
+.fc .fc-daygrid-day-number {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+}
+
+/* today highlight */
+.fc-day-today {
+    background: #fff7e6 !important;
+}
+
+/* events look like pills */
+.fc-daygrid-event {
+    border-radius: 6px !important;
+    padding: 3px 6px !important;
+    font-size: 12px !important;
+    border: none !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,.15);
+}
+
+/* hover animation */
+.fc-daygrid-event:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid {
+    border: 1px solid #f1f1f1 !important;
+}
+
+.fc .fc-daygrid-day-top {
+    padding: 4px 6px;
+}
+
+.fc .fc-daygrid-day-events {
+    margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+
+    #calendar {
+        font-size: 11px;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 15px !important;
+    }
+
+    .fc .fc-button {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+
+    .fc .fc-daygrid-day-frame {
+        min-height: 60px;
+    }
+}
+
 @media (max-width: 768px) {
     .content-single {
         padding: 20px;
@@ -82,3 +257,4 @@ body {
         padding: 15px;
     }
 }
+

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin | Calendar Activities</title>
+
+<link rel="stylesheet" href="css/admin-navbar.css">
+<link rel="stylesheet" href="css/admin-calendar.css">
+
+</head>
+<body class="admin-body">
+
+<!-- ================= ADMIN TOPBAR ================= -->
+
+<header class="admin-topbar">
+  <div class="topbar-left">
+    <img src="images/school-logo-remove-background.png" class="logo">
+    <div class="brand">
+      <strong>EAST SYSTEMS COLLEGES OF RIZAL</strong>
+      <br>
+      <span>Admin Portal</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="admin-user">
+      <img id="topbarPhoto" class="topbar-photo" src="images/ai-profile.jpg">
+      <div class="user-info">
+        <strong id="topbarAdminName"></strong>
+        <br>
+        <span>Administrator</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAGE LAYOUT ================= -->
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+
+    <aside class="admin-sidebar">
+        <ul class="nav-menu">
+
+    <li onclick="goTo('admin-dashboard.html')">
+        <span class="icon">📊</span>
+        <span class="label">Dashboard</span>
+    </li>
+
+    <li onclick="goTo('admin-conversation-logs.html')">
+        <span class="icon">💬</span>
+        <span class="label">Conversation Logs</span>
+    </li>
+
+    <li onclick="goTo('admin-knowledge-base.html')">
+        <span class="icon">📘</span>
+        <span class="label">Knowledge Base</span>
+    </li>
+
+    <li onclick="goTo('admin-user-management.html')">
+        <span class="icon">👤</span>
+        <span class="label">User Management</span>
+    </li>
+
+    <li class="active" onclick="goTo('admin-calendar.html')">
+        <span class="icon">🗓</span>
+        <span class="label">Calendar Activities</span>
+    </li>
+
+    <li onclick="goTo('admin-analytics.html')">
+        <span class="icon">📈</span>
+        <span class="label">Analytics</span>
+    </li>
+
+    <li onclick="goTo('admin-settings.html')">
+        <span class="icon">⚙️</span>
+        <span class="label">Settings</span>
+    </li>
+
+    </ul>
+
+    <button class="logout-btn" onclick="logout()">
+    <span class="icon">↩️</span>
+    Logout
+    </button>
+
+  </aside>
+
+  <!-- 🔒 ADMIN AUTH CHECK -->
+
+  <script>
+    if (!localStorage.getItem("admin")) {
+      window.location.replace("admin-login.html");
+    }
+  </script>
+
+  <!-- ================= CONTENT ================= -->
+
+  <main class="admin-content">
+
+    <div class="admin-header">
+    <h1>School Calendar Activities</h1>
+    <p>Add and manage events visible in the student calendar</p>
+    </div>
+
+    <!-- ADD EVENT PANEL -->
+    <div class="panel">
+    <h3>Add Activity</h3>
+
+    <div class="form-grid">
+        <input id="title" placeholder="Event Title">
+
+        <input type="date" id="start_date">
+        <input type="date" id="end_date">
+
+        <input id="color" type="color" value="#3788d8">
+
+        <textarea id="description" placeholder="Description"></textarea>
+    </div>
+
+    <button class="primary-btn" onclick="addEvent()">Save Activity</button>
+    </div>
+
+    <!-- EVENT LIST PANEL -->
+    <div class="panel">
+    <h3>Existing Activities</h3>
+
+    <table class="event-table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Color</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="eventList"></tbody>
+    </table>
+    </div>
+
+    </main>
+</div>
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
+<script src="admin.js"></script>
+
+<script src="admin-ui.js"></script>
+
+<script>
+function goTo(page){
+  window.location.href = page;
+}
+
+/* ================= LOAD EVENTS ================= */
+async function loadEvents(){
+  const res = await fetch("http://localhost:5000/api/admin/calendar");
+  const data = await res.json();
+
+  function formatDate(dateStr){
+  if(!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-US",{
+    year:"numeric",
+    month:"short",
+    day:"numeric"
+  });
+}
+
+  const table = document.getElementById("eventList");
+  table.innerHTML = "";
+
+  data.forEach(e=>{
+    table.innerHTML += `
+      <tr>
+        <td>${e.title}</td>
+        <td>${formatDate(e.start_date)}</td>
+        <td>${formatDate(e.end_date)}</td>
+        <td><span class="color-box" style="background:${e.color}"></span></td>
+        <td>
+          <button class="danger" onclick="deleteEvent(${e.id})">Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+
+/* ================= ADD EVENT ================= */
+async function addEvent(){
+
+  await fetch("http://localhost:5000/api/admin/calendar",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      title: document.getElementById("title").value,
+      description: document.getElementById("description").value,
+      start_date: document.getElementById("start_date").value,
+      end_date: document.getElementById("end_date").value,
+      color: document.getElementById("color").value
+    })
+  });
+
+  loadEvents();
+}
+
+/* ================= DELETE ================= */
+async function deleteEvent(id){
+  await fetch(`http://localhost:5000/api/admin/calendar/${id}`,{
+    method:"DELETE"
+  });
+
+  loadEvents();
+}
+
+loadEvents();
+
+</script>
+
+</body>
+</html>

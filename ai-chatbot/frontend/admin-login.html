@@ -31,11 +31,12 @@
     <input type="password" id="password" placeholder="Enter your password" required>
 
     <div class="remember-row">
-      <label>
-        <input type="checkbox">
+      <label class="remember">
+        <input type="checkbox" id="adminRemember">
         Remember Me
       </label>
-      <a href="#" class="forgot">Forgot Password?</a>
+
+      <p class="forgot">Contact system administrator to recover account</p>
     </div>
 
     <button type="submit" class="btn-signin">Sign In</button>
@@ -49,7 +50,9 @@
 
   </form>
 </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

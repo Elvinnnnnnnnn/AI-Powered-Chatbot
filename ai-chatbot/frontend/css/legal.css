@@ -1,0 +1,53 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6fb;
+    padding:40px 20px;
+    display:flex;
+    justify-content:center;
+}
+
+.legal-card{
+    background:white;
+    max-width:800px;
+    width:100%;
+    padding:40px;
+    border-radius:14px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.12);
+    line-height:1.6;
+}
+
+h1{
+    margin-bottom:5px;
+}
+
+.updated{
+    color:#666;
+    margin-bottom:25px;
+    font-size:14px;
+}
+
+h3{
+    margin-top:22px;
+    margin-bottom:8px;
+}
+
+ul{
+    padding-left:18px;
+    margin-bottom:12px;
+}
+
+.btn-close{
+    display:inline-block;
+    margin-top:30px;
+    padding:12px 22px;
+    background:#d9251c;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+}

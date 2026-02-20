@@ -7,15 +7,117 @@ import time
 import re
 import os
 from werkzeug.utils import secure_filename
+import pytz
+from datetime import datetime
+import secrets
+from datetime import timedelta
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app,
+     resources={r"/*": {"origins": ["http://localhost:5500", "http://127.0.0.1:5500"]}},
+     supports_credentials=True)
+
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "bernabeelvin@gmail.com"
+app.config["MAIL_PASSWORD"] = "odgp nfua mivk bwqv"
+
+mail = Mail(app)
 
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+UTC = pytz.utc
+PH = pytz.timezone("Asia/Manila")
+
+def iso_time(dt):
+    if not dt:
+        return None
+
+    # force UTC and remove local conversions
+    if dt.tzinfo is None:
+        dt = UTC.localize(dt)
+
+    return dt.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+@app.route("/forgot-password", methods=["POST", "OPTIONS"])
+def forgot_password():
+
+    if request.method == "OPTIONS":
+        return jsonify({"success": True}), 200
+
+    data = request.json
+    email = data.get("email")
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT id FROM users WHERE email=%s", (email,))
+    user = cursor.fetchone()
+
+    if not user:
+        return jsonify({"success": True})
+
+    token = secrets.token_urlsafe(32)
+    expiry = datetime.utcnow() + timedelta(minutes=15)
+
+    cursor.execute("""
+        INSERT INTO password_resets (user_id, token, expires_at)
+        VALUES (%s,%s,%s)
+    """, (user["id"], token, expiry))
+    db.commit()
+
+    reset_link = f"http://127.0.0.1:5500/reset-password.html?token={token}"
+
+    print("RESET LINK:", reset_link)
+
+    msg = Message(
+        "Password Reset",
+        sender=app.config["MAIL_USERNAME"],
+        recipients=[email]
+    )
+
+    msg.body = f"Click this link to reset your password:\n{reset_link}"
+    mail.send(msg)
+
+    return jsonify({"success": True})
+
+@app.route("/reset-password", methods=["POST"])
+def reset_password():
+    data = request.json
+    token = data.get("token")
+    new_password = data.get("password")
+
+    hashed = hashlib.sha256(new_password.encode()).hexdigest()
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT * FROM password_resets
+        WHERE token=%s AND used=0 AND expires_at > UTC_TIMESTAMP()
+    """, (token,))
+    record = cursor.fetchone()
+
+    if not record:
+        return jsonify({"success": False, "message": "Invalid or expired token"})
+
+    cursor.execute("""
+        UPDATE users SET password=%s WHERE id=%s
+    """, (hashed, record["user_id"]))
+
+    cursor.execute("""
+        UPDATE password_resets SET used=1 WHERE id=%s
+    """, (record["id"],))
+
+    db.commit()
+
+    return jsonify({"success": True})
 
 @app.route("/api/admin/profile", methods=["GET"])
 def get_admin_profile():
@@ -87,7 +189,6 @@ def after_request(response):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
     return response
-
 
 # ---------------- REGISTER ----------------
 @app.route("/register", methods=["POST"])
@@ -301,9 +402,128 @@ def get_calendar():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("SELECT * FROM school_calendar ORDER BY start_date")
-    events = cursor.fetchall()
+    rows = cursor.fetchall()
+
+    events = []
+    for e in rows:
+
+        # combine date + time
+        if e["start_time"]:
+            start_dt = datetime.strptime(
+                f"{e['start_date']} {e['start_time']}",
+                "%Y-%m-%d %H:%M:%S"
+            )
+        else:
+            start_dt = datetime.strptime(
+                f"{e['start_date']} 00:00:00",
+                "%Y-%m-%d %H:%M:%S"
+            )
+
+        if e["end_date"]:
+            end_dt = datetime.strptime(
+                f"{e['end_date']} {e['end_time'] or '23:59:59'}",
+                "%Y-%m-%d %H:%M:%S"
+            )
+        else:
+            end_dt = None
+
+        # convert to UTC ISO (CRITICAL)
+        start_iso = iso_time(start_dt)
+        end_iso = iso_time(end_dt) if end_dt else None
+
+        events.append({
+            "id": e["id"],
+            "title": e["title"],
+            "start": start_iso,
+            "end": end_iso,
+            "color": e["color"],
+            "description": e["description"]
+        })
+
+    cursor.close()
+    conn.close()
 
     return jsonify(events)
+
+@app.route("/api/admin/calendar", methods=["POST"])
+def add_calendar_event():
+    data = request.json
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO school_calendar 
+        (title, description, start_date, end_date, start_time, end_time, color)
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+    """, (
+        data["title"],
+        data.get("description"),
+        data["start_date"],
+        data.get("end_date"),
+        data.get("start_time"),
+        data.get("end_time"),
+        data.get("color", "#3788d8")
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/api/admin/calendar", methods=["GET"])
+def get_admin_calendar():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM school_calendar ORDER BY start_date DESC")
+    events = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(events)
+
+@app.route("/api/admin/calendar/<int:event_id>", methods=["PUT"])
+def update_calendar_event(event_id):
+    data = request.json
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE school_calendar
+        SET title=%s, description=%s, start_date=%s, end_date=%s,
+            start_time=%s, end_time=%s, color=%s
+        WHERE id=%s
+    """, (
+        data["title"],
+        data.get("description"),
+        data["start_date"],
+        data.get("end_date"),
+        data.get("start_time"),
+        data.get("end_time"),
+        data.get("color", "#3788d8"),
+        event_id
+    ))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/api/admin/calendar/<int:event_id>", methods=["DELETE"])
+def delete_calendar_event(event_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM school_calendar WHERE id=%s", (event_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -313,24 +533,17 @@ def chat():
     user_id = data.get("user_id")
     message = (data.get("message") or "").strip()
 
-    # 🔹 Load global chatbot settings (ADMIN CONTROLLED)
     settings = get_system_settings()
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # ======================================================
-    # 1️⃣ CHECK IF THIS IS USER'S FIRST CHAT → SEND WELCOME
-    # ======================================================
     cursor.execute(
         "SELECT COUNT(*) AS total FROM chats WHERE user_id = %s",
         (user_id,)
     )
     is_first_chat = cursor.fetchone()["total"] == 0
 
-    # ======================================================
-    # 2️⃣ SEARCH KNOWLEDGE BASE
-    # ======================================================
     cursor.execute("""
         SELECT answer
         FROM knowledge_base
@@ -340,9 +553,6 @@ def chat():
     """, (f"%{message}%",))
     result = cursor.fetchone()
 
-    # ======================================================
-    # 3️⃣ DECIDE STATUS + REPLY
-    # ======================================================
     if result:
         reply = result["answer"]
         status = "resolved"
@@ -350,15 +560,9 @@ def chat():
         reply = settings["fallback_message"]
         status = "escalated" if settings["auto_escalation"] else "resolved"
 
-    # ======================================================
-    # 4️⃣ RESPONSE TIME
-    # ======================================================
     end_time = time.time()
     response_time = round((end_time - start_time) * 1000, 2)
 
-    # ======================================================
-    # 5️⃣ SAVE CHAT
-    # ======================================================
     cursor.execute("""
         INSERT INTO chats (user_id, user_message, bot_reply, status, response_time)
         VALUES (%s, %s, %s, %s, %s)
@@ -367,9 +571,6 @@ def chat():
 
     chat_id = cursor.lastrowid
 
-    # ======================================================
-    # 6️⃣ ESCALATION TICKET NUMBER (IF ENABLED)
-    # ======================================================
     if status == "escalated":
         reply = (
             f"{reply}\n\n"
@@ -389,7 +590,8 @@ def chat():
     return jsonify({
         "reply": reply,
         "status": status,
-        "chat_id": chat_id
+        "chat_id": chat_id,
+        "created_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
     })
 
 @app.route("/chat/history/<int:user_id>")
@@ -402,18 +604,22 @@ def chat_history(user_id):
             id,
             user_message,
             bot_reply,
-            feedback
+            feedback,
+            created_at
         FROM chats
         WHERE user_id = %s
         ORDER BY created_at ASC
     """, (user_id,))
 
     history = cursor.fetchall()
+    for h in history:
+        h["created_at"] = iso_time(h["created_at"])
 
     cursor.close()
     db.close()
 
     return jsonify(history)
+
 
 @app.route("/api/admin/login", methods=["POST"])
 def admin_login():
@@ -515,7 +721,11 @@ def get_conversations():
     cursor.close()
     db.close()
 
+    for c in conversations:
+        c["created_at"] = iso_time(c["created_at"])
+
     return jsonify(conversations)
+
 
 @app.route("/api/admin/conversations/<int:user_id>", methods=["GET"])
 def get_conversation_thread(user_id):
@@ -541,6 +751,9 @@ def get_conversation_thread(user_id):
 
     cursor.execute(query, (user_id,))
     data = cursor.fetchall()
+
+    for d in data:
+        d["created_at"] = iso_time(d["created_at"])
 
     cursor.close()
     db.close()
@@ -625,16 +838,86 @@ def admin_reply():
     db = get_db_connection()
     cursor = db.cursor()
 
+    # 1️⃣ save admin reply
     cursor.execute("""
         INSERT INTO chats (user_id, bot_reply, status)
         VALUES (%s, %s, 'resolved')
     """, (user_id, "[ADMIN] " + reply))
+
+    chat_id = cursor.lastrowid
+
+    # 2️⃣ create notification for student
+    cursor.execute("""
+        INSERT INTO notifications (user_id, chat_id, message)
+        VALUES (%s, %s, %s)
+    """, (user_id, chat_id, "Admin replied to your escalated question"))
 
     db.commit()
     cursor.close()
     db.close()
 
     return jsonify({"success": True})
+
+@app.route("/api/student/notifications/<int:user_id>")
+def get_notifications(user_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT id, message, created_at
+        FROM notifications
+        WHERE user_id=%s AND is_read=0
+        ORDER BY created_at DESC
+    """, (user_id,))
+
+    data = cursor.fetchall()
+
+    for n in data:
+        n["created_at"] = iso_time(n["created_at"])
+
+    cursor.close()
+    db.close()
+
+    return jsonify(data)
+
+@app.route("/api/student/notifications/read/<int:notif_id>", methods=["PUT"])
+def mark_notification_read(notif_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE notifications
+        SET is_read=1
+        WHERE id=%s
+    """, (notif_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
+@app.route("/api/student/notifications/read-all/<int:user_id>", methods=["PUT", "OPTIONS"])
+def mark_all_notifications_read(user_id):
+
+    if request.method == "OPTIONS":
+        return jsonify({"success": True}), 200
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE user_id = %s AND is_read = 0
+    """, (user_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"success": True})
+
 
 @app.route("/api/admin/knowledge-base", methods=["GET"])
 def get_knowledge_base():
@@ -996,6 +1279,8 @@ def recent_activity():
     """)
 
     data = cursor.fetchall()
+    for d in data:
+        d["created_at"] = iso_time(d["created_at"])
 
     cursor.close()
     db.close()
@@ -1257,7 +1542,7 @@ def analytics_hours():
 
     cursor.execute(f"""
         SELECT
-            HOUR(created_at) AS hour,
+            HOUR(CONVERT_TZ(created_at,'+00:00','+08:00')) AS hour,
             COUNT(*) AS total
         FROM chats
         WHERE {date_filter}
@@ -1506,7 +1791,6 @@ def admin_create_user():
         "message": "User created successfully"
     })
 
-
 # ---------------- RUN SERVER ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False, threaded=True)

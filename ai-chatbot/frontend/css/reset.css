@@ -1,0 +1,144 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6fb;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.card{
+    background:white;
+    padding:40px;
+    width:100%;
+    max-width:380px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+.logo{
+    width:90px;
+    margin-bottom:15px;
+}
+
+h2{
+    margin-bottom:8px;
+    color:#222;
+}
+
+.subtitle{
+    font-size:14px;
+    color:#666;
+    margin-bottom:25px;
+    line-height:1.4;
+}
+
+label{
+    display:block;
+    text-align:left;
+    margin-bottom:6px;
+    font-size:14px;
+    font-weight:600;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    margin-bottom:16px;
+    outline:none;
+    transition:0.2s;
+    font-size:14px;
+}
+
+input:focus{
+    border-color:#d32f2f;
+    box-shadow:0 0 0 2px rgba(211,47,47,0.1);
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.2s;
+    font-size:15px;
+}
+
+.btn:hover{
+    background:#b71c1c;
+}
+
+.back{
+    display:block;
+    margin-top:18px;
+    text-decoration:none;
+    color:#555;
+    font-size:14px;
+}
+
+.back:hover{
+    color:#d32f2f;
+}
+
+/* MOBILE */
+@media(max-width:480px){
+
+    .card{
+        padding:28px 20px;
+        border-radius:12px;
+    }
+
+    .logo{
+        width:70px;
+    }
+
+    h2{
+        font-size:20px;
+    }
+
+    .subtitle{
+        font-size:13px;
+    }
+
+    input{
+        padding:11px;
+    }
+
+    .btn{
+        padding:11px;
+    }
+}
+
+/* LARGE SCREEN */
+@media(min-width:900px){
+
+    body{
+        background:linear-gradient(135deg,#f4f6fb,#eef1ff);
+    }
+
+    .card{
+        max-width:420px;
+        padding:50px;
+    }
+}

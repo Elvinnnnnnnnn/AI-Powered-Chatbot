@@ -5,5 +5,6 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",   # XAMPP default is empty
-        database="escr_chatbot"
+        database="escr_chatbot",
+        time_zone='+00:00'  
     )

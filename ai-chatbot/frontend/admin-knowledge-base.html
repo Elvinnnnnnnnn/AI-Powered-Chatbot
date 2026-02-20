@@ -59,6 +59,11 @@
         <span class="label">User Management</span>
       </li>
 
+      <li onclick="goTo('admin-calendar.html')">
+        <span class="icon">🗓</span>
+        <span class="label">Calendar Activities</span>
+      </li>
+
       <li onclick="goTo('admin-analytics.html')">
         <span class="icon">📈</span>
         <span class="label">Analytics</span>
@@ -217,7 +222,9 @@
     </div>
 
 </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
 <script src="admin.js"></script>
 <script src="admin-ui.js"></script>
 </body>

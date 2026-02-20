@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Register | Account Information</title>
     <link rel="stylesheet" href="css/register2.css">
+    <link rel="stylesheet" href="css/toast.css">
 </head>
 <body>
 
@@ -40,11 +41,11 @@
 
     <!-- TERMS -->
     <label class="checkbox">
-        <input type="checkbox">
+        <input id="agree" type="checkbox">
         I agree to the
-        <a href="#">Terms and Conditions</a>
+        <a href="terms.html" target="_blank">Terms and Conditions</a>
         and
-        <a href="#">Privacy Policy</a>
+        <a href="privacy.html" target="_blank">Privacy Policy</a>
     </label>
 
     <!-- ACTIONS -->
@@ -59,7 +60,9 @@
     </p>
 
 </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ if (loginForm) {
     const password = document.getElementById("password").value.trim();
 
     if (!email || !password) {
-      alert("Please enter email and password");
+      showToast("Enter email and password", "warn");
       return;
     }
 
@@ -25,14 +25,19 @@ if (loginForm) {
 
       if (response.ok && data.success) {
         localStorage.setItem("admin", JSON.stringify(data.admin));
-        window.location.href = "admin-dashboard.html";
+        showToast("Login successful", "success");
+
+        setTimeout(() => {
+          window.location.href = "admin-dashboard.html";
+        }, 900);
+
       } else {
-        alert(data.message || "Login failed");
+        showToast(data.message || "Invalid email or password", "error");
       }
 
     } catch (error) {
       console.error("Login error:", error);
-      alert("Cannot connect to server");
+      showToast("Cannot connect to server", "error");
     }
   });
 }
@@ -80,12 +85,12 @@ function submitEditUser() {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("User updated successfully");
+      showToast("User updated successfully", "success");
       closeEditUserModal();
       loadUsers();
       loadUserStats();
     } else {
-      alert(data.message || "Update failed");
+      showToast(data.message || "Update failed", "error");
     }
   });
 }
@@ -93,9 +98,11 @@ function submitEditUser() {
 document.addEventListener("DOMContentLoaded", () => {
   const editModal = document.getElementById("editUserModal");
 
-  editModal.addEventListener("click", (e) => {
-    if (e.target === editModal) {
-      editModal.classList.remove("active");
-    }
-  });
+  if (editModal) {
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) {
+        editModal.classList.remove("active");
+      }
+    });
+  }
 });

@@ -11,6 +11,10 @@
 
 /* TOPBAR */
 .admin-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 80px;
   background: #ffffff;
   display: flex;
@@ -18,6 +22,7 @@
   align-items: center;
   padding: 0 24px;
   border-bottom: 1px solid #e5e7eb;
+  z-index: 1000; /* stays above everything */
 }
 
 .logo {
@@ -78,8 +83,7 @@
 
 /* LAYOUT */
 .admin-layout {
-  display: flex;
-  height: calc(100vh - 80px);
+  height: 100vh;
 }
 
 .profile-wrapper {
@@ -113,12 +117,17 @@
 }
 /* ================= SIDEBAR ================= */
 .admin-sidebar {
+  position: fixed;
+  top: 80px;           /* BELOW header */
+  left: 0;
+  bottom: 0;
   width: 240px;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   padding: 20px 14px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;    /* sidebar scroll if long */
 }
 
 .sidebar-brand {
@@ -189,4 +198,53 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+/* MAIN CONTENT SCROLL AREA */
+.admin-content {
+  position: absolute;
+  top: 80px;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 28px 34px;
+  background: #f4f6fb;
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+
+#toast-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 340px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  animation: slideIn .25s ease, fadeOut .3s ease 3.7s forwards;
+}
+
+.toast.success { background: #16a34a; }
+.toast.error   { background: #dc2626; }
+.toast.info    { background: #2563eb; }
+.toast.warn    { background: #f59e0b; }
+
+@keyframes slideIn {
+  from { transform: translateX(120%); opacity:0; }
+  to   { transform: translateX(0); opacity:1; }
+}
+
+@keyframes fadeOut {
+  to { opacity:0; transform: translateX(120%); }
 }

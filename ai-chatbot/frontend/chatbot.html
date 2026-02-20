@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/chatbot.css">
 </head>
+<div id="notifPanel" class="notif-panel">
+    <h3>Notifications</h3>
+    <div id="notifList"></div>
+</div>
 <body>
 
     <!-- TOP NAVBAR -->
@@ -22,6 +26,9 @@
         </div>
 
         <div class="topbar-right">
+            <div class="notif-bell" onclick="openNotifications()">
+                🔔 <span id="notifCount" class="notif-count">0</span>
+            </div>
             <div class="profile">
                 <div class="avatar"></div>
                 <div class="profile-text">
@@ -89,7 +96,9 @@
         </div>
     </div>
 </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
 <script src="script.js"></script>
 
 <script>

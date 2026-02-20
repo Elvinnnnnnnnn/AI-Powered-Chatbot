@@ -8,60 +8,155 @@
 let lastChatId = null;        // ⭐ REQUIRED
 let isInCategoryFlow = false;
 let cachedWelcomeMessage = null;
+let notifPanelOpen = false;
+let stepHistory = [];
 
 /* STEP 1 → SAVE PERSONAL INFO */
 function saveStep1() {
-    localStorage.setItem("first_name", document.getElementById("first_name").value);
-    localStorage.setItem("middle_name", document.getElementById("middle_name").value);
-    localStorage.setItem("last_name", document.getElementById("last_name").value);
-    localStorage.setItem("birth_date", document.getElementById("birth_date").value);
-    localStorage.setItem("gender", document.getElementById("gender").value);
+
+    const first = document.getElementById("first_name").value.trim();
+    const middle = document.getElementById("middle_name").value.trim();
+    const last = document.getElementById("last_name").value.trim();
+    const birth = document.getElementById("birth_date").value;
+    const gender = document.getElementById("gender").value;
+
+    if(!first){
+        showToast("First name is required","error");
+        return;
+    }
+
+    if(!last){
+        showToast("Last name is required","error");
+        return;
+    }
+
+    if(!birth){
+        showToast("Birth date is required","error");
+        return;
+    }
+
+    if(!gender){
+        showToast("Please select gender","error");
+        return;
+    }
+
+    localStorage.setItem("first_name", first);
+    localStorage.setItem("middle_name", middle);
+    localStorage.setItem("last_name", last);
+    localStorage.setItem("birth_date", birth);
+    localStorage.setItem("gender", gender);
 
     window.location.href = "register-step2.html";
 }
 
 /* STEP 2 → SAVE CONTACT INFO */
-function saveStep2() {
-    localStorage.setItem("email", document.getElementById("email").value);
-    localStorage.setItem("phone", document.getElementById("phone").value);
-    localStorage.setItem("address", document.getElementById("address").value);
-    localStorage.setItem("program", document.getElementById("program").value);
-    localStorage.setItem("year_level", document.getElementById("year_level").value);
+function saveStep2(){
+
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const program = document.getElementById("program").value;
+    const year = document.getElementById("year_level").value;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{11}$/;
+
+    if(!email){
+        showToast("Email is required","error");
+        return;
+    }
+
+    if(!emailRegex.test(email)){
+        showToast("Invalid email format","error");
+        return;
+    }
+
+    if(!phone){
+        showToast("Phone number is required","error");
+        return;
+    }
+
+    if(!phoneRegex.test(phone)){
+        showToast("Phone must be 11 digits","error");
+        return;
+    }
+
+    if(!address){
+        showToast("Address is required","error");
+        return;
+    }
+
+    if(!program){
+        showToast("Select your program","error");
+        return;
+    }
+
+    if(!year){
+        showToast("Select year level","error");
+        return;
+    }
+
+    localStorage.setItem("email", email);
+    localStorage.setItem("phone", phone);
+    localStorage.setItem("address", address);
+    localStorage.setItem("program", program);
+    localStorage.setItem("year_level", year);
 
     window.location.href = "register-step3.html";
 }
 
 /* STEP 3 → SEND EVERYTHING TO BACKEND */
-function registerUser() {
+function registerUser(){
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
+
+    if(!username){
+        showToast("Username is required","error");
+        return;
+    }
+
+    if(password.length < 6){
+        showToast("Password must be at least 6 characters","error");
+        return;
+    }
+
+    if(password !== confirm){
+        showToast("Passwords do not match","error");
+        return;
+    }
+
     const data = {
         first_name: localStorage.getItem("first_name"),
         middle_name: localStorage.getItem("middle_name"),
         last_name: localStorage.getItem("last_name"),
         birth_date: localStorage.getItem("birth_date"),
         gender: localStorage.getItem("gender"),
-
         email: localStorage.getItem("email"),
         phone: localStorage.getItem("phone"),
         address: localStorage.getItem("address"),
         program: localStorage.getItem("program"),
         year_level: localStorage.getItem("year_level"),
-
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value
+        username: username,
+        password: password
     };
 
-    fetch("http://127.0.0.1:5000/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+    fetch("http://127.0.0.1:5000/register",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify(data)
     })
-    .then(res => res.json())
-    .then(response => {
-        alert(response.message);
-        if (response.success) {
-            localStorage.clear();
-            window.location.href = "login.html";
+    .then(res=>res.json())
+    .then(res=>{
+        if(!res.success){
+            showToast(res.message || "Registration failed","error");
+            return;
         }
+
+        localStorage.clear();
+        showToast("Account created successfully","success");
+        setTimeout(()=>location.href="login.html",900);
     });
 }
 
@@ -87,7 +182,7 @@ function loginUser() {
             sessionStorage.setItem("user", JSON.stringify(response.user));
             window.location.href = "dashboard.html";
         } else {
-            alert(response.message);
+            showToast(response.message || "Invalid email or password", "error");
         }
     });
 }
@@ -96,7 +191,8 @@ function loginUser() {
 function requireLogin() {
     const user = sessionStorage.getItem("user");
     if (!user) {
-        window.location.href = "login.html";
+        showToast("Login successful", "success");
+        setTimeout(() => window.location.href = "dashboard.html", 900);
     }
 }
 
@@ -172,7 +268,7 @@ function updateProfile() {
     .then(res => res.json())
     .then(res => {
         if (!res.success) {
-            alert(res.message);
+            showToast(res.message, "error");
             return;
         }
 
@@ -183,9 +279,9 @@ function updateProfile() {
         loadUserInfo();
         loadAvatarEverywhere();
 
-        alert("Profile updated successfully");
+        showToast("Profile updated successfully", "success");
     })
-    .catch(() => alert("Something went wrong"));
+    .catch(() => showToast("Network error. Please try again.", "error"));
 }
 
 
@@ -194,7 +290,7 @@ function changePassword() {
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     if (new_password.value !== confirm_password.value) {
-        alert("Passwords do not match");
+        showToast("Passwords do not match", "warn");
         return;
     }
 
@@ -209,8 +305,8 @@ function changePassword() {
     })
     .then(res => res.json())
     .then(res => {
-        if (res.success) alert("Password changed");
-        else alert(res.message);
+        if (res.success) showToast("Password changed successfully", "success");
+        else showToast(res.message || "Password change failed", "error");
     });
 }
 
@@ -323,7 +419,8 @@ function sendMessage() {
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
-    addMessage("user", msg);
+    const nowUTC = new Date().toISOString();
+    addMessage("user", msg, nowUTC);
 
     fetch("http://localhost:5000/chat", {
         method: "POST",
@@ -339,7 +436,7 @@ function sendMessage() {
         // ⭐ STORE CHAT ID FOR FEEDBACK
         lastChatId = data.chat_id;
 
-        addMessage("admin", data.reply);
+        addMessage("admin", data.reply, data.created_at);
     });
 
     input.value = "";
@@ -352,7 +449,7 @@ function sendQuick(text) {
 }
 
 /* ADD MESSAGE TO CHAT BOX */
-function addMessage(sender, text, chatId = null, withFeedback = false) {
+function addMessage(sender, text, time = null, chatId = null, withFeedback = false) {
     const box = document.getElementById("chatBox");
     if (!box) return;
 
@@ -377,7 +474,10 @@ function addMessage(sender, text, chatId = null, withFeedback = false) {
 
         html = `
             <div class="chat-message user">
-                <div class="bubble user-bubble">${text}</div>
+                <div class="bubble user-bubble">
+                    ${text}
+                    <div class="msg-time">${formatTime(time)}</div>
+                </div>
                 <div class="avatar user-avatar"
                     style="${avatarStyle}">
                     ${avatarContent}
@@ -403,6 +503,7 @@ function addMessage(sender, text, chatId = null, withFeedback = false) {
                 <div class="bubble admin-bubble">
                     <strong>${adminName}</strong><br>
                     ${text}
+                    <div class="msg-time">${formatTime(time)}</div>
                 </div>
             </div>
         `;
@@ -420,10 +521,28 @@ function closeFeedbackModal() {
     document.getElementById("feedbackModal").style.display = "none";
 }
 
+function formatTime(datetime) {
+    if (!datetime) return "";
+
+    // force ISO UTC if backend forgot the Z
+    if (typeof datetime === "string" && !datetime.endsWith("Z")) {
+        datetime = datetime.replace(" ", "T") + "Z";
+    }
+
+    const date = new Date(datetime);
+
+    return date.toLocaleTimeString("en-PH", {
+        timeZone: "Asia/Manila",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+}
+
 function submitFeedback(type) {
 
     if (!lastChatId) {
-        alert("No message to rate yet.");
+        showToast("No message to rate yet", "warn");
         return;
     }
 
@@ -441,11 +560,11 @@ function submitFeedback(type) {
     })
     .then(data => {
         closeFeedbackModal();
-        alert("Thank you for your feedback!");
+        showToast("Thank you for your feedback!", "success");
     })
     .catch(err => {
         console.error("Feedback error:", err);
-        alert("Something went wrong.");
+        showToast("Something went wrong", "error");
     });
 }
 
@@ -539,7 +658,7 @@ function selectCategory(category) {
 
     const user = JSON.parse(sessionStorage.getItem("user"));
 
-    addMessage("user", category);
+    addMessage("user", category, new Date().toISOString());
 
     // 1️⃣ Get category answer
     fetch("http://127.0.0.1:5000/chat/category", {
@@ -553,7 +672,7 @@ function selectCategory(category) {
     .then(res => res.json())
     .then(data => {
         lastChatId = data.chat_id;
-        addMessage("admin", data.reply, data.chat_id, true);
+        addMessage("admin", data.reply, new Date().toISOString(), data.chat_id, true);
         loadCategoryQuestions(category);
     })
     .catch(err => {
@@ -568,7 +687,7 @@ function selectQuestion(question, answer) {
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     // show user question immediately
-    addMessage("user", question);
+    addMessage("user", question, new Date().toISOString());
 
     fetch("http://127.0.0.1:5000/chat/quick-answer", {
         method: "POST",
@@ -583,7 +702,7 @@ function selectQuestion(question, answer) {
     .then(data => {
         // show bot answer WITH feedback
         lastChatId = data.chat_id;
-        addMessage("admin", data.reply, data.chat_id, true);
+        addMessage("admin", data.reply, new Date().toISOString(), data.chat_id, true);
     });
 
 }
@@ -610,15 +729,13 @@ function loadChatHistory() {
 
             data.forEach(row => {
                 if (row.user_message) {
-                    addMessage("user", row.user_message);
+                    addMessage("user", row.user_message, row.created_at);
                 }
                 if (row.bot_reply) {
-                    addMessage("admin", row.bot_reply, row.id, row.feedback === null);
-
-                    // ⭐ always keep latest message id
-                    lastChatId = row.id;
+                    addMessage("admin", row.bot_reply, row.created_at, row.id, row.feedback === null);
                 }
             });
+
 
             const activeCategory = sessionStorage.getItem("activeCategory");
             if (activeCategory) {
@@ -742,6 +859,9 @@ function handleBlockClick(block) {
 function renderNextButtons(list, clickHandler) {
 
     const wrapper = document.querySelector(".year-wrapper");
+
+    stepHistory.push(wrapper.innerHTML);
+
     wrapper.innerHTML = "";
 
     list.forEach(item => {
@@ -749,18 +869,22 @@ function renderNextButtons(list, clickHandler) {
         btn.className = "year-btn";
         btn.textContent = item;
 
-        btn.addEventListener("click", () => {
-            clickHandler(item);
-        });
+        btn.addEventListener("click", () => clickHandler(item));
 
         wrapper.appendChild(btn);
     });
+
+    updateBackButton();
 }
 
 /* SHOW IMAGE */
 function showScheduleImage(imagePath) {
 
     const wrapper = document.querySelector(".year-wrapper");
+
+    // save current state
+    stepHistory.push(wrapper.innerHTML);
+
     wrapper.innerHTML = "";
 
     const img = new Image();
@@ -772,6 +896,7 @@ function showScheduleImage(imagePath) {
                 <img src="${imagePath}" class="schedule-image">
             </div>
         `;
+        updateBackButton();
     };
 
     img.onerror = function () {
@@ -785,8 +910,73 @@ function showScheduleImage(imagePath) {
                 No schedule available for this selection.
             </div>
         `;
+        updateBackButton();
     };
 }
+
+function restoreStepLogic(){
+    const buttons = document.querySelectorAll(".year-btn");
+
+    buttons.forEach(btn => {
+
+        const text = btn.textContent.trim();
+
+        if(text === "SHS" || text.includes("Year")){
+            btn.onclick = () => handleYearClick(text);
+        }
+        else if(text.startsWith("Grade")){
+            btn.onclick = () => handleSHSClick(text);
+        }
+        else if(collegeCourses.includes(text)){
+            btn.onclick = () => handleCourseClick(text);
+        }
+        else if(scheduleBlocks.includes(text)){
+            btn.onclick = () => handleBlockClick(text);
+        }
+        else if(shsStrands.includes(text)){
+            btn.onclick = () => handleStrandClick(text);
+        }
+
+    });
+}
+
+function goBackStep(){
+
+    if(stepHistory.length === 0) return;
+
+    const wrapper = document.querySelector(".year-wrapper");
+
+    const lastHTML = stepHistory.pop();
+
+    wrapper.innerHTML = lastHTML;
+
+    restoreStepLogic();
+    updateBackButton();
+}
+
+function rebindYearButtons(){
+
+    const buttons = document.querySelectorAll(".year-btn");
+
+    buttons.forEach(btn=>{
+        const text = btn.textContent.trim();
+
+        btn.addEventListener("click", ()=>{
+            handleYearClick(text);
+        });
+    });
+}
+
+function updateBackButton(){
+    const btn = document.getElementById("backBtn");
+    if(!btn) return;
+
+    btn.style.display = stepHistory.length ? "inline-block" : "none";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateBackButton();
+});
 
 function showWelcomeMessage() {
     if (cachedWelcomeMessage) {
@@ -891,4 +1081,127 @@ function loadChatbotAdminProfile() {
         .catch(err => {
             console.error("Failed to load admin profile:", err);
         });
+}
+
+async function checkNotifications() {
+
+    const badge = document.getElementById("notifCount");
+    if (!badge) return;
+
+    // ⭐ DO NOT POLL WHILE PANEL OPEN
+    if (notifPanelOpen) return;
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user) return;
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/student/notifications/${user.id}`);
+        const data = await res.json();
+
+        badge.textContent = data.length;
+        badge.style.display = data.length ? "inline-block" : "none";
+
+    } catch (err) {
+        console.error("Notification error:", err);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("notifCount")) {
+        checkNotifications();
+        setInterval(checkNotifications, 5000);
+    }
+});
+
+async function openNotifications() {
+
+    const panel = document.getElementById("notifPanel");
+    const list = document.getElementById("notifList");
+    const badge = document.getElementById("notifCount");
+
+    if (!panel || !list) return;
+
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (!user) return;
+
+    // TOGGLE
+    notifPanelOpen = !notifPanelOpen;
+    panel.style.display = notifPanelOpen ? "block" : "none";
+
+    // If closing → stop here
+    if (!notifPanelOpen) return;
+
+    // LOAD notifications
+    const res = await fetch(`http://localhost:5000/api/student/notifications/${user.id}`);
+    const data = await res.json();
+
+    list.innerHTML = "";
+
+    data.forEach(n => {
+        list.innerHTML += `
+            <div class="notif-item">
+                ${n.message}<br>
+                <small>${formatTime(n.created_at)}</small>
+            </div>`;
+    });
+
+    // MARK ALL AS READ
+    await fetch(`http://localhost:5000/api/student/notifications/read-all/${user.id}`, {
+        method: "PUT"
+    });
+
+    // FORCE UI ZERO
+    badge.textContent = "0";
+    badge.style.display = "none";
+}
+
+function requestReset(){
+ fetch("http://127.0.0.1:5000/forgot-password",{
+   method:"POST",
+   headers:{ "Content-Type":"application/json" },
+   body:JSON.stringify({
+     email: document.getElementById("email").value
+   })
+ })
+ .then(r=>r.json())
+ .then(()=> showToast("If email exists, reset link sent","success"));
+}
+
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+function resetPassword(){
+
+    const pass = document.getElementById("new_password").value;
+    const confirm = document.getElementById("confirm_password").value;
+
+    if(pass !== confirm){
+        showToast("Passwords do not match","error");
+        return;
+    }
+
+    fetch("http://127.0.0.1:5000/reset-password",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+            token:token,
+            password:pass
+        })
+    })
+    .then(r=>r.json())
+    .then(res=>{
+        if(res.success){
+            showToast("Password updated","success");
+            setTimeout(()=>location.href="login.html",900);
+        }else{
+            showToast(res.message,"error");
+        }
+    });
+}
+
+const agree = document.getElementById("agree");
+
+if(!agree.checked){
+    showToast("You must accept the Terms and Privacy Policy","error");
+    return;
 }

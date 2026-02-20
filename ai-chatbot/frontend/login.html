@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Login | ESCR Chatbot</title>
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/toast.css">
 </head>
 <body>
 
@@ -32,7 +33,7 @@
             <input type="checkbox">
             Remember Me
         </label>
-        <a href="#" class="forgot">Forgot Password?</a>
+        <a href="forgot-password.html" class="forgot">Forgot Password?</a>
     </div>
 
     <button class="btn-signin" onclick="loginUser()">Sign In</button>
@@ -44,7 +45,9 @@
     <a href="register.html" class="btn-outline">Create Account</a>
     <a href="index.html" class="btn-back">Back to Home</a>
 </div>
-
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
+<script src="toast.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

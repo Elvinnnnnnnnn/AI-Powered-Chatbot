@@ -104,6 +104,18 @@ body {
     margin-bottom: 25px;
 }
 
+.remember {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+}
+
+.remember input{
+    width:auto;
+    margin:0;
+}
+
 .forgot {
     color: #f39c12;
     font-weight: bold;

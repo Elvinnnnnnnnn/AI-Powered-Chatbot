@@ -1,3 +1,19 @@
+/* ================= TIME HELPER ================= */
+function formatPHTime(dateString) {
+  if (!dateString) return "";
+
+  return new Date(dateString).toLocaleString("en-PH", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+}
+
 let editingKbId = null;
 let kbData = [];
 let activeCategory = "All";
@@ -41,6 +57,7 @@ function loadConversations() {
     .then(res => res.json())
     .then(data => {
       const list = document.getElementById("conversationList");
+      if (!list) return;
       list.innerHTML = "";
 
       data
@@ -76,7 +93,7 @@ function loadConversations() {
 
               <div class="item-footer">
                 <span class="time">
-                  ${new Date(chat.created_at).toLocaleString()}
+                  ${formatPHTime(chat.created_at)}
                 </span>
               </div>
             `;
@@ -163,7 +180,10 @@ function loadConversationThread(userId) {
         if (row.user_message) {
           const userMsg = document.createElement("div");
           userMsg.className = "chat student";
-          userMsg.textContent = row.user_message;
+          userMsg.innerHTML = `
+            <div>${row.user_message}</div>
+            <small class="msg-time">${formatPHTime(row.created_at)}</small>
+          `;
           body.appendChild(userMsg);
         }
 
@@ -178,7 +198,10 @@ function loadConversationThread(userId) {
               "Admin: " + row.bot_reply.replace("[ADMIN]", "").trim();
           } else {
             botMsg.className = "chat bot";
-            botMsg.textContent = row.bot_reply;
+            botMsg.innerHTML = `
+              <div>${row.bot_reply}</div>
+              <small class="msg-time">${formatPHTime(row.created_at)}</small>
+            `;
           }
 
           body.appendChild(botMsg);
@@ -193,19 +216,19 @@ function sendAdminReply() {
   const replyEl = document.getElementById("adminReply");
 
   if (!replyEl) {
-    alert("Reply box not found");
+    showToast("Reply box not found", "error");
     return;
   }
 
   const reply = replyEl.value.trim();
 
   if (!activeConversationChatId) {
-    alert("Chat ID is missing. Click a conversation first.");
+    showToast("Select a conversation first", "warn");
     return;
   }
 
   if (!reply) {
-    alert("Reply cannot be empty");
+    showToast("Reply cannot be empty", "warn");
     return;
   }
 
@@ -222,7 +245,7 @@ function sendAdminReply() {
     console.log("SERVER RESPONSE:", data);
 
     if (!data.success) {
-      alert(data.message || "Reply failed");
+      showToast(data.message || "Reply failed", "error");
       return;
     }
 
@@ -235,10 +258,12 @@ function sendAdminReply() {
     body.scrollTop = body.scrollHeight;
 
     replyEl.value = "";
+    showToast("Reply sent", "success");
     loadConversations();
   })
   .catch(err => {
     console.error("SEND ERROR:", err);
+    showToast("Network error. Please try again.", "error");
   });
 }
 
@@ -323,7 +348,6 @@ function saveKnowledgeBase(event) {
   });
 }
 
-
 function editKnowledgeBase(id, category, question, answer, status) {
   editingKbId = id;
 
@@ -391,7 +415,11 @@ function deleteKnowledgeBase(id) {
   .then(() => {
     loadKnowledgeBase();
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function renderKnowledgeBase() {
@@ -461,7 +489,11 @@ function updateChatStatus(status) {
     loadConversations(); // refresh left list
     loadConversationThread(activeConversationUserId); // refresh right panel
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function renderCategoryButtons() {
@@ -506,11 +538,11 @@ function updateKbStats() {
   }
 
   const latest = kbData
-    .map(item => new Date(item.updated_at))
-    .sort((a, b) => b - a)[0];
+    .map(item => item.updated_at)
+    .sort((a, b) => new Date(b) - new Date(a))[0];
 
   document.getElementById("statUpdated").textContent =
-    latest.toLocaleDateString() + " " + latest.toLocaleTimeString();
+    formatPHTime(latest);
 }
 
 function addQuestionBlock() {
@@ -628,7 +660,11 @@ function loadMostAskedQuestions() {
         list.appendChild(li);
       });
     })
-    .catch(err => console.error("Most Asked Error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function loadRecentActivity() {
@@ -687,7 +723,11 @@ function loadRecentActivity() {
 
       });
     })
-    .catch(err => console.error("Recent Activity Error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function formatStatus(status) {
@@ -720,7 +760,7 @@ function loadUsers() {
           <td><span class="tag ${user.role.toLowerCase()}">${user.role}</span></td>
           <td><span class="status ${user.status}">${user.status}</span></td>
           <td>—</td>
-          <td>${new Date(user.created_at).toLocaleDateString()}</td>
+          <td>${formatPHTime(user.created_at)}</td>
           <td>
             <td>
               <span class="action-btn" onclick="openEditUserModal(${user.id}, '${user.role}', '${user.status}')">✏️</span>
@@ -731,7 +771,11 @@ function loadUsers() {
         tbody.appendChild(tr);
       });
     })
-    .catch(err => console.error("Load users error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -749,16 +793,16 @@ function deleteUser(userId) {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("User deleted successfully");
+      showToast("User deleted successfully", "success");
       loadUsers();
       loadUserStats();
     } else {
-      alert("Delete failed");
+      showToast("Delete failed", "error");
     }
   })
   .catch(err => {
     console.error("Delete error:", err);
-    alert("Server error");
+    showToast("Server error", "error");
   });
 }
 
@@ -767,7 +811,7 @@ function editUser(userId) {
   const newStatus = prompt("Enter new status (active/inactive):");
 
   if (!newRole || !newStatus) {
-    alert("Role and status required");
+    showToast("Role and status required", "warn");
     return;
   }
 
@@ -782,15 +826,15 @@ function editUser(userId) {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("User updated successfully");
+      showToast("User updated successfully", "success");
       loadUsers();
     } else {
-      alert("Update failed");
+      showToast("Update failed", "error");
     }
   })
   .catch(err => {
     console.error("Update error:", err);
-    alert("Server error");
+    showToast("Server error", "error");
   });
 }
 
@@ -805,7 +849,11 @@ function loadUserStats() {
       document.getElementById("statStudents").textContent = stats.students;
       document.getElementById("statAdmins").textContent = stats.admins;
     })
-    .catch(err => console.error("User stats error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -853,7 +901,11 @@ function loadAnalytics(range = "7d") {
       document.getElementById("escalationChange").textContent = "Live data";
       document.getElementById("satisfactionChange").textContent = "Live data";
     })
-    .catch(err => console.error("Analytics error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 
@@ -884,7 +936,11 @@ function loadCategoryDistribution(range = "7d") {
         container.appendChild(bar);
       });
     })
-    .catch(err => console.error("Category analytics error:", err));
+    .catch(err => {
+    console.error(err);
+    showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -950,7 +1006,11 @@ function loadPeakUsageHours(range = "7d") {
         container.appendChild(row);
       });
     })
-    .catch(err => console.error("Peak hours error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -982,7 +1042,11 @@ function loadGeneralSettings() {
       document.getElementById("timezone").value = data.timezone;
       document.getElementById("maintenanceMode").checked = !!data.maintenance_mode;
     })
-    .catch(err => console.error("Load settings error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1008,9 +1072,13 @@ function saveGeneralSettings() {
   })
     .then(res => res.json())
     .then(() => {
-      alert("General settings saved successfully.");
+      showToast("General settings saved successfully", "success");
     })
-    .catch(err => console.error("Save settings error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function loadChatbotSettings() {
@@ -1030,7 +1098,11 @@ function loadChatbotSettings() {
       document.getElementById("autoEscalation").checked =
         !!data.auto_escalation;
     })
-    .catch(err => console.error("Load chatbot settings error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function saveSettings() {
@@ -1064,13 +1136,17 @@ function saveAdminProfile() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        alert("Profile updated successfully.");
+        showToast("Profile updated successfully", "success");
         loadAdminProfile();
       } else {
-        alert(data.message || "Profile update failed");
+        showToast(data.message || "Profile update failed", "error");
       }
     })
-    .catch(err => console.error("Profile save error:", err));
+   .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function saveChatbotSettings() {
@@ -1091,9 +1167,13 @@ function saveChatbotSettings() {
   })
     .then(res => res.json())
     .then(() => {
-      alert("Chatbot configuration saved successfully.");
+      showToast("Chatbot configuration saved successfully", "success");
     })
-    .catch(err => console.error("Save chatbot settings error:", err));
+   .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function startNewChat() {
@@ -1137,7 +1217,7 @@ function submitAddUser() {
   const password = modal.querySelector("input[type='password']").value;
 
   if (!name || !email || !role || !password) {
-    alert("Please fill in all fields");
+    showToast("Please fill in all fields", "warn");
     return;
   }
 
@@ -1154,11 +1234,11 @@ function submitAddUser() {
     .then(res => res.json())
     .then(data => {
       if (!data.success) {
-        alert(data.message || "Failed to add user");
+        showToast(data.message || "Failed to add user", "error");
         return;
       }
 
-      alert("User added successfully!");
+      showToast("User added successfully", "success");
       closeAddUserModal();
       loadUsers();       // refresh table
       loadUserStats();   // refresh stats
@@ -1169,7 +1249,7 @@ function submitAddUser() {
     })
     .catch(err => {
       console.error("ADD USER ERROR:", err);
-      alert("Server error");
+      showToast("Server error", "error");
     });
 }
 
@@ -1199,7 +1279,11 @@ function loadMostAskedTable(range = "7d") {
         tbody.appendChild(tr);
       });
     })
-    .catch(err => console.error("Most Asked Table Error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1269,7 +1353,11 @@ function loadAdminProfile() {
         document.getElementById("topbarPhoto").src = defaultImage;
       }
     })
-    .catch(err => console.error("Load profile error:", err));
+    .catch(err => {
+  console.error(err);
+  showToast("Network error. Please refresh the page.", "error");
+});
+
 }
 
 function registerAdmin() {
@@ -1279,12 +1367,12 @@ function registerAdmin() {
   const confirmPassword = document.getElementById("confirm_password").value;
 
   if (!username || !password || !confirmPassword) {
-    alert("All fields are required");
+    showToast("All fields are required", "warn");
     return;
   }
 
   if (password !== confirmPassword) {
-    alert("Passwords do not match");
+    showToast("Passwords do not match", "warn");
     return;
   }
 
@@ -1302,16 +1390,24 @@ function registerAdmin() {
   .then(data => {
 
     if (!data.success) {
-      alert(data.message);
+      showToast(data.message, "error");
       return;
     }
 
-    alert("Admin account created successfully!");
-    window.location.href = "admin-login.html";
-
+   showToast("Admin account created successfully", "success");
+    setTimeout(() => {
+      window.location.href = "admin-login.html";
+    }, 1200);
   })
   .catch(err => {
     console.error("Register error:", err);
-    alert("Server error");
+    showToast("Server error", "error");
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("activityList")) {
+    loadRecentActivity();
+  }
+});
+

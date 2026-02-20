@@ -1,0 +1,137 @@
+/* HEADER SPACING */
+.admin-header {
+margin-bottom: 22px;
+}
+
+.admin-header h1 {
+font-size: 26px;
+margin-bottom: 6px;
+}
+
+.admin-header p {
+color: #6b7280;
+font-size: 14px;
+}
+
+/* CARD PANELS */
+.panel {
+background: #ffffff;
+border-radius: 16px;
+padding: 22px;
+box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+margin-bottom: 22px;
+}
+
+/* FORM LAYOUT */
+.form-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 14px;
+margin-top: 10px;
+}
+
+.form-grid input,
+.form-grid textarea {
+width: 100%;
+padding: 10px 12px;
+border: 1px solid #e5e7eb;
+border-radius: 10px;
+font-size: 14px;
+background: #f9fafb;
+}
+
+.form-grid textarea {
+grid-column: span 4;
+height: 90px;
+resize: none;
+}
+
+/* BUTTON */
+.primary-btn {
+margin-top: 14px;
+background: linear-gradient(135deg,#4f6ef7,#2563eb);
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 12px;
+font-weight: 500;
+cursor: pointer;
+transition: .2s;
+}
+
+.primary-btn:hover {
+transform: translateY(-1px);
+box-shadow: 0 6px 16px rgba(37,99,235,.25);
+}
+
+/* TABLE */
+.event-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 10px;
+}
+
+.event-table th {
+text-align: left;
+font-size: 13px;
+color: #6b7280;
+padding: 12px;
+border-bottom: 1px solid #e5e7eb;
+}
+
+.event-table td {
+padding: 14px 12px;
+border-bottom: 1px solid #f1f5f9;
+font-size: 14px;
+}
+
+.event-table tr:hover {
+background: #f8fafc;
+}
+
+/* COLOR PREVIEW */
+.color-box {
+width: 22px;
+height: 22px;
+border-radius: 6px;
+display: inline-block;
+border: 1px solid #e5e7eb;
+}
+
+/* DELETE BUTTON */
+.danger {
+background: #fee2e2;
+color: #dc2626;
+border: none;
+padding: 6px 12px;
+border-radius: 10px;
+cursor: pointer;
+transition: .2s;
+}
+
+.danger:hover {
+background: #fecaca;
+}
+
+/* MATCH DASHBOARD CONTENT WIDTH */
+.admin-content {
+flex: 1;
+padding: 28px 34px;
+max-width: 1200px;
+}
+
+/* CENTER CONTENT LIKE OTHER PAGES */
+.admin-layout {
+display: flex;
+background: #f4f6fb;
+}
+
+/* FIX PANEL WIDTH */
+.panel {
+width: 100%;
+}
+
+/* MAKE TABLE FULL WIDTH */
+.event-table {
+width: 100%;
+}

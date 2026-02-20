@@ -6,7 +6,10 @@
         <link rel="stylesheet" href="css/navbar.css">
         <link rel="stylesheet" href="css/class-schedule.css">
     </head>
-
+    <div id="notifPanel" class="notif-panel">
+        <h3>Notifications</h3>
+        <div id="notifList"></div>
+    </div>
     <body>
 
         <!-- TOP NAVBAR -->
@@ -22,6 +25,9 @@
             </div>
 
             <div class="topbar-right">
+                <div class="notif-bell" onclick="openNotifications()">
+                    🔔 <span id="notifCount" class="notif-count">0</span>
+                </div>
                 <div class="profile">
                     <div class="avatar"></div>
                     <div class="profile-text">
@@ -45,7 +51,10 @@
         <!-- MAIN CONTENT -->
         <div class="content-single">
 
-            <!-- YEAR BUTTONS -->
+            <div class="schedule-nav">
+                <button id="backBtn" class="back-btn" onclick="goBackStep()">← Back</button>
+            </div>
+
             <div class="year-wrapper">
                 <button class="year-btn">SHS</button>
                 <button class="year-btn">1st Year</button>
@@ -54,12 +63,14 @@
                 <button class="year-btn">4th Year</button>
             </div>
 
-            <!-- SCHEDULE OUTPUT (for later use) -->
             <div id="scheduleTable"></div>
 
         </div>
+<!-- GLOBAL TOAST -->
+<div id="toast-container"></div>
 
     <!-- SCRIPTS -->
+     <script src="toast.js"></script>
     <script src="script.js"></script>
 
     <script>
