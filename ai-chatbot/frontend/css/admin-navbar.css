@@ -5,6 +5,10 @@
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
+html {
+scrollbar-gutter: stable !important;
+}
+
 .admin-body {
   background: #f4f7fb;
 }
@@ -15,7 +19,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 80px;
+  height: 90px;
   background: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -28,17 +32,6 @@
 .logo {
   width: 80px;
   margin-left: 30px;
-}
-
-.brand strong  {
-    font-size: 40px;
-    font-weight: bold;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-.brand span {
-    -size: 15px;
-    color: #777;
 }
 
 .topbar-left {
@@ -55,11 +48,12 @@
 }
 
 .brand strong {
-  font-size: 15px;
+  font-size: 20px;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .brand span {
-  font-size: 12px;
+  font-size: 15px;
   color: #6b7280;
 }
 

@@ -97,13 +97,6 @@
   transition: background 0.2s ease;
 }
 
-.admin-content {
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .kb-categories button.active {
   background: #4f6ef7;
   color: #ffffff;

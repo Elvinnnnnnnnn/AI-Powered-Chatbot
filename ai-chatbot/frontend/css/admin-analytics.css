@@ -13,23 +13,6 @@ body {
   color: #1f2937;
 }
 
-/* TOPBAR */
-.topbar {
-  height: 64px;
-  background: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.topbar-left, .topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .menu-btn {
   background: none;
   border: none;
@@ -63,22 +46,6 @@ body {
   color: #6b7280;
 }
 
-/* LAYOUT */
-.admin-layout {
-  display: flex;
-  height: calc(100vh - 64px);
-}
-
-/* SIDEBAR */
-.admin-sidebar {
-  width: 240px;
-  background: #fff;
-  border-right: 1px solid #e5e7eb;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-}
-
 .menu {
   list-style: none;
 }
@@ -107,13 +74,6 @@ body {
 .admin-header p {
   font-size: 14px;
   color: #6b7280;
-}
-
-/* CONTENT */
-.admin-content {
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
 }
 
 /* HEADER */

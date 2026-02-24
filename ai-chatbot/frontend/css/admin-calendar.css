@@ -113,19 +113,6 @@ transition: .2s;
 background: #fecaca;
 }
 
-/* MATCH DASHBOARD CONTENT WIDTH */
-.admin-content {
-flex: 1;
-padding: 28px 34px;
-max-width: 1200px;
-}
-
-/* CENTER CONTENT LIKE OTHER PAGES */
-.admin-layout {
-display: flex;
-background: #f4f6fb;
-}
-
 /* FIX PANEL WIDTH */
 .panel {
 width: 100%;

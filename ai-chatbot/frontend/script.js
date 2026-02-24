@@ -1198,10 +1198,3 @@ function resetPassword(){
         }
     });
 }
-
-const agree = document.getElementById("agree");
-
-if(!agree.checked){
-    showToast("You must accept the Terms and Privacy Policy","error");
-    return;
-}

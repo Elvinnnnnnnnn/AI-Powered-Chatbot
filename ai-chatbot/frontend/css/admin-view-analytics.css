@@ -6,24 +6,6 @@ body {
   background: #f1f5f9;
 }
 
-.admin-layout {
-  display: flex;
-  height: calc(100vh - 70px);
-}
-
-/* ================= TOPBAR ================= */
-
-.admin-content {
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-}
-
 .admin-user {
   display: flex;
   align-items: center;
@@ -46,28 +28,24 @@ body {
   color: #6b7280;
 }
 
-/* ================= SIDEBAR ================= */
-
-.admin-sidebar {
-  width: 230px;
-  background: white;
-  padding: 25px 15px;
-  border-right: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-}
-
 .nav-menu {
   list-style: none;
   padding: 0;
 }
 
 .nav-menu li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
   padding: 12px 14px;
-  margin-bottom: 8px;
-  border-radius: 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  color: #374151;
 }
 
 .nav-menu li.active {
@@ -75,20 +53,11 @@ body {
   color: white;
 }
 
-/* ================= MAIN ================= */
-
-.admin-content {
-  flex: 1;
-  padding: 35px;
-  overflow-y: auto;
-}
 
 /* ================= HEADER ================= */
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+margin-bottom: 24px;
 }
 
 .page-header h1 {
